@@ -7,13 +7,13 @@ Follow this guide to get started
 1. **Clone the Repository**: Clone this repository to your local machine using:
 
     ```
-    git clone https://github.com/your-username/your-flask-app.git
+    git clone https://github.com/your-username/arctic-sprint-solutions.git
     ```
 
 2. **Navigate to the Project Directory**: Change directory to the project folder:
 
     ```
-    cd your-flask-app
+    cd arctic-sprint-solutions
     ```
 
 3. **Set Up Python Environment**:
