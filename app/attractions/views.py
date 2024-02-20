@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, render_template
 from . import attractions
 from .models import Attraction
 from app import db
@@ -18,4 +18,4 @@ def get_attractions():
             'points': attraction.points
         }
         attraction_list.append(attraction_data)
-    return jsonify(attraction_list)
+    return render_template('attractions.html', attractions=attraction_list)

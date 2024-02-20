@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Attractions</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+</head>
+<body>
+    <h1>Attractions</h1>
+    <div class="attraction-list">
+        {% for attraction in attractions %}
+            <div class="attraction">
+                <h2>{{ attraction.name }}</h2>
+                <p><strong>Location:</strong> {{ attraction.location }}</p>
+                <p>{{ attraction.description }}</p>
+            </div>
+        {% else %}
+            <p>No attractions found.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
