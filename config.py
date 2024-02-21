@@ -1,3 +1,14 @@
+"""Configuration settings for the application
+
+Keyword arguments:
+	Config: Base config class.
+	TestConfig: Configuration settings for testing.
+	LiveConfig: Configuration settings for live (production).
+Return: 
+	Dictionary mapping configuration names to classes.
+"""
+
+
 import os
 import secrets
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -26,11 +37,12 @@ class TestConfig(Config):
 
 
 class LiveConfig(Config):
-    DEBUG = False
-    MYSQL_HOST = 'kark.uit.no'
-    MYSQL_USER = 'stud_v23_ete026'
-    MYSQL_PASSWORD = ''
-    MYSQL_DB = 'stud_v23_ete026'
+	# TODO: Denne må oppdateres dersom vi skal ha en live database-sever.
+	DEBUG=False
+	MYSQL_HOST = 'kark.uit.no'
+	MYSQL_USER = 'stud_v23_ete026'
+	MYSQL_PASSWORD = ''
+	MYSQL_DB = 'stud_v23_ete026'
 
     MYSQL_DICT = {
         'host': MYSQL_HOST,
