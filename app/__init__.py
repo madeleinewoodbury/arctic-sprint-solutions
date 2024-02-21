@@ -8,15 +8,14 @@ Return: flask application (with right configuration)
 
 
 from flask import Flask
-#from config import config
 from flask_sqlalchemy import SQLAlchemy
-#from app.routes.attractions_view import attractions
 
 db = SQLAlchemy()
 
 class Config:
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://user:test@localhost/arcticSprintSolutionsDB'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
 
 config = {
     'development': Config,
