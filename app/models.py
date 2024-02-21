@@ -4,7 +4,7 @@ from app import db
 
 
 class Achievement(db.Model):
-    __tablename__ = 'Achievement'
+    __tablename__ = 'achievement'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text)
@@ -12,16 +12,16 @@ class Achievement(db.Model):
 
 
 class AgeGroup(db.Model):
-    __tablename__ = 'AgeGroup'
+    __tablename__ = 'ageGroup'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
 
 class Attraction(db.Model):
-    __tablename__ = 'Attraction'
+    __tablename__ = 'attraction'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    city = db.Column(db.Integer, db.ForeignKey('City.id'), nullable=False)
+    city = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
     location = db.Column(db.String(255))
     description = db.Column(db.Text)
     image = db.Column(db.String(255))
@@ -32,7 +32,7 @@ class Attraction(db.Model):
 
 
 class AttractionAgeGroup(db.Model):
-    __tablename__ = 'AttractionAgeGroup'
+    __tablename__ = 'attractionAgeGroup'
     attraction_id = db.Column(db.Integer, db.ForeignKey(
         'Attraction.id'), primary_key=True)
     age_group_id = db.Column(db.Integer, db.ForeignKey(
@@ -40,37 +40,37 @@ class AttractionAgeGroup(db.Model):
 
 
 class AttractionCategory(db.Model):
-    __tablename__ = 'AttractionCategory'
+    __tablename__ = 'attractionCategory'
     category_id = db.Column(db.Integer, db.ForeignKey(
-        'Category.id'), primary_key=True)
+        'category.id'), primary_key=True)
     attraction_id = db.Column(db.Integer, db.ForeignKey(
-        'Attraction.id'), primary_key=True)
+        'attraction.id'), primary_key=True)
 
 
 class AttractionGroup(db.Model):
-    __tablename__ = 'AttractionGroup'
+    __tablename__ = 'attractionGroup'
     id = db.Column(db.Integer, primary_key=True)
-    owner = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+    owner = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     title = db.Column(db.String(50), nullable=False)
     visibility = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class AttractionTag(db.Model):
-    __tablename__ = 'AttractionTag'
-    tag_id = db.Column(db.Integer, db.ForeignKey('Tag.id'), primary_key=True)
+    __tablename__ = 'attractionTag'
+    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
     attraction_id = db.Column(db.Integer, db.ForeignKey(
-        'Attraction.id'), primary_key=True)
+        'attraction.id'), primary_key=True)
 
 
 class Category(db.Model):
-    __tablename__ = 'Category'
+    __tablename__ = 'category'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
 
 class City(db.Model):
-    __tablename__ = 'City'
+    __tablename__ = 'city'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text)
@@ -78,41 +78,41 @@ class City(db.Model):
 
 
 class Friendship(db.Model):
-    __tablename__ = 'Friendship'
-    user_1 = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key=True)
-    user_2 = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key=True)
+    __tablename__ = 'friendship'
+    user_1 = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    user_2 = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     status = db.Column(db.String(50))
 
 
 class GroupedAttraction(db.Model):
-    __tablename__ = 'GroupedAttraction'
+    __tablename__ = 'groupedAttraction'
     group_id = db.Column(db.Integer, db.ForeignKey(
-        'AttractionGroup.id'), primary_key=True)
+        'attractionGroup.id'), primary_key=True)
     attraction_id = db.Column(db.Integer, db.ForeignKey(
-        'Attraction.id'), primary_key=True)
+        'attraction.id'), primary_key=True)
 
 
 class Language(db.Model):
-    __tablename__ = 'Language'
+    __tablename__ = 'language'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
 
 
 class Tag(db.Model):
-    __tablename__ = 'Tag'
+    __tablename__ = 'tag'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
 
 class User(db.Model):
-    __tablename__ = 'User'
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50))
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.Integer, db.ForeignKey('UserRole.id'))
+    role = db.Column(db.Integer, db.ForeignKey('userRole.id'))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     role_rel = db.relationship(
@@ -120,23 +120,23 @@ class User(db.Model):
 
 
 class UserAchievement(db.Model):
-    __tablename__ = 'UserAchievement'
+    __tablename__ = 'userAchievement'
     achievement_id = db.Column(db.Integer, db.ForeignKey(
-        'Achievement.id'), primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key=True)
+        'achievement.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     time_achieved = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class UserRole(db.Model):
-    __tablename__ = 'UserRole'
+    __tablename__ = 'userRole'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30))
     is_admin = db.Column(db.Boolean, default=False)
 
 
 class VisitedAttraction(db.Model):
-    __tablename__ = 'VisitedAttraction'
-    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key=True)
+    __tablename__ = 'visitedAttraction'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     attraction_id = db.Column(db.Integer, db.ForeignKey(
-        'Attraction.id'), primary_key=True)
+        'attraction.id'), primary_key=True)
     time_visited = db.Column(db.DateTime, default=datetime.utcnow)
