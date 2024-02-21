@@ -1,6 +1,6 @@
-from flask import jsonify, render_template
+from flask import render_template
 from . import attractions
-from .models import Attraction
+from app.models import Attraction
 from app import db
 
 
