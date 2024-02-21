@@ -37,19 +37,19 @@ class TestConfig(Config):
 
 
 class LiveConfig(Config):
-	# TODO: Denne må oppdateres dersom vi skal ha en live database-sever.
-	DEBUG=False
-	MYSQL_HOST = 'kark.uit.no'
-	MYSQL_USER = 'stud_v23_ete026'
-	MYSQL_PASSWORD = ''
-	MYSQL_DB = 'stud_v23_ete026'
+    # TODO: Denne må oppdateres dersom vi skal ha en live database-sever.
+    """DEBUG=False
+    MYSQL_HOST = 'kark.uit.no'
+    MYSQL_USER = 'stud_v23_ete026'
+    MYSQL_PASSWORD = ''
+    MYSQL_DB = 'stud_v23_ete026'
 
-    MYSQL_DICT = {
-        'host': MYSQL_HOST,
-        'user': MYSQL_USER,
-        'password': MYSQL_PASSWORD,
-        'database': MYSQL_DB
-    }
+MYSQL_DICT = {
+    'host': MYSQL_HOST,
+    'user': MYSQL_USER,
+    'password': MYSQL_PASSWORD,
+    'database': MYSQL_DB
+}"""
 
 
 config = {
