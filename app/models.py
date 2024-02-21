@@ -1,7 +1,7 @@
 from app import db
 
 class Attraction(db.Model):
-    __tablename__ = 'Attraction'
+    #__tablename__ = 'Attraction'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(55), nullable=False)
