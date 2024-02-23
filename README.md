@@ -37,12 +37,32 @@ Follow this guide to get started
     pip install -r requirements.txt
     ```
 
+5. **Environment Variables**: This project utilizes environment variables for configuration. These variables are stored in a `.env` file located in the root directory of the project. To set up your environment variables:
+
+    1. Create a `.env` file in the root directory of the project if it does not already exist.
+    2. Add the required environment variables to the `.env` file. For example:
+
+    ```plaintext
+    DATABASE_URI=your_database_uri_here
+    ```
+
+    Replace `your_database_uri_here` with the actual URI for your database.
+
+    3. Save the `.env` file.
+
+## Configuration
+
+The following environment variables are used in this project:
+
+- `DATABASE_URI`: This variable is used to specify the URI for the database. It should be set to the appropriate URI for your database system.
+
+
 ## Usage
 
 - **Run the Flask App**: Start the Flask app by running the following command:
 
     ```
-    python app.py
+    python run.py
     ```
 
 - **Access the App**: Open a web browser and navigate to [http://localhost:5200/](http://localhost:5000/). 
