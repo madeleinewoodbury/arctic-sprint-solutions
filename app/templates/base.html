@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/styles.css') }}">
+        {% if title %}
+        <title>{{ title }} - WorkingTitle</title>
+        {% else %}
+        <title>Welcome to WorkingTitle</title>
+        {% endif %}
+    </head>
+    <body>
+        <nav>
+            <span>WorkingTitle - </span>
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <a href="{{ url_for('attractions.get_attractions') }}">Attractions</a>
+            {% if current_user.is_anonymous %}
+            <a href="{{ url_for('auth.login') }}">Login</a>
+            {% else %}
+            <a href="{{ url_for('auth.logout') }}">Profile</a>
+            <div>
+                <span>Logged in as {{ current_user.username }}</span>
+                <a href="{{ url_for('auth.logout') }}">(logout)</a>
+            </div>
+            {% endif %}
+        </nav>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
