@@ -34,5 +34,8 @@ def create_app(config_name):
 
     from .attractions import attractions as attractions_bp
     app.register_blueprint(attractions_bp)
+    
+    from .main import main as main_bp
+    app.register_blueprint(main_bp)
 
     return app

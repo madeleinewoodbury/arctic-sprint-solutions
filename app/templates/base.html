@@ -12,13 +12,17 @@
     </head>
     <body>
         <nav>
-            WorkingTitle:
-            <a href="{{ url_for('index') }}">Home</a>
+            WorkingTitle - 
+            <a href="{{ url_for('main.index') }}">Home</a>
             <a href="{{ url_for('attractions.get_attractions') }}">Attractions</a>
             {% if current_user.is_anonymous %}
             <a href="{{ url_for('auth.login') }}">Login</a>
             {% else %}
-            Logged in as {{ current_user.username }}<a href="{{ url_for('auth.logout') }}">(logout)</a>
+            <a href="{{ url_for('auth.logout') }}">Profile</a>
+            <div>
+                <span>Logged in as {{ current_user.username }}</span>
+                <a href="{{ url_for('auth.logout') }}">(logout)</a>
+            </div>
             {% endif %}
         </nav>
         <hr>
