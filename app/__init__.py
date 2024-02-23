@@ -27,6 +27,7 @@ def create_app(config_name):
     # Loads the configurations settings based on config type.
     app.config.from_object(config[config_name])
     db.init_app(app)
+    login_manager.init_app(app)
 
     from .auth import auth as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
