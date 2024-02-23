@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<head>
-    <meta charset="utf-8">
-    <title>Attractions</title>
-    <link rel="stylesheet" href="../static/css/styles.css">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
     <h1>Attractions</h1>
     <div class="attraction-list">
         {% for attraction in attractions %}
@@ -17,5 +13,4 @@
             <p>No attractions found.</p>
         {% endfor %}
     </div>
-</body>
-</html>
+{% endblock %}

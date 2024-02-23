@@ -12,7 +12,7 @@
     </head>
     <body>
         <nav>
-            WorkingTitle - 
+            <span>WorkingTitle - </span>
             <a href="{{ url_for('main.index') }}">Home</a>
             <a href="{{ url_for('attractions.get_attractions') }}">Attractions</a>
             {% if current_user.is_anonymous %}
