@@ -8,18 +8,21 @@ Return:
 	Dictionary mapping configuration names to classes.
 """
 
-
+from dotenv import load_dotenv
 import os
 import secrets
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+
+# load environment variables located in .env file
+load_dotenv()
 
 class Config():
     SECRET_KEY = secrets.token_urlsafe(16)
 
 
 class TestConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'mysql://user:test@localhost:3306/arcticSprintSolutionsDB'
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI")
 
 
 """    DEBUG = True
