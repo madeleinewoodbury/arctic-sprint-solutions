@@ -173,7 +173,7 @@
   
   .auth-card .content {
     padding: 3rem 2rem;
-    justify-content: space-between;
+    justify-content: start;
     height: 100%;
   }
 
@@ -181,6 +181,14 @@
     padding-bottom: 0;
   }
 
+  .auth-card form {
+    padding-top: 7rem;
+  }
+
+  .auth-card form {
+    height: 100%;
+    justify-content: space-between;
+  }
 
   .auth-card .form-row {
     grid-template-columns: repeat(2, 1fr);
