@@ -1,25 +1,58 @@
 {% extends "base.html" %}
 
-{% block content %}
-    <h1>Login</h1>
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.email.label }}<br>
-            {{ form.email(size=50) }}<br>
-            {% for error in form.email.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=50) }}<br>
-            {% for error in form.password.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-        <p>{{ form.submit() }}</p>
-    </form>
-    <p>Don't have an account? <Strong><a href="{{ url_for('auth.register') }}">Register now</a></Strong></p>
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
 {% endblock %}
+
+{% block content %}
+<section class="login wrapper">
+    <div class="auth-card">
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='img/aurora-bg.png') }}" alt="Northern lights over a mountain">
+        </div>
+        <div class="text-container">
+            <div class="content">
+                <div class="title">
+                    <h1>Working Title</h1>
+                    <p>Login with Email</p>
+                </div>
+
+                <form action="" method="post" novalidate>
+                    <div class="top">
+                        {{ form.hidden_tag() }}
+                        <div class="form-control">
+                            {{ form.email.label }}
+                            {{ form.email(size=50) }}
+                            {% for error in form.email.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                        <div class="form-control">
+                            {{ form.password.label }}
+                            {{ form.password(size=50) }}
+                            {% for error in form.password.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                        </div>
+                        <div class="form-row">
+                            <div class="remember-me">
+                                {{ form.remember_me() }} {{ form.remember_me.label }}
+                            </div>
+                            <div class="forgot-password">
+                                <a href="#!">Forgot Password?</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-container">
+                        {{ form.submit() }}
+                        <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register now</a></p>
+                    </div>
+                </form>
+        
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
