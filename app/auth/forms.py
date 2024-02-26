@@ -7,7 +7,7 @@ class LoginForm(Form):
 	email = EmailField('Email', validators=[DataRequired()])
 	password = PasswordField('Password', validators=[DataRequired()])
 	remember_me = BooleanField('Remember me')
-	submit = SubmitField('Login')
+	submit = SubmitField('Login', render_kw={'class': 'btn btn-primary'})
 
 class RegistrationForm(Form):
 	first_name = StringField('First Name', validators=[DataRequired(), Length(max=50)])
@@ -16,7 +16,7 @@ class RegistrationForm(Form):
 	email = EmailField('Email', validators=[DataRequired(), Length(max=50)])
 	password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=50)])
 	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=6, max=50), EqualTo('password')])
-	submit = SubmitField('Register')
+	submit = SubmitField('Register', render_kw={'class': 'btn btn-primary'})
  
 	def validate_username(self, username):
 		user = User.query.filter_by(username=username.data).first()
