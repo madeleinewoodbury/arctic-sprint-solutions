@@ -1,5 +1,6 @@
 
-.login.wrapper {
+.login.wrapper,
+.register.wrapper {
   background-color: var(--bg-light);
   align-items: start;
 }
@@ -138,7 +139,8 @@
 }
 
 @media (min-width: 500px) {
-  .login.wrapper {
+  .login.wrapper,
+  .register.wrapper {
     background-color: var(--bg-dark);
     align-items: center;
   }
