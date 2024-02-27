@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Feb 19, 2024 at 12:36 AM
--- Server version: 11.2.3-MariaDB-1:11.2.3+maria~ubu2204
--- PHP Version: 8.1.17
+-- Generation Time: Feb 20, 2024 at 07:07 PM
+-- Server version: 10.11.2-MariaDB-1:10.11.2+maria~ubu2204
+-- PHP Version: 8.1.15
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,10 +24,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Achievement`
+-- Table structure for table `achievement`
 --
 
-CREATE TABLE `Achievement` (
+CREATE TABLE `achievement` (
   `id` int(11) NOT NULL,
   `title` varchar(50) NOT NULL,
   `description` text DEFAULT NULL,
@@ -35,29 +35,29 @@ CREATE TABLE `Achievement` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
--- Dumping data for table `Achievement`
+-- Dumping data for table `achievement`
 --
 
-INSERT INTO `Achievement` (`id`, `title`, `description`, `points_needed`) VALUES
+INSERT INTO `achievement` (`id`, `title`, `description`, `points_needed`) VALUES
 (1, 'Explorer', 'Visited 10 different attractions', 100),
 (2, 'Globetrotetr', 'Visited 20 different attractions', 200);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `AgeGroup`
+-- Table structure for table `ageGroup`
 --
 
-CREATE TABLE `AgeGroup` (
+CREATE TABLE `ageGroup` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
--- Dumping data for table `AgeGroup`
+-- Dumping data for table `ageGroup`
 --
 
-INSERT INTO `AgeGroup` (`id`, `name`) VALUES
+INSERT INTO `ageGroup` (`id`, `name`) VALUES
 (1, 'All age groups'),
 (2, '0-4 years'),
 (3, '5-9 years'),
@@ -73,10 +73,10 @@ INSERT INTO `AgeGroup` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Attraction`
+-- Table structure for table `attraction`
 --
 
-CREATE TABLE `Attraction` (
+CREATE TABLE `attraction` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `city` int(11) NOT NULL,
@@ -87,10 +87,10 @@ CREATE TABLE `Attraction` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
--- Dumping data for table `Attraction`
+-- Dumping data for table `attraction`
 --
 
-INSERT INTO `Attraction` (`id`, `name`, `city`, `location`, `description`, `image`, `points`) VALUES
+INSERT INTO `attraction` (`id`, `name`, `city`, `location`, `description`, `image`, `points`) VALUES
 (1, 'Ishavskatedralen', 1, 'Hans Nilsens veg 41', 'An iconic church with unique architecture and stunning views of the fjord.', 'https://www.ishavskatedralen.no/wp-content/uploads/2013/06/testfoto1.jpg', 10),
 (2, 'Fjellheisen Tromsø', 1, 'Sollivegen 12', 'The Cable Car is Tromsø’s most popular tourist destination. It runs from Solliveien in Tromsdalen up to the mountain ledge Storsteinen. The lower station is located on Tromsø’s mainland, 50 m above sea level, while the upper station, Fjellstua, is situated at an altitude of 421 m above sea level. The trip up takes just four minutes. From the large outdoor terrace, you can enjoy the spectacular panoramic view of Tromsø and the virtually endless sight of islands, fjords, mountains and the open sea. Fjellheisen was built in 1961 by Brød­rene Jakob­sens Rederi, a local shipping company that was a major player in arctic hunting/trapping, fishing and expeditions to the arc­tic and Antarctic. The gondolas proudly convey this tradition by bearing the shipping company’s symbols: the polar bear and the seal.', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/9d/14/38/yellow-gondola-fjellheisen.jpg?w=1200&h=-1&s=1', 10),
 (3, 'Polaria', 1, 'Hjalmar Johansens Gate 12', 'Polaria is an Arctic Experience Centre and Aquarium located in the heart of Tromsø. Learn about Climate Change through our brand-new interactive exhibitions, reflect over how all life in the Arctic is connected, and discover how you can make a difference. In our aquarium you will find unique species of fish and crustations from the northern regions, as well as our five seals. Join in on the daily feeding and training sessions of the seals at 10:30, 12:30 and 15:30. Sit down and enjoy our three Panoramic films about the nature and wildlife at Svalbard, the magical Northern Lights, and a behind the scenes documentary showing how we work with our animals. Polaria is suitable for all ages, and the perfect place for those who are interested in diving beneath the surface to explore the Arctic in a unique way.\n\n', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2b/57/e0/7a/meet-the-bearded-seals.jpg?w=1200&h=-1&s=1', 10);
@@ -98,19 +98,19 @@ INSERT INTO `Attraction` (`id`, `name`, `city`, `location`, `description`, `imag
 -- --------------------------------------------------------
 
 --
--- Table structure for table `AttractionAgeGroup`
+-- Table structure for table `attractionAgeGroup`
 --
 
-CREATE TABLE `AttractionAgeGroup` (
+CREATE TABLE `attractionAgeGroup` (
   `attraction_id` int(11) NOT NULL,
   `age_group_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
--- Dumping data for table `AttractionAgeGroup`
+-- Dumping data for table `attractionAgeGroup`
 --
 
-INSERT INTO `AttractionAgeGroup` (`attraction_id`, `age_group_id`) VALUES
+INSERT INTO `attractionAgeGroup` (`attraction_id`, `age_group_id`) VALUES
 (1, 1),
 (1, 2),
 (1, 3);
@@ -118,31 +118,31 @@ INSERT INTO `AttractionAgeGroup` (`attraction_id`, `age_group_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `AttractionCategory`
+-- Table structure for table `attractionCategory`
 --
 
-CREATE TABLE `AttractionCategory` (
+CREATE TABLE `attractionCategory` (
   `category_id` int(11) NOT NULL,
   `attraction_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
--- Dumping data for table `AttractionCategory`
+-- Dumping data for table `attractionCategory`
 --
 
-INSERT INTO `AttractionCategory` (`category_id`, `attraction_id`) VALUES
-(9, 1),
+INSERT INTO `attractionCategory` (`category_id`, `attraction_id`) VALUES
 (3, 2),
 (7, 3),
-(8, 3);
+(8, 3),
+(9, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `AttractionGroup`
+-- Table structure for table `attractionGroup`
 --
 
-CREATE TABLE `AttractionGroup` (
+CREATE TABLE `attractionGroup` (
   `id` int(11) NOT NULL,
   `owner` int(11) NOT NULL,
   `title` varchar(50) NOT NULL,
@@ -153,45 +153,45 @@ CREATE TABLE `AttractionGroup` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `AttractionTag`
+-- Table structure for table `attractionTag`
 --
 
-CREATE TABLE `AttractionTag` (
+CREATE TABLE `attractionTag` (
   `tag_id` int(11) NOT NULL,
   `attraction_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
--- Dumping data for table `AttractionTag`
+-- Dumping data for table `attractionTag`
 --
 
-INSERT INTO `AttractionTag` (`tag_id`, `attraction_id`) VALUES
-(5, 1),
-(17, 1),
+INSERT INTO `attractionTag` (`tag_id`, `attraction_id`) VALUES
 (1, 2),
 (3, 2),
-(8, 2),
-(17, 2),
 (3, 3),
+(5, 1),
 (7, 3),
+(8, 2),
+(17, 1),
+(17, 2),
 (17, 3);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Category`
+-- Table structure for table `category`
 --
 
-CREATE TABLE `Category` (
+CREATE TABLE `category` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
--- Dumping data for table `Category`
+-- Dumping data for table `category`
 --
 
-INSERT INTO `Category` (`id`, `name`) VALUES
+INSERT INTO `category` (`id`, `name`) VALUES
 (1, 'Historical sites'),
 (2, 'Art and culture'),
 (3, 'Nature and outdoor experiences'),
@@ -206,10 +206,10 @@ INSERT INTO `Category` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `City`
+-- Table structure for table `city`
 --
 
-CREATE TABLE `City` (
+CREATE TABLE `city` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `description` text DEFAULT NULL,
@@ -217,19 +217,19 @@ CREATE TABLE `City` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
--- Dumping data for table `City`
+-- Dumping data for table `city`
 --
 
-INSERT INTO `City` (`id`, `name`, `description`, `image`) VALUES
+INSERT INTO `city` (`id`, `name`, `description`, `image`) VALUES
 (1, 'Tromsø', 'Tromsø, a vibrant city surrounded by majestic mountains and the Arctic landscape, is known as the \'Gateway to the Arctic Sea.\' The city offers a unique blend of culture, history, and nature, with attractions such as the Arctic Cathedral, Polaria, and opportunities for Northern Lights safaris and outdoor activities', 'https://images.unsplash.com/photo-1609538205185-40f2701cf7d6?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Friendship`
+-- Table structure for table `friendship`
 --
 
-CREATE TABLE `Friendship` (
+CREATE TABLE `friendship` (
   `user_1` int(11) NOT NULL,
   `user_2` int(11) NOT NULL,
   `status` varchar(50) DEFAULT NULL
@@ -238,10 +238,10 @@ CREATE TABLE `Friendship` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `GroupedAttraction`
+-- Table structure for table `groupedAttraction`
 --
 
-CREATE TABLE `GroupedAttraction` (
+CREATE TABLE `groupedAttraction` (
   `group_id` int(11) NOT NULL,
   `attraction_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
@@ -249,37 +249,37 @@ CREATE TABLE `GroupedAttraction` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Language`
+-- Table structure for table `language`
 --
 
-CREATE TABLE `Language` (
+CREATE TABLE `language` (
   `id` int(11) NOT NULL,
   `name` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
--- Dumping data for table `Language`
+-- Dumping data for table `language`
 --
 
-INSERT INTO `Language` (`id`, `name`) VALUES
+INSERT INTO `language` (`id`, `name`) VALUES
 (1, 'English');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `Tag`
+-- Table structure for table `tag`
 --
 
-CREATE TABLE `Tag` (
+CREATE TABLE `tag` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
--- Dumping data for table `Tag`
+-- Dumping data for table `tag`
 --
 
-INSERT INTO `Tag` (`id`, `name`) VALUES
+INSERT INTO `tag` (`id`, `name`) VALUES
 (1, 'Outdoor'),
 (2, 'Historical'),
 (3, 'Family-friendly'),
@@ -301,10 +301,10 @@ INSERT INTO `Tag` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `User`
+-- Table structure for table `user`
 --
 
-CREATE TABLE `User` (
+CREATE TABLE `user` (
   `id` int(11) NOT NULL,
   `username` varchar(50) DEFAULT NULL,
   `first_name` varchar(50) DEFAULT NULL,
@@ -318,10 +318,10 @@ CREATE TABLE `User` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `UserAchievement`
+-- Table structure for table `userAchievement`
 --
 
-CREATE TABLE `UserAchievement` (
+CREATE TABLE `userAchievement` (
   `achievement_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `time_achieved` timestamp NULL DEFAULT current_timestamp()
@@ -330,30 +330,30 @@ CREATE TABLE `UserAchievement` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `UserRole`
+-- Table structure for table `userRole`
 --
 
-CREATE TABLE `UserRole` (
+CREATE TABLE `userRole` (
   `id` int(11) NOT NULL,
   `title` varchar(30) DEFAULT NULL,
   `is_admin` tinyint(4) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `UserRole`
+-- Dumping data for table `userRole`
 --
 
-INSERT INTO `UserRole` (`id`, `title`, `is_admin`) VALUES
+INSERT INTO `userRole` (`id`, `title`, `is_admin`) VALUES
 (1, 'Administrator', 1),
 (2, 'Bruker', 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `VisitedAttraction`
+-- Table structure for table `visitedAttraction`
 --
 
-CREATE TABLE `VisitedAttraction` (
+CREATE TABLE `visitedAttraction` (
   `user_id` int(11) NOT NULL,
   `attraction_id` int(11) NOT NULL,
   `time_visited` timestamp NULL DEFAULT current_timestamp()
@@ -364,115 +364,115 @@ CREATE TABLE `VisitedAttraction` (
 --
 
 --
--- Indexes for table `Achievement`
+-- Indexes for table `achievement`
 --
-ALTER TABLE `Achievement`
+ALTER TABLE `achievement`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `AgeGroup`
+-- Indexes for table `ageGroup`
 --
-ALTER TABLE `AgeGroup`
+ALTER TABLE `ageGroup`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `Attraction`
+-- Indexes for table `attraction`
 --
-ALTER TABLE `Attraction`
+ALTER TABLE `attraction`
   ADD PRIMARY KEY (`id`),
   ADD KEY `city` (`city`);
 
 --
--- Indexes for table `AttractionAgeGroup`
+-- Indexes for table `attractionAgeGroup`
 --
-ALTER TABLE `AttractionAgeGroup`
+ALTER TABLE `attractionAgeGroup`
   ADD PRIMARY KEY (`attraction_id`,`age_group_id`),
   ADD KEY `age_group_id` (`age_group_id`);
 
 --
--- Indexes for table `AttractionCategory`
+-- Indexes for table `attractionCategory`
 --
-ALTER TABLE `AttractionCategory`
+ALTER TABLE `attractionCategory`
   ADD PRIMARY KEY (`category_id`,`attraction_id`),
   ADD KEY `attraction_id` (`attraction_id`);
 
 --
--- Indexes for table `AttractionGroup`
+-- Indexes for table `attractionGroup`
 --
-ALTER TABLE `AttractionGroup`
+ALTER TABLE `attractionGroup`
   ADD PRIMARY KEY (`id`),
   ADD KEY `owner` (`owner`);
 
 --
--- Indexes for table `AttractionTag`
+-- Indexes for table `attractionTag`
 --
-ALTER TABLE `AttractionTag`
+ALTER TABLE `attractionTag`
   ADD PRIMARY KEY (`tag_id`,`attraction_id`),
   ADD KEY `attraction_id` (`attraction_id`);
 
 --
--- Indexes for table `Category`
+-- Indexes for table `category`
 --
-ALTER TABLE `Category`
+ALTER TABLE `category`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `City`
+-- Indexes for table `city`
 --
-ALTER TABLE `City`
+ALTER TABLE `city`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `Friendship`
+-- Indexes for table `friendship`
 --
-ALTER TABLE `Friendship`
+ALTER TABLE `friendship`
   ADD PRIMARY KEY (`user_1`,`user_2`),
   ADD KEY `user_2` (`user_2`);
 
 --
--- Indexes for table `GroupedAttraction`
+-- Indexes for table `groupedAttraction`
 --
-ALTER TABLE `GroupedAttraction`
+ALTER TABLE `groupedAttraction`
   ADD PRIMARY KEY (`group_id`,`attraction_id`),
   ADD KEY `attraction_id` (`attraction_id`);
 
 --
--- Indexes for table `Language`
+-- Indexes for table `language`
 --
-ALTER TABLE `Language`
+ALTER TABLE `language`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `Tag`
+-- Indexes for table `tag`
 --
-ALTER TABLE `Tag`
+ALTER TABLE `tag`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `User`
+-- Indexes for table `user`
 --
-ALTER TABLE `User`
+ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
   ADD KEY `fk_role` (`role`);
 
 --
--- Indexes for table `UserAchievement`
+-- Indexes for table `userAchievement`
 --
-ALTER TABLE `UserAchievement`
+ALTER TABLE `userAchievement`
   ADD PRIMARY KEY (`achievement_id`,`user_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `UserRole`
+-- Indexes for table `userRole`
 --
-ALTER TABLE `UserRole`
+ALTER TABLE `userRole`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `VisitedAttraction`
+-- Indexes for table `visitedAttraction`
 --
-ALTER TABLE `VisitedAttraction`
+ALTER TABLE `visitedAttraction`
   ADD PRIMARY KEY (`user_id`,`attraction_id`),
   ADD KEY `attraction_id` (`attraction_id`);
 
@@ -481,63 +481,63 @@ ALTER TABLE `VisitedAttraction`
 --
 
 --
--- AUTO_INCREMENT for table `Achievement`
+-- AUTO_INCREMENT for table `achievement`
 --
-ALTER TABLE `Achievement`
+ALTER TABLE `achievement`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `AgeGroup`
+-- AUTO_INCREMENT for table `ageGroup`
 --
-ALTER TABLE `AgeGroup`
+ALTER TABLE `ageGroup`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT for table `Attraction`
+-- AUTO_INCREMENT for table `attraction`
 --
-ALTER TABLE `Attraction`
+ALTER TABLE `attraction`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `AttractionGroup`
+-- AUTO_INCREMENT for table `attractionGroup`
 --
-ALTER TABLE `AttractionGroup`
+ALTER TABLE `attractionGroup`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `Category`
+-- AUTO_INCREMENT for table `category`
 --
-ALTER TABLE `Category`
+ALTER TABLE `category`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `City`
+-- AUTO_INCREMENT for table `city`
 --
-ALTER TABLE `City`
+ALTER TABLE `city`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `Language`
+-- AUTO_INCREMENT for table `language`
 --
-ALTER TABLE `Language`
+ALTER TABLE `language`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `Tag`
+-- AUTO_INCREMENT for table `tag`
 --
-ALTER TABLE `Tag`
+ALTER TABLE `tag`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT for table `User`
+-- AUTO_INCREMENT for table `user`
 --
-ALTER TABLE `User`
+ALTER TABLE `user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `UserRole`
+-- AUTO_INCREMENT for table `userRole`
 --
-ALTER TABLE `UserRole`
+ALTER TABLE `userRole`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
@@ -545,71 +545,71 @@ ALTER TABLE `UserRole`
 --
 
 --
--- Constraints for table `Attraction`
+-- Constraints for table `attraction`
 --
-ALTER TABLE `Attraction`
-  ADD CONSTRAINT `Attraction_ibfk_1` FOREIGN KEY (`city`) REFERENCES `City` (`id`) ON DELETE CASCADE;
+ALTER TABLE `attraction`
+  ADD CONSTRAINT `attraction_ibfk_1` FOREIGN KEY (`city`) REFERENCES `city` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `AttractionAgeGroup`
+-- Constraints for table `attractionAgeGroup`
 --
-ALTER TABLE `AttractionAgeGroup`
-  ADD CONSTRAINT `AttractionAgeGroup_ibfk_1` FOREIGN KEY (`attraction_id`) REFERENCES `Attraction` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `AttractionAgeGroup_ibfk_2` FOREIGN KEY (`age_group_id`) REFERENCES `AgeGroup` (`id`) ON DELETE CASCADE;
+ALTER TABLE `attractionAgeGroup`
+  ADD CONSTRAINT `attractionAgeGroup_ibfk_1` FOREIGN KEY (`attraction_id`) REFERENCES `attraction` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `attractionAgeGroup_ibfk_2` FOREIGN KEY (`age_group_id`) REFERENCES `ageGroup` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `AttractionCategory`
+-- Constraints for table `attractionCategory`
 --
-ALTER TABLE `AttractionCategory`
-  ADD CONSTRAINT `AttractionCategory_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `Category` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `AttractionCategory_ibfk_2` FOREIGN KEY (`attraction_id`) REFERENCES `Attraction` (`id`) ON DELETE CASCADE;
+ALTER TABLE `attractionCategory`
+  ADD CONSTRAINT `attractionCategory_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `attractionCategory_ibfk_2` FOREIGN KEY (`attraction_id`) REFERENCES `attraction` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `AttractionGroup`
+-- Constraints for table `attractionGroup`
 --
-ALTER TABLE `AttractionGroup`
-  ADD CONSTRAINT `AttractionGroup_ibfk_1` FOREIGN KEY (`owner`) REFERENCES `User` (`id`) ON DELETE CASCADE;
+ALTER TABLE `attractionGroup`
+  ADD CONSTRAINT `attractionGroup_ibfk_1` FOREIGN KEY (`owner`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `AttractionTag`
+-- Constraints for table `attractionTag`
 --
-ALTER TABLE `AttractionTag`
-  ADD CONSTRAINT `AttractionTag_ibfk_1` FOREIGN KEY (`tag_id`) REFERENCES `Tag` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `AttractionTag_ibfk_2` FOREIGN KEY (`attraction_id`) REFERENCES `Attraction` (`id`) ON DELETE CASCADE;
+ALTER TABLE `attractionTag`
+  ADD CONSTRAINT `attractionTag_ibfk_1` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `attractionTag_ibfk_2` FOREIGN KEY (`attraction_id`) REFERENCES `attraction` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `Friendship`
+-- Constraints for table `friendship`
 --
-ALTER TABLE `Friendship`
-  ADD CONSTRAINT `Friendship_ibfk_1` FOREIGN KEY (`user_1`) REFERENCES `User` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `Friendship_ibfk_2` FOREIGN KEY (`user_2`) REFERENCES `User` (`id`) ON DELETE CASCADE;
+ALTER TABLE `friendship`
+  ADD CONSTRAINT `friendship_ibfk_1` FOREIGN KEY (`user_1`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `friendship_ibfk_2` FOREIGN KEY (`user_2`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `GroupedAttraction`
+-- Constraints for table `groupedAttraction`
 --
-ALTER TABLE `GroupedAttraction`
-  ADD CONSTRAINT `GroupedAttraction_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `AttractionGroup` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `GroupedAttraction_ibfk_2` FOREIGN KEY (`attraction_id`) REFERENCES `Attraction` (`id`) ON DELETE CASCADE;
+ALTER TABLE `groupedAttraction`
+  ADD CONSTRAINT `groupedAttraction_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `attractionGroup` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `groupedAttraction_ibfk_2` FOREIGN KEY (`attraction_id`) REFERENCES `attraction` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `User`
+-- Constraints for table `user`
 --
-ALTER TABLE `User`
-  ADD CONSTRAINT `fk_role` FOREIGN KEY (`role`) REFERENCES `UserRole` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `user`
+  ADD CONSTRAINT `fk_role` FOREIGN KEY (`role`) REFERENCES `userRole` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `UserAchievement`
+-- Constraints for table `userAchievement`
 --
-ALTER TABLE `UserAchievement`
-  ADD CONSTRAINT `UserAchievement_ibfk_1` FOREIGN KEY (`achievement_id`) REFERENCES `Achievement` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `UserAchievement_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`) ON DELETE CASCADE;
+ALTER TABLE `userAchievement`
+  ADD CONSTRAINT `userAchievement_ibfk_1` FOREIGN KEY (`achievement_id`) REFERENCES `achievement` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `userAchievement_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `VisitedAttraction`
+-- Constraints for table `visitedAttraction`
 --
-ALTER TABLE `VisitedAttraction`
-  ADD CONSTRAINT `VisitedAttraction_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `VisitedAttraction_ibfk_2` FOREIGN KEY (`attraction_id`) REFERENCES `Attraction` (`id`) ON DELETE CASCADE;
+ALTER TABLE `visitedAttraction`
+  ADD CONSTRAINT `visitedAttraction_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `visitedAttraction_ibfk_2` FOREIGN KEY (`attraction_id`) REFERENCES `attraction` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
