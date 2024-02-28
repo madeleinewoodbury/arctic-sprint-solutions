@@ -1,28 +1,41 @@
 {% extends "base.html" %}
 
+{% block styles %}
+<link rel="stylesheet" type="text/css"
+    href="{{ url_for('static', filename='css/attractions.css') }}">
+{% endblock %}
+
 {% block content %}
-  <div>
-        <h1>Attractions</h1>
-        <div>
+<div class="wrapper attractions">
+    <div class="title-container">
+        <div class="title">
+            <h1>Exlpore Attractions in Tromsø</h1>
+        </div>
+    </div>
+    <div class="attractions-container">
+        <div class="attractions-grid">
             {% for attraction in attractions %}
-            <div>
-                <div>
-                    {% if attraction.image %}
-                    <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
-                    {% endif %}
-                    <div>
+            <div class="attraction">
+                {% if attraction.image %}
+                <div class="image-container">
+                    <img src="{{ attraction.image }}"
+                        alt="{{ attraction.name }}">
+                </div>
+                {% endif %}
+                <div class="text-container">
+                    <div class="top">
                         <h5>{{ attraction.name }}</h5>
-                        <p>{{ attraction.description }}</p>
+                        <p class="description">{{ attraction.description }}</p>
                     </div>
-                    <div>
-                        <small>Location: {{ attraction.location }}</small>
-                        <br>
-                        <small>Points of Interest: {{ attraction.points }}</small>
+                    <div class="info">
+                        <p><span>Location: </span>{{ attraction.location }}</p>
+                        <p><span>Points of Interest: </span>{{ attraction.points
+                            }}</p>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
+</div>
 {% endblock %}
-
