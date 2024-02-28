@@ -1,16 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Attractions</h1>
-    <div class="attraction-list">
-        {% for attraction in attractions %}
-            <div class="attraction">
-                <h2>{{ attraction.name }}</h2>
-                <p><strong>Location:</strong> {{ attraction.location }}</p>
-                <p>{{ attraction.description }}</p>
+  <div>
+        <h1>Attractions</h1>
+        <div>
+            {% for attraction in attractions %}
+            <div>
+                <div>
+                    {% if attraction.image %}
+                    <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
+                    {% endif %}
+                    <div>
+                        <h5>{{ attraction.name }}</h5>
+                        <p>{{ attraction.description }}</p>
+                    </div>
+                    <div>
+                        <small>Location: {{ attraction.location }}</small>
+                        <br>
+                        <small>Points of Interest: {{ attraction.points }}</small>
+                    </div>
+                </div>
             </div>
-        {% else %}
-            <p>No attractions found.</p>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}
+
