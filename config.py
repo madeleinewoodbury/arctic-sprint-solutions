@@ -25,9 +25,9 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI")
 
 
-"""    DEBUG = True
-    MYSQL_HOST = 'localhost:3306'
-    MYSQL_USER = 'user'
+    DEBUG = True
+    MYSQL_HOST = 'localhost:5000'
+    MYSQL_USER = 'username1'
     MYSQL_PASSWORD = 'test'
     MYSQL_DB = 'arcticSprintSolutionsDB'
 
@@ -36,7 +36,7 @@ class TestConfig(Config):
         'user': MYSQL_USER,
         'password': MYSQL_PASSWORD,
         'database': MYSQL_DB
-    }"""
+    }
 
 
 class LiveConfig(Config):
