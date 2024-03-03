@@ -14,6 +14,7 @@
     <body>
         <nav>
             <div class="brand">
+                <!-- TODO: Add logo/brand -->
                 <span>Logo</span>
             </div>
             <ul class="nav-links">
@@ -29,7 +30,8 @@
                 </li>
                 {% else %}
                 <li>
-                    <a href="{{ url_for('auth.logout') }}">Profile</a>
+                  <!-- TODO: Add dashboard/profile -->
+                    <a href="#">{{ current_user.username }}</a>
                 </li>
                 <li>
                     <a href="{{ url_for('auth.logout') }}">Logout</a>

@@ -24,14 +24,14 @@
                                 {{ form.first_name.label }}
                                 {{ form.first_name(size=50) }}
                                 {% for error in form.first_name.errors %}
-                                <span style="color: red;">[{{ error }}]</span>
+                                <span style="color: red;">{{ error }}</span>
                                 {% endfor %}
                             </div>
                             <div class="form-control">
                                 {{ form.last_name.label }}
                                 {{ form.last_name(size=50) }}
                                 {% for error in form.last_name.errors %}
-                                <span style="color: red;">[{{ error }}]</span>
+                                <span style="color: red;">{{ error }}</span>
                                 {% endfor %}
                             </div>
                         </div>
@@ -40,14 +40,14 @@
                                 {{ form.username.label }}
                                 {{ form.username(size=50) }}
                                 {% for error in form.username.errors %}
-                                <span style="color: red;">[{{ error }}]</span>
+                                <span style="color: red;">{{ error }}</span>
                                 {% endfor %}
                             </div>
                             <div class="form-control">
                                 {{ form.email.label }}
                                 {{ form.email(size=50) }}
                                 {% for error in form.email.errors %}
-                                <span style="color: red;">[{{ error }}]</span>
+                                <span style="color: red;">{{ error }}</span>
                                 {% endfor %}
                             </div>
                         </div>
@@ -55,14 +55,14 @@
                             {{ form.password.label }}
                             {{ form.password(size=50) }}
                             {% for error in form.password.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
+                            <span style="color: red;">{{ error }}</span>
                             {% endfor %}
                         </div>
                         <div class="form-control">
                             {{ form.confirm_password.label }}
                             {{ form.confirm_password(size=50) }}
                             {% for error in form.confirm_password.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
+                            <span style="color: red;">{{ error }}</span>
                             {% endfor %}
                         </div>
                     </div>

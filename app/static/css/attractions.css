@@ -85,6 +85,11 @@
   font-weight: bold;
 }
 
+.attraction a {
+  text-decoration: none;
+  color: inherit;
+}
+
 
 @media (min-width: 500px) {
   .attractions .title {
