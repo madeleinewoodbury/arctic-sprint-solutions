@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css"
+    href="{{ url_for('static', filename='css/attractions.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="wrapper attractions">
+    <div class="title-container">
+        <div class="title">
+            <h1>Explore Attractions in Tromsø</h1>
+        </div>
+    </div>
+    <div class="attractions-container">
+        <div class="attractions-grid">
+            {% for attraction in attractions %}
+            <div class="attraction">
+                <a href="{{ url_for('attractions.get_attraction', attraction_id=attraction.id) }}">
+                {% if attraction.image %}
+                <div class="image-container">
+                    <img src="{{ attraction.image }}"
+                        alt="{{ attraction.name }}">
+                </div>
+                {% endif %}
+                <div class="text-container">
+                    <div class="top">
+                        <h5>{{ attraction.name }}</h5>
+                        <p class="description">{{ attraction.description }}</p>
+                    </div>
+                    <div class="info">
+                        <p><span>Location: </span>{{ attraction.location }}</p>
+                        <p><span>Points: </span>{{ attraction.points }}</p>
+                        <p>Click for more info</p>
+                    </div>
+                </div>
+            </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
