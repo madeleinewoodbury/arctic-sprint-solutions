@@ -93,6 +93,10 @@ ul {
 
 /* Navigation */
 nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   color: var(--bg-light);
   font-family: var(--secondary-font);
   padding: 1rem;
@@ -152,7 +156,7 @@ nav {
 @media (min-width: 768px) {
   .landing {
     padding: 2rem 0;
-    height: 80%;
+    height: 80vh;
   }
     
   .landing h1 {
