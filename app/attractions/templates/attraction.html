@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 
+{% block styles %}
+<link rel="stylesheet" type="text/css"
+    href="{{ url_for('static', filename='css/attractions.css') }}">
+{% endblock %}
+
 {% block content %}
-
-<h1>{{ attraction.name }}</h1>
-<p>{{ attraction.description }}</p>
-<p><b>Address:</b> {{ attraction.location }}</p>
-<p><b>Points:</b> {{ attraction.points }}</p>
-<img src="{{ attraction.image }}" alt="{{ attraction.name }}">
-
+<section class="attraction-info">
+  <h1>{{ attraction.name }}</h1>
+  <p>{{ attraction.description }}</p>
+  <p><b>Address:</b> {{ attraction.location }}</p>
+  <p><b>Points:</b> {{ attraction.points }}</p>
+  <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
+</section>
 {% endblock %}
