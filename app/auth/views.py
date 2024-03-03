@@ -31,7 +31,7 @@ def login() -> 'html':
 		user = User.query.filter_by(email=form.email.data).first()
 		if user is not None and user.check_password(form.password.data):
 			login_user(user, form.remember_me.data)
-			return redirect(url_for('main.index'))
+			return redirect(url_for('attractions.get_attractions'))
 		flash('Invalid username or password.')
 	return render_template('login.html', form=form)
 

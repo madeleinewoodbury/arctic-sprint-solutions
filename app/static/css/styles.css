@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital@0;1&display=swap');
 
 :root {
   --bg-dark: #1E2832;
@@ -9,7 +10,8 @@
   --medium-grey: #646464;
   --black: #000;
   --white: #ffffff;
-  --sans: "Roboto", sans-serif;
+  --main-font: "Roboto", sans-serif;
+  --secondary-font: "Montserrat", sans-serif;
 }
 
 html {
@@ -25,20 +27,20 @@ html {
 }
 
 body {
+  width: 100vw;
+  height: 100vh;
   padding: 0;
   margin: 0;
-  background-color: var(--bg-light);
-  font-family: var(--sans);
+  background-color: var(--bg-dark);
+  font-family: var(--main-font);
   font-size: 16px;
-  color: var(--dark-blue);
 }
 
 .wrapper {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
-  /* overflow: hidden; */
 }
 
 .btn {
@@ -50,6 +52,7 @@ body {
   font-size: 1rem;
   transition: all .2s ease-in-out;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .btn-primary {
@@ -59,4 +62,111 @@ body {
 
 .btn-primary:hover {
   background-color: var(--darken-primary);
+}
+
+.btn-primary-outline {
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.btn-primary-outline:hover {
+  background-color: var(--primary);
+  color: var(--dark-blue);
+}
+
+.btn-container {
+  display: flex;
+  justify-content: center;
+}
+
+ul {
+  list-style: none;
+}
+
+.text-primary {
+  color: var(--primary);
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Navigation */
+nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: var(--bg-light);
+  font-family: var(--secondary-font);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-links a {
+  color: var(--bg-light);
+  text-decoration: none;
+  transition: all .2s ease-in-out;
+}
+
+.nav-links a:hover {
+  color: var(--primary);
+}
+
+.landing {
+  padding: 2rem 1rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.landing h1 {
+  font-size: 2.5rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.landing .lead {
+  font-size: 1.2rem;
+  line-height: 1.2;
+  color: var(--white);
+  max-width: 500px;
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.landing .lead span {
+  font-weight: bold;
+  color: var(--primary);
+}
+
+.landing .btn-container {
+  gap: 2rem;
+}
+
+
+@media (min-width: 768px) {
+  .landing {
+    padding: 2rem 0;
+    height: 80vh;
+  }
+    
+  .landing h1 {
+    max-width: 500px;
+    font-size: 3.5rem;
+  }
+  
+  .landing .lead {
+    font-size: 1.3rem;
+    padding: 4rem 0;
+
+  }
 }
