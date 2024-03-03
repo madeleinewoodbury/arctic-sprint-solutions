@@ -40,7 +40,8 @@
 
 .auth-card .title h1 {
   font-size: 2.2rem;
-  line-height: 1.5;
+  line-height: 1.3;
+  max-width: 350px;
 }
 
 .auth-card .title p {

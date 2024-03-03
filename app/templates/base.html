@@ -13,20 +13,30 @@
     </head>
     <body>
         <nav>
-            <span>WorkingTitle - </span>
-            <a href="{{ url_for('main.index') }}">Home</a>
-            <a href="{{ url_for('attractions.get_attractions') }}">Attractions</a>
-            {% if current_user.is_anonymous %}
-            <a href="{{ url_for('auth.login') }}">Login</a>
-            {% else %}
-            <a href="{{ url_for('auth.logout') }}">Profile</a>
-            <div>
-                <span>Logged in as {{ current_user.username }}</span>
-                <a href="{{ url_for('auth.logout') }}">(logout)</a>
+            <div class="brand">
+                <span>Logo</span>
             </div>
-            {% endif %}
+            <ul class="nav-links">
+                <li>
+                    <a href="{{ url_for('main.index') }}">Home</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('attractions.get_attractions') }}">Attractions</a>
+                </li>
+                {% if current_user.is_anonymous %}
+                <li>
+                    <a href="{{ url_for('auth.login') }}">Login</a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="{{ url_for('auth.logout') }}">Profile</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('auth.logout') }}">Logout</a>
+                </li>
+                {% endif %}
+            </ul>
         </nav>
-        <hr>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul>
