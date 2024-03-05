@@ -11,8 +11,12 @@ from flask import Flask
 from config import config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_admin import Admin
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 db = SQLAlchemy()
+admin_manager = Admin()
 
 # Flask-login verdier
 login_manager = LoginManager()
@@ -28,13 +32,16 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     db.init_app(app)
     login_manager.init_app(app)
+    admin_manager.init_app(app)
+
+    from .admin import admin_manager as admin_bp
 
     from .auth import auth as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
 
     from .attractions import attractions as attractions_bp
     app.register_blueprint(attractions_bp)
-    
+
     from .main import main as main_bp
     app.register_blueprint(main_bp)
 
