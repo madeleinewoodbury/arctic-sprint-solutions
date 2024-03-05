@@ -157,6 +157,7 @@ class UserAchievement(db.Model):
 
 class UserRole(db.Model):
     __tablename__ = 'userRole'
+    def __repr__(self): return self.title
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30))
     is_admin = db.Column(db.Boolean, default=False)
