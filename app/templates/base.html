@@ -33,7 +33,11 @@
                   <!-- TODO: Add dashboard/profile -->
                     <a href="#">{{ current_user.username }}</a>
                 </li>
+                {% if current_user.is_admin %}
                 <li>
+                    <a href="{{ url_for('admin.index') }}">Admin</a>
+                <li>
+                {% endif %}
                     <a href="{{ url_for('auth.logout') }}">Logout</a>
                 </li>
                 {% endif %}
