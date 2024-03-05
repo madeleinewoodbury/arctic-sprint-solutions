@@ -12,4 +12,3 @@ class AdminModelView(ModelView):
 
 
 admin_manager.add_view(AdminModelView(User, db.session))
-admin_manager.get_category_menu_item

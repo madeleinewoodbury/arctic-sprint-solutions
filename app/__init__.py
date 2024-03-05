@@ -12,8 +12,6 @@ from config import config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_admin import Admin
-import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 db = SQLAlchemy()
 admin_manager = Admin()
