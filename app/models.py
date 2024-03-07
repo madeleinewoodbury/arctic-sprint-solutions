@@ -142,7 +142,7 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(50))
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.Integer, db.ForeignKey("userRole.id"))
+    role = db.Column(db.Integer, db.ForeignKey("userRole.id"), default=2)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
