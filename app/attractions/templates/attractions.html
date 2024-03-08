@@ -12,6 +12,14 @@
             <h1>Explore Attractions in Tromsø</h1>
         </div>
     </div>
+    <div class="form-wrapper">
+        <form class="search" method="POST" action="{{ url_for('attractions.get_attractions') }}">
+          <div class="search-text">
+              <input type="text" name="search_query" placeholder="Search attractions" value="{{ search_query }}">
+              <input type="submit" value="Search" class="search-btn">
+          </div>
+        </form>
+      </div>
     <div class="attractions-container">
         <div class="attractions-grid">
             {% for attraction in attractions %}
