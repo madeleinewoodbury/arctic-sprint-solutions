@@ -12,10 +12,15 @@ class LoginForm(Form):
 class RegistrationForm(Form):
 	first_name = StringField('First Name', validators=[DataRequired(), Length(max=50)])
 	last_name = StringField('Last Name', validators=[DataRequired(), Length(max=50)])
-	username = StringField('Username', validators=[DataRequired(), Length(min=6, max=20), 
-                                                Regexp('^[a-zA-Z0-9_]+$', message='Username can only contain letters, numbers, and underscores.')])
+	username = StringField('Username', validators=[
+    	DataRequired(), Length(min=6, max=20), 
+     	Regexp('^[a-zA-Z0-9_]+$', 
+             message='Username can only contain letters, numbers, and underscores.')])
 	email = StringField('Email', validators=[DataRequired(), Email(), Length(max=50)])
-	password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=50)])
+	password = PasswordField('Password', validators=[
+    	DataRequired(), Length(min=10, max=50), 
+      	Regexp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]+$', 
+              message='Password must contain at least one uppercase letter, one lowercase letter, and one number.')])
 	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=6, max=50), EqualTo('password')])
 	submit = SubmitField('Register', render_kw={'class': 'btn btn-primary'})
  
