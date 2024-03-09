@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, R
 from app.models import User
 
 class LoginForm(Form):
-	email = StringField('Email', validators=[DataRequired(), Email()])
+	email = StringField('Email', validators=[DataRequired(), Email()], render_kw={"autocomplete": "username"})
 	password = PasswordField('Password', validators=[DataRequired()])
 	remember_me = BooleanField('Remember me')
 	submit = SubmitField('Login', render_kw={'class': 'btn btn-primary'})
@@ -15,13 +15,13 @@ class RegistrationForm(Form):
 	username = StringField('Username', validators=[
     	DataRequired(), Length(min=6, max=20), 
      	Regexp('^[a-zA-Z0-9_]+$', 
-             message='Username can only contain letters, numbers, and underscores.')])
-	email = StringField('Email', validators=[DataRequired(), Email(), Length(max=50)])
+            message='Username must be at least 10 characters long and only contain letters, numbers, and underscores.')])
+	email = StringField('Email', validators=[DataRequired(), Email(), Length(max=50)], render_kw={"autocomplete": "username"})
 	password = PasswordField('Password', validators=[
-    	DataRequired(), Length(min=10, max=50), 
-      	Regexp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]+$', 
-              message='Password must contain at least one uppercase letter, one lowercase letter, and one number.')])
-	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=6, max=50), EqualTo('password')])
+    	DataRequired(), Length(min=10, max=40), 
+      	Regexp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,40}$', 
+            message='Password must be at least 10 characters long while containing at least one uppercase letter, one lowercase letter, and one number.')])
+	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=10, max=40), EqualTo('password')])
 	submit = SubmitField('Register', render_kw={'class': 'btn btn-primary'})
  
 	def validate_username(self, username):
