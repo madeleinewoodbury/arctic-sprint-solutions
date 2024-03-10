@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/attractions.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="wrapper attractions">
+    <div class="title-container">
+        <div class="title">
+            <h1>Explore Attractions in Tromsø</h1>
+        </div>
+    </div>
+    <div class="attractions-container">
+        <div class="categories-container">
+            <form id="category-form">
+                <div class="form-group">
+                    {{ form.categories.label }}
+                    {{ form.categories(class="form-control", size=10) }}
+                </div>
+            </form>
+        </div>
+        <div class="attractions-grid" id="filteredResults">
+            <!-- Filtered results will be displayed here -->
+            {% for attraction in attractions %}
+                {% include 'attractions_items.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
