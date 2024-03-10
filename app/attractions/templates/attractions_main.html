@@ -11,12 +11,22 @@
             <h1>Explore Attractions in Tromsø</h1>
         </div>
     </div>
+    <div class="form-wrapper" id="search-attractions-form">
+        <form class="search" method="POST" action="{{ url_for('attractions.get_attractions') }}">
+            {{ search_form.hidden_tag() }}
+            <!-- TODO: Add category, tags, age groups select fields -->
+          <div class="search-text form-control">
+              {{ search_form.search_text }}
+              {{ search_form.submit }}
+          </div>
+        </form>
+      </div>
     <div class="attractions-container">
         <div class="categories-container">
             <form id="category-form">
                 <div class="form-group">
-                    {{ form.categories.label }}
-                    {{ form.categories(class="form-control", size=10) }}
+                    {{ filter_form.categories.label }}
+                    {{ filter_form.categories }}
                 </div>
             </form>
         </div>

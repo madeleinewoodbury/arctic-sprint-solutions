@@ -8,19 +8,13 @@ from app import db
 # Get all attractions
 @attractions.route('/attractions', methods=['GET', 'POST'])
 def get_attractions():
-    searchform = SearchForm()
-    search_text = searchform.data.get('search_text')
+    search_form = SearchForm()
+    search_text = search_form.data.get('search_text')
     #TODO: Add category, tags, age groups select
-
+    filter_form = FilterAttractionsForm()
+    
     if search_text:
         attractions = Attraction.query.filter(Attraction.name.contains(search_text)).all()
-        return render_template('attractions.html', attractions=attractions, form=searchform)
-    
-    filterForm = FilterAttractionsForm()
-    selected_categories = form.categories.data    
-    if filterForm.validate_on_submit() and selected_categories:
-        attractions = Attraction.query.filter(
-            Attraction.category.any(AttractionCategory.category_id.in_(selected_categories))).all()
     else:
         attractions = Attraction.query.all()
     
@@ -32,16 +26,16 @@ def get_attractions():
     
     # Update the category form labels with the category counts.
     updated_choices = []
-    for choice in filterForm.categories.choices:
+    for choice in filter_form.categories.choices:
         if choice[0] in category_counts:
             updated_label = f'{choice[1]} ({category_counts[choice[0]]})'
             updated_choices.append((choice[0], updated_label))
         else:
             updated_label = f'{choice[1]} (0)'
             updated_choices.append((choice[0], updated_label))
-    filterForm.categories.choices = updated_choices
+    filter_form.categories.choices = updated_choices
     
-    return render_template('attractions_main.html', form=filterForm, attractions=attractions)
+    return render_template('attractions_main.html', attractions=attractions, search_form=search_form, filter_form=filter_form)
 
 
 # Get single attraction
@@ -53,8 +47,6 @@ def get_attraction(attraction_id):
         abort(404)  # Raise a 404 error if not found
 
     return render_template('attraction.html', attraction=attraction)
-
-
 
 
 # Filter and refresh attractions content by category with AJAX
