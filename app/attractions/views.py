@@ -1,4 +1,5 @@
 from flask import render_template, abort, request
+from .forms import SearchForm
 from . import attractions
 from app.models import Attraction
 from app import db
@@ -7,15 +8,16 @@ from app import db
 # Get all attractions
 @attractions.route('/attractions', methods=['GET', 'POST'])
 def get_attractions():
-    search_query = request.form.get('search_query')
+    form = SearchForm()
+    search_text = form.data.get('search_text')
+    #TODO: Add category, tags, age groups select
 
-    # Search for attraction by name
-    if search_query:
-        attractions = Attraction.query.filter(Attraction.name.contains(search_query)).all()
-        return render_template('attractions.html', attractions=attractions)
-
+    if search_text:
+        attractions = Attraction.query.filter(Attraction.name.contains(search_text)).all()
+        return render_template('attractions.html', attractions=attractions, form=form)
+    
     attractions = db.session.query(Attraction).all()
-    return render_template('attractions.html', attractions=attractions)
+    return render_template('attractions.html', attractions=attractions, form=form)
 
 
 # Get single attraction
