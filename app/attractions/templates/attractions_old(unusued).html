@@ -12,6 +12,16 @@
             <h1>Explore Attractions in Tromsø</h1>
         </div>
     </div>
+    <div class="form-wrapper" id="search-attractions-form">
+        <form class="search" method="POST" action="{{ url_for('attractions.get_attractions') }}">
+            {{ form.hidden_tag() }}
+            <!-- TODO: Add category, tags, age groups select fields -->
+          <div class="search-text form-control">
+              {{ form.search_text }}
+              {{ form.submit }}
+          </div>
+        </form>
+      </div>
     <div class="attractions-container">
         <div class="attractions-grid">
             {% for attraction in attractions %}
