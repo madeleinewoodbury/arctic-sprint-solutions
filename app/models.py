@@ -47,6 +47,9 @@ class Attraction(db.Model):
     tags = db.relationship(
         "Tag", secondary="attractionTag", backref=db.backref("attractions", lazy=True)
     )
+    
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
 class AttractionAgeGroup(db.Model):
