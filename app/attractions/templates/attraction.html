@@ -19,6 +19,15 @@
         <li>{{ tag.name }} {% if not loop.last %}<span>&#xB7;</span> {% endif %}</li>
       {% endfor %}
     </ul>
+      <p>
+  {% if current_user.is_authenticated %}
+    {% if visited %}
+      <input type="checkbox" id="visitedCheckbox" name="visited" onchange="markAsVisited('{{ attraction.id }}')" checked> Besøkt
+    {% else %}
+      <input type="checkbox" id="visitedCheckbox" name="visited" onchange="markAsVisited('{{ attraction.id }}')"> Merk som besøkt
+    {% endif %}
+  {% endif %}
+  </p>
   </div>
 
   <div class="content">
@@ -39,4 +48,24 @@
     </div>
   </div>
 </section>
-{% endblock %}
+
+{% if current_user.is_authenticated %}
+<script>
+  function markAsVisited(attractionId) {
+    const visited = document.getElementById('visitedCheckbox').checked;
+    fetch(`/attractions/${attractionId}/mark_as_visited`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ visited: visited })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);  // Behandle serverresponsen her.
+    })
+    .catch(error => console.error('Error:', error));
+  }
+  </script>
+  {% endif %}
+  {% endblock %}
