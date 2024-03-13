@@ -1,0 +1,118 @@
+.attraction-info {
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 4rem;
+  color: var(--white);
+}
+
+.attraction-info .title-container {
+  padding: 0 1rem 2rem;
+}
+
+.attraction-info h1 {
+  font-size: 2.3rem;
+  line-height: 1.3;
+}
+
+.attraction-info p.lead {
+  font-family: var(--secondary-font);
+  font-size: 1.2rem;
+  line-height: 1.3;
+}
+
+.attraction-info .tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  font-family: var(--secondary-font);
+  font-size: .9rem;
+  gap: .25rem .5rem;
+  color: var(--bg-light);
+  padding: 0 1rem;
+}
+
+.attraction-info .tags li {
+  display: flex;
+  gap: .5rem;
+}
+
+.attraction-info .content {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-light);
+  border-radius: 1rem;
+  margin-top: 5rem;
+  padding-top: .5rem;
+}
+
+.attraction-info .image-container {
+  padding: 0 1rem 1rem;
+  margin-top: -5rem;
+  position: relative;
+}
+
+.attraction-info .points {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--secondary-font);
+  gap: 5px;
+  color: var(--black);
+  background-color: var(--white);
+  padding: 5px 10px;
+  border-radius: .5rem;
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+  z-index: 10;
+}
+
+.attraction-info img {
+  border-radius: 1rem;
+  box-shadow: 3px 6px 25px -18px rgba(0,0,0,0.75);
+}
+
+.attraction-info .text-container {
+  padding: 1rem;
+  color: var(--black);
+}
+
+.attraction-info h3 {
+  font-size: 1.5rem;
+  line-height: 1.3;
+  padding-bottom: .5rem;
+}
+
+.attraction-info p {
+  font-size: 1rem;
+  line-height: 1.3;
+  padding-bottom: 1rem;
+}
+
+@media (min-width: 500px) {
+
+  .attraction-info h1 {
+    font-size: 2.75rem;
+  }
+
+  .attraction-info p.lead {
+    font-size: 1.3rem;
+  }
+
+  .attraction-info .tags li {
+    font-size: 1rem;
+  }
+
+  .attraction-info h3 {
+    font-size: 1.7rem;
+  }
+  
+  .attraction-info p {
+    font-size: 1.1rem;
+    line-height: 1.4;
+  }
+}
+
+@media (min-width: 992px) {
+  /* TODO: Style desktop */
+}

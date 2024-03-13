@@ -142,13 +142,6 @@
   color: inherit;
 }
 
-/* TODO: Style attraction page */
-.attraction-info {
-  color: var(--white);
-  padding: 4rem 2rem;
-}
-
-
 @media (min-width: 500px) {
   .attractions .title {
     padding: 3rem;
