@@ -2,15 +2,41 @@
 
 {% block styles %}
 <link rel="stylesheet" type="text/css"
-    href="{{ url_for('static', filename='css/attractions.css') }}">
+    href="{{ url_for('static', filename='css/attraction.css') }}">
 {% endblock %}
 
 {% block content %}
 <section class="attraction-info">
-  <h1>{{ attraction.name }}</h1>
-  <p>{{ attraction.description }}</p>
-  <p><b>Address:</b> {{ attraction.location }}</p>
-  <p><b>Points:</b> {{ attraction.points }}</p>
-  <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
+  <div class="title-container">
+    <h1 class="text-primary">{{ attraction.name }}</h1>
+    <p class="lead">
+      {% for cat in attraction.category %}
+        <span>{{ cat.name }} {% if not loop.last %}, {% endif %}</span>
+      {% endfor %}
+    </p>
+    <ul class="tags">
+      {% for tag in attraction.tags %}
+        <li>{{ tag.name }} {% if not loop.last %}<span>&#xB7;</span> {% endif %}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="content">
+    <div class="image-container">
+      <div class="points"><span>🏆</span> {{ attraction.points }} points</div>
+      <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
+    </div>
+    <div class="text-container">
+      <h3>About</h3>
+      <p>{{ attraction.description }}</p>
+      <p><strong>Location:</strong> {{ attraction.location }}</p>
+      {% if attraction.age_groups %}
+        <p><strong>Suitable for:</strong>
+          {% for age_group in attraction.age_groups %}
+          <span>{{ age_group.name }} {% if not loop.last %}, {% endif %}</span>
+          {% endfor %}
+      {% endif %}
+    </div>
+  </div>
 </section>
 {% endblock %}

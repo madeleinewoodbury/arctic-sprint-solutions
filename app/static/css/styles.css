@@ -28,7 +28,7 @@ html {
 
 body {
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   padding: 0;
   margin: 0;
   background-color: var(--bg-dark);
@@ -38,9 +38,15 @@ body {
 
 .wrapper {
   width: 100%;
+  min-height: 100vh;
   height: 100%;
   display: flex;
   justify-content: center;
+}
+
+img {
+  width: 100%;
+  height: auto;
 }
 
 .btn {
@@ -125,6 +131,7 @@ nav {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 2rem;
 }
 
 

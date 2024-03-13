@@ -76,9 +76,11 @@
 
 .attractions-container {
   background-color: var(--bg-light);
-  border-radius: 1rem 1rem 0 0;
+  border-radius: 1rem;
   padding: 2rem;
   height: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 .attractions-grid {
@@ -142,13 +144,6 @@
   color: inherit;
 }
 
-/* TODO: Style attraction page */
-.attraction-info {
-  color: var(--white);
-  padding: 4rem 2rem;
-}
-
-
 @media (min-width: 500px) {
   .attractions .title {
     padding: 3rem;
@@ -191,7 +186,8 @@
   }
   
   .attractions-container {
-    padding: 3rem 4rem;
+    padding: 4rem;
+    padding-bottom: 6rem;
   }
   
   .attractions-grid {
