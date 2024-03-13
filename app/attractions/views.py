@@ -1,25 +1,24 @@
 from flask import render_template, abort, request, jsonify
 from flask_login import login_required, current_user
+from .forms import SearchForm
 from . import attractions
 from app.models import Attraction, VisitedAttraction
 from app import db
 
 
-@attractions.route('/attractions', methods=['GET'])
+# Get all attractions
+@attractions.route('/attractions', methods=['GET', 'POST'])
 def get_attractions():
+    form = SearchForm()
+    search_text = form.data.get('search_text')
+    #TODO: Add category, tags, age groups select
+
+    if search_text:
+        attractions = Attraction.query.filter(Attraction.name.contains(search_text)).all()
+        return render_template('attractions.html', attractions=attractions, form=form)
+    
     attractions = db.session.query(Attraction).all()
-    attraction_list = []
-    for attraction in attractions:
-        attraction_data = {
-            'id': attraction.id,
-            'name': attraction.name,
-            'description': attraction.description,
-            'location': attraction.location,
-            'image': attraction.image,
-            'points': attraction.points
-        }
-        attraction_list.append(attraction_data)
-    return render_template('attractions.html', attractions=attraction_list)
+    return render_template('attractions.html', attractions=attractions, form=form)
 
 
 # Get single attraction
@@ -65,4 +64,5 @@ def mark_as_visited(attraction_id):
             return jsonify({'status': 'success', 'message': 'Attraction mark removed.'})
 
     return jsonify({'status': 'error', 'message': 'An error occurred.'})
+
 

@@ -22,11 +22,65 @@
   max-width: 550px;
 }
 
+/* Search Form */
+.attractions .form-wrapper {
+  max-width: 1200px;
+  width: 100%;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 2rem;
+  margin: 2rem auto 0;
+}
+
+.attractions .form-wrapper form {
+  background-color: var(--white);
+  box-shadow: 3px 6px 25px -18px rgba(0,0,0,0.75);
+  padding: 1rem;
+  width: calc(100% - 2rem);
+  border-radius: .5rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); 
+}
+
+.attractions .form-wrapper .form-control {
+  width: 100%;
+  display: flex;
+}
+
+.attractions .form-wrapper .search-text input[type="text"] {
+  width: 75%;
+  border: 2px solid var(--primary);
+  border-right: none;
+  border-radius: .5rem 0 0 .5rem;
+  padding: .5rem 1rem;
+  background-color: transparent;
+  font-size: 1.1rem;;
+  color: var(--dark-blue);
+}
+
+.attractions .form-wrapper .search-btn {
+  background-color: var(--primary);
+  color: var(--white);
+  outline: none;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: .5rem;
+  border-radius: 0 .5rem .5rem 0;
+  border: none;
+  width: 25%;
+  cursor: pointer;
+}
+
+
 .attractions-container {
   background-color: var(--bg-light);
-  border-radius: 1rem 1rem 0 0;
+  border-radius: 1rem;
   padding: 2rem;
   height: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 .attractions-grid {
@@ -90,13 +144,6 @@
   color: inherit;
 }
 
-/* TODO: Style attraction page */
-.attraction-info {
-  color: var(--white);
-  padding: 4rem 2rem;
-}
-
-
 @media (min-width: 500px) {
   .attractions .title {
     padding: 3rem;
@@ -132,9 +179,15 @@
   .attractions .title h1 {
     max-width: 650px;
   }
+
+  
+  .attractions .form-wrapper form {
+    padding: 2rem;
+  }
   
   .attractions-container {
-    padding: 3rem 4rem;
+    padding: 4rem;
+    padding-bottom: 6rem;
   }
   
   .attractions-grid {
