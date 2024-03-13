@@ -14,12 +14,13 @@
         <span>{{ cat.name }} {% if not loop.last %}, {% endif %}</span>
       {% endfor %}
     </p>
-  </div>
     <ul class="tags">
       {% for tag in attraction.tags %}
-        <li>{% if not loop.first %}<span>&#xB7;</span> {% endif %}{{ tag.name }} </li>
+        <li>{{ tag.name }} {% if not loop.last %}<span>&#xB7;</span> {% endif %}</li>
       {% endfor %}
     </ul>
+  </div>
+
   <div class="content">
     <div class="image-container">
       <div class="points"><span>🏆</span> {{ attraction.points }} points</div>
@@ -35,7 +36,6 @@
           <span>{{ age_group.name }} {% if not loop.last %}, {% endif %}</span>
           {% endfor %}
       {% endif %}
-      <!-- <p><b>Points:</b> {{ attraction.points }}</p> -->
     </div>
   </div>
 </section>
