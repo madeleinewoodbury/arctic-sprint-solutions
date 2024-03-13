@@ -11,15 +11,20 @@
   <p>{{ attraction.description }}</p>
   <p><b>Address:</b> {{ attraction.location }}</p>
   <p><b>Points:</b> {{ attraction.points }}</p>
-  <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
   
+  <p>
   {% if current_user.is_authenticated %}
     {% if visited %}
-      <input type="checkbox" id="visitedCheckbox" name="visited" onchange="markAsVisited('{{ attraction.id }}')" checked> Merk som besøkt
+      <input type="checkbox" id="visitedCheckbox" name="visited" onchange="markAsVisited('{{ attraction.id }}')" checked> Besøkt
     {% else %}
       <input type="checkbox" id="visitedCheckbox" name="visited" onchange="markAsVisited('{{ attraction.id }}')"> Merk som besøkt
     {% endif %}
   {% endif %}
+  </p>
+  
+  <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
+  
+  
 </section>
 
 {% if current_user.is_authenticated %}
