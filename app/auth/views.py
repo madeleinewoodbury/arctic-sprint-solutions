@@ -1,5 +1,5 @@
 from . import auth
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, ProfileForm
 from .. import db
 from ..models import User
 from flask import render_template, request, redirect, url_for, session, flash
@@ -42,3 +42,9 @@ def logout():
 	logout_user()
 	flash('You have been logged out.')
 	return redirect(url_for('main.index'))
+
+
+@auth.route('/profile', methods=['GET', 'POST'])
+def profile() -> 'html':
+	form = ProfileForm()
+	return render_template('profile.html', form=form)

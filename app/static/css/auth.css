@@ -1,6 +1,7 @@
 
 .login.wrapper,
-.register.wrapper {
+.register.wrapper
+.profile.wrapper {
   background-color: var(--bg-light);
   align-items: start;
 }
@@ -197,4 +198,5 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   } 
+
 }
