@@ -19,16 +19,21 @@
         <li>{{ tag.name }} {% if not loop.last %}<span>&#xB7;</span> {% endif %}</li>
       {% endfor %}
     </ul>
-      <p>
-  {% if current_user.is_authenticated %}
-    {% if visited %}
-      <input type="checkbox" id="visitedCheckbox" name="visited" onchange="markAsVisited('{{ attraction.id }}')" checked> Besøkt
-    {% else %}
-      <input type="checkbox" id="visitedCheckbox" name="visited" onchange="markAsVisited('{{ attraction.id }}')"> Merk som besøkt
-    {% endif %}
+    {% if current_user.is_authenticated %}
+      <div class="form-control visited">
+        <input 
+          type="checkbox" 
+          id="visitedCheckbox" 
+          name="visited"
+          onchange="markAsVisited('{{ attraction.id }}')" 
+          {% if visited %}checked{%endif %}>
+          <label for="visitedCheckbox" class="visited-text">
+            {{ 'Visited' if visited else 'Mark as visited'}}
+          </label>
+      </div>
   {% endif %}
-  </p>
   </div>
+  
 
   <div class="content">
     <div class="image-container">
@@ -53,6 +58,9 @@
 <script>
   function markAsVisited(attractionId) {
     const visited = document.getElementById('visitedCheckbox').checked;
+    const visitedText = document.querySelector('.visited-text');
+    visitedText.innerHTML = visited ? 'Visited' : 'Mark as visited';
+
     fetch(`/attractions/${attractionId}/mark_as_visited`, {
       method: 'POST',
       headers: {

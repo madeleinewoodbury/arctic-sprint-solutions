@@ -7,6 +7,8 @@
 
 .attraction-info .title-container {
   padding: 0 1rem 2rem;
+  position: relative;
+
 }
 
 .attraction-info h1 {
@@ -33,6 +35,44 @@
 .attraction-info .tags li {
   display: flex;
   gap: .5rem;
+}
+
+.attraction-info .form-control.visited {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-family: var(--secondary-font);
+  font-size: 1rem;
+  padding-top: 1rem;
+}
+
+.attraction-info .form-control.visited input[type="checkbox"] {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--bg-light);
+  appearance: none;
+  background-color: transparent;
+  outline: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-radius: .25rem;
+}
+
+.attraction-info .form-control.visited input[type="checkbox"]:checked {
+  border-color: var(--primary);
+  background-color: var(--darken-primary);
+}
+
+
+.attraction-info .form-control.visited input[type="checkbox"]:checked::after {
+  content: "\2713"; 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--white);
+  font-size: 1.2rem;
 }
 
 .attraction-info .content {
@@ -157,6 +197,30 @@
   }
 }
 
+@media (min-width: 992px) {
+  .attraction-info .form-control.visited {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-right: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .attraction-info .form-control.visited input[type="checkbox"] {
+    width: 25px;
+    height: 25px;
+    order: 2;
+  }
+  
+  .attraction-info .form-control.visited input[type="checkbox"]:checked::after {
+    font-size: 1.4rem;
+  }
+
+  .attraction-info .form-control.visited .visited-text {
+    order: 1;
+  }
+}
+
 @media (min-width: 1200px) {
   .attraction-info .content {
     align-items: center;
@@ -166,3 +230,4 @@
     margin-top: 0;
   }
 }
+
