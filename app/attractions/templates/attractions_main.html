@@ -4,6 +4,10 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/attractions.css') }}">
 {% endblock %}
 
+{% set categories_visible = filter_form.categories.choices %}
+{% set age_groups_visible = filter_form.age_groups.choices %}
+{% set tags_visible = filter_form.tags.choices %}
+
 {% block content %}
 <div class="wrapper attractions">
     <div class="title-container">
@@ -20,6 +24,7 @@
             </div>
         </form>
     </div>
+    {% if categories_visible or age_groups_visible or tags_visible %}
     <div class="filter-wrapper" id="filter-attractions-form">
         <form class="filter">
             {{ filter_form.hidden_tag() }}
@@ -41,6 +46,7 @@
             {% endif %}
         </form>
     </div>
+    {% endif %}
     <div class="attractions-container">
         {% if attractions == [] %}
         <br>
