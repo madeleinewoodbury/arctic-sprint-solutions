@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm as Form
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField, SelectMultipleField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, Regexp, Email
 from app.models import User
 
@@ -33,3 +33,10 @@ class RegistrationForm(Form):
 		user = User.query.filter_by(email=email.data).first()
 		if user is not None:
 			raise ValidationError('This email is already taken.')
+
+
+class ProfileForm(Form):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    gravatar_url = HiddenField('Gravatar URL')
+    tag = SelectMultipleField('Select Tags', coerce=int)
+    submit = SubmitField('Update profile', render_kw={'class': 'btn btn-primary'})
