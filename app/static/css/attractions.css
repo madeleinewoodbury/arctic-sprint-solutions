@@ -84,6 +84,8 @@
 }
 
 .attractions .filter-wrapper form {
+  background-color: var(--white);
+  box-shadow: 3px 6px 25px -18px rgba(0,0,0,0.75);
   padding: 1rem;
   width: calc(100% - 2rem);
   border-radius: .5rem;

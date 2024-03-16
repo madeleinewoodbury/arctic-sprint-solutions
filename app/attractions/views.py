@@ -104,7 +104,8 @@ def filter_attractions():
     selected_categories = request.json.get('selectedCategories', [])
     selected_age_groups = request.json.get('selectedAgeGroups', [])
     selected_tags = request.json.get('selectedTags', [])
-    filter_priority = request.json.get('filterPriority', '')
+    search_text = request.json.get('searchText', '')
+    filter_priority = request.json.get('filterPriority', [])
 
     # Construct dynamic filter based on selected options
     filters = []
@@ -114,6 +115,8 @@ def filter_attractions():
         filters.append(Attraction.age_groups.any(AttractionAgeGroup.age_group_id.in_(selected_age_groups)))
     if selected_tags:
         filters.append(Attraction.tags.any(AttractionTag.tag_id.in_(selected_tags)))
+    if search_text:
+        filters.append(Attraction.name.contains(search_text))
 
     # Apply filters or get all attractions if no filters are selected
     if filters:
