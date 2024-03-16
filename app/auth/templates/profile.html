@@ -40,11 +40,12 @@
                         {{ form.tag_preferences.label }}
                         {{ form.tag_preferences(disabled='disabled') }}
                     </div>
+                    
                     <div class="user-preferences">
-                        <h3>User Preferences</h3>
+                        <h2>User Preferences</h2>
                         <ul>
-                            {% for tag in selected_tags %}
-                                <li>{{ tag }}</li>
+                            {% for preference in user_preferences %}
+                                <li>{{ preference }}</li>
                             {% endfor %}
                         </ul>
                     </div>

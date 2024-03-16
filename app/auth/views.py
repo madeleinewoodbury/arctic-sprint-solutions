@@ -51,6 +51,7 @@ def logout():
 #	tags = Tag.query.all()
 #	return render_template('profile.html', form=form, tags=tags)
 
+
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -58,17 +59,30 @@ def profile():
     tags = Tag.query.all()
     form.tag.choices = [(tag.id, tag.name) for tag in tags]
 
-    user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
-    selected_tag_ids = [preference.tag_id for preference in user_tag_preferences]
-    form.tag_preferences.choices = [(tag.id, tag.name) for tag in tags if tag.id in selected_tag_ids]
-
-    selected_tags = [tag.name for tag in tags if tag.id in selected_tag_ids]
-
     if form.validate_on_submit():
-        current_user.email = form.email.data
-        db.session.commit()
-        flash('Your profile has been updated!', 'success')
-        return redirect(url_for('auth.profile'))
+        # Get the user based on the provided email
+        user = User.query.filter_by(email=form.email.data).first()
 
-    form.email.data = current_user.email
-    return render_template('profile.html', form=form, tags=tags, selected_tags=selected_tags)
+        # Update user preferences if user is found
+        if user:
+            selected_tag_ids = form.tag.data
+
+            # Delete existing user preferences
+            UserTagPreference.query.filter_by(user_id=user.id).delete()
+
+            # Create new user preferences
+            for tag_id in selected_tag_ids:
+                user_preference = UserTagPreference(user_id=user.id, tag_id=tag_id)
+                db.session.add(user_preference)
+
+            db.session.commit()
+            flash('Your preferences have been updated!', 'success')
+            return redirect(url_for('auth.profile'))  # Redirect to avoid form resubmission
+        else:
+            flash('User with provided email does not exist', 'error')
+
+    # Fetch the user preferences from the database
+    user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
+    user_preferences = [Tag.query.get(preference.tag_id).name for preference in user_tag_preferences]
+
+    return render_template('profile.html', form=form, tags=tags, user_preferences=user_preferences)
