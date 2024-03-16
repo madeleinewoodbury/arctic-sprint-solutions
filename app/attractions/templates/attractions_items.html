@@ -1,0 +1,20 @@
+<div class="attraction">
+    <a href="{{ url_for('attractions.get_attraction', attraction_id=attraction.id) }}">
+        {% if attraction.image %}
+        <div class="image-container">
+            <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
+        </div>
+        {% endif %}
+        <div class="text-container">
+            <div class="top">
+                <h5>{{ attraction.name }}</h5>
+                <p class="description">{{ attraction.description | truncate(150, true) }} </p>
+            </div>
+            <div class="info">
+                <p><span>Location: </span>{{ attraction.location }}</p>
+                <p><span>Points: </span>{{ attraction.points }}</p>
+                <p>Click for more info</p>
+            </div>
+        </div>
+    </a>
+</div>
