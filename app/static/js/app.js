@@ -12,6 +12,33 @@ const truncateAttractionDescription = () => {
     })
 }
 
+/**
+ * Initializes the attraction filters component.
+ * This function returns an object representing the state and methods for managing attraction filters.
+ * @returns {Object} An object containing the state and methods for managing attraction filters.
+ */
+const attractionFilters = () => {
+    const maxWidth = 1200
+    return {
+        showFilters: false,
+
+        initFilters() {
+            this.updateShowFilters()
+
+            window.addEventListener('resize', () => {
+                setTimeout(() => {
+                    this.updateShowFilters()
+                }, 200)
+            })
+        },
+
+        updateShowFilters() {
+            this.showFilters = window.innerWidth > maxWidth
+            console.log(this.showFilters);
+        }
+    }
+}
+
 // Function to update checkboxes based on the number of available attractions
 const disableCheckboxes = () => {
     const attractionsContainer = document.getElementById('filtered-results')
