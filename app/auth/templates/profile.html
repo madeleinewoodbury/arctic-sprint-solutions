@@ -27,7 +27,11 @@
                     </div>
                     <div class="form-control">
                         {{ form.tag.label }}
-                        {{ form.tag(class="form-select", multiple="multiple") }}
+                        <select name="tag" class="form-select">
+                            {% for tag in tags %}
+                                <option value="{{ tag.id }}">{{ tag.name }}</option>
+                            {% endfor %}
+                        </select>
                         {% for error in form.tag.errors %}
                             <span style="color: red;">{{ error }}</span>
                         {% endfor %}
@@ -36,7 +40,14 @@
                         {{ form.tag_preferences.label }}
                         {{ form.tag_preferences(disabled='disabled') }}
                     </div>
-                    
+                    <div class="user-preferences">
+                        <h3>User Preferences</h3>
+                        <ul>
+                            {% for tag in selected_tags %}
+                                <li>{{ tag }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
 
                     {{ form.hidden_tag() }}
                     

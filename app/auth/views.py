@@ -1,9 +1,10 @@
 from . import auth
 from .forms import LoginForm, RegistrationForm, ProfileForm
 from .. import db
-from ..models import User
+from ..models import User, Tag, UserTagPreference
 from flask import render_template, request, redirect, url_for, session, flash
 from flask_login import login_user, logout_user, login_required, current_user
+
 
 
 @auth.route('/register', methods=['GET', 'POST'])
@@ -44,7 +45,30 @@ def logout():
 	return redirect(url_for('main.index'))
 
 
+#@auth.route('/profile', methods=['GET', 'POST'])
+#def profile() -> 'html':
+#	form = ProfileForm()
+#	tags = Tag.query.all()
+#	return render_template('profile.html', form=form, tags=tags)
+
 @auth.route('/profile', methods=['GET', 'POST'])
-def profile() -> 'html':
-	form = ProfileForm()
-	return render_template('profile.html', form=form)
+@login_required
+def profile():
+    form = ProfileForm()
+    tags = Tag.query.all()
+    form.tag.choices = [(tag.id, tag.name) for tag in tags]
+
+    user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
+    selected_tag_ids = [preference.tag_id for preference in user_tag_preferences]
+    form.tag_preferences.choices = [(tag.id, tag.name) for tag in tags if tag.id in selected_tag_ids]
+
+    selected_tags = [tag.name for tag in tags if tag.id in selected_tag_ids]
+
+    if form.validate_on_submit():
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Your profile has been updated!', 'success')
+        return redirect(url_for('auth.profile'))
+
+    form.email.data = current_user.email
+    return render_template('profile.html', form=form, tags=tags, selected_tags=selected_tags)

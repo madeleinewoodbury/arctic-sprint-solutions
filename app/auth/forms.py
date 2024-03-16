@@ -33,6 +33,6 @@ class RegistrationForm(Form):
 class ProfileForm(Form):
 	email = StringField('Email', validators=[DataRequired(), Email()])
 	gravatar_url = HiddenField('Gravatar URL')
-	tag_preferences = StringField('Attraction Preferences') #tags
+	tag_preferences = StringField('Your Attraction Preferences') #tags
 	submit = SubmitField('Update profile', render_kw={'class': 'btn btn-primary'})
-	tag = StringField('Tag')
+	tag = StringField('Select Attraction preferences')
