@@ -10,7 +10,7 @@
         <div class="text-container">
             <div class="content">
                 <div class="title">
-                    <h1>Hello {{ current_user.username }}!</h1>
+                    <h2>Hello {{ current_user.username }}!</h2>
                     <h2>Welcome to your profile page</h2>
                 </div>
 
@@ -27,7 +27,7 @@
                     </div>
                     <div class="form-control">
                         {{ form.tag.label }}
-                        <select name="tag" class="form-select">
+                        <select name="tag" class="form-select" multiple>
                             {% for tag in tags %}
                                 <option value="{{ tag.id }}">{{ tag.name }}</option>
                             {% endfor %}
@@ -35,12 +35,7 @@
                         {% for error in form.tag.errors %}
                             <span style="color: red;">{{ error }}</span>
                         {% endfor %}
-                    </div>
-                    <div class="form-control">
-                        {{ form.tag_preferences.label }}
-                        {{ form.tag_preferences(disabled='disabled') }}
-                    </div>
-                    
+                    </div>          
                     <div class="user-preferences">
                         <h2>User Preferences</h2>
                         <ul>

@@ -85,4 +85,6 @@ def profile():
     user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
     user_preferences = [Tag.query.get(preference.tag_id).name for preference in user_tag_preferences]
 
+
+
     return render_template('profile.html', form=form, tags=tags, user_preferences=user_preferences)
