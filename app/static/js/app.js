@@ -32,7 +32,7 @@ const filterAttractions = () => {
     const checkboxes = document.querySelectorAll('.filter input[type="checkbox"]')
     if (!checkboxes) return
 
-    const searchInput = document.getElementById('search_text');
+    const searchInput = document.getElementById('search_text')
     const searchText = searchInput ? searchInput.value.trim() : '';
     let filterPriority = []
     checkboxes.forEach(checkbox => {
@@ -58,7 +58,7 @@ const filterAttractions = () => {
                     }
                 }
             })
-            
+
             // Updates the filterPriority if any filter groups have been reset.
             if (selectedCategories.length === 0 && filterPriority.includes('categories')) {
                 filterPriority.splice(filterPriority.indexOf('categories'), 1)

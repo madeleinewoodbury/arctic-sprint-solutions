@@ -22,9 +22,9 @@
     </div>
     <div class="filter-wrapper" id="filter-attractions-form">
         <form class="filter">
-            <!-- <div class="filter-text form-control"> -->
             {{ filter_form.hidden_tag() }}
-
+            <p><a href="{{ url_for('attractions.get_attractions') }}">Clear all filters</a></p>
+            <br>
             {% if filter_form.categories.choices %}
             <b>{{ filter_form.categories.label }}</b>
             {{ filter_form.categories(id="category-checkbox") }}
