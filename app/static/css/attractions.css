@@ -74,6 +74,28 @@
 }
 
 
+/* Filter Form */
+.attractions .filter-wrapper {
+  max-width: 300px;
+  width: 100%;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+}
+
+.attractions .filter-wrapper form {
+  padding: 1rem;
+  width: calc(100% - 2rem);
+  border-radius: .5rem;
+  position: absolute;
+}
+
+.attractions .filter-wrapper .form-control {
+  width: 100%;
+  display: flex;
+}
+
+
 .attractions-container {
   background-color: var(--bg-light);
   border-radius: 1rem 1rem 0 0;

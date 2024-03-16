@@ -14,26 +14,44 @@
     <div class="form-wrapper" id="search-attractions-form">
         <form class="search" method="POST" action="{{ url_for('attractions.get_attractions') }}">
             {{ search_form.hidden_tag() }}
-            <!-- TODO: Add category, tags, age groups select fields -->
-          <div class="search-text form-control">
-              {{ search_form.search_text }}
-              {{ search_form.submit }}
-          </div>
+            <div class="search-text form-control">
+                {{ search_form.search_text }}
+                {{ search_form.submit }}
+            </div>
         </form>
-      </div>
+    </div>
+    <div class="filter-wrapper" id="filter-attractions-form">
+        <form class="filter">
+            <!-- <div class="filter-text form-control"> -->
+            {{ filter_form.hidden_tag() }}
+
+            {% if filter_form.categories.choices %}
+            <b>{{ filter_form.categories.label }}</b>
+            {{ filter_form.categories(id="category-checkbox") }}
+            {% endif %}
+            <br>
+            {% if filter_form.age_groups.choices %}
+            <b>{{ filter_form.age_groups.label }}</b>
+            {{ filter_form.age_groups(id="age-group-checkbox") }}
+            {% endif %}
+            <br>
+            {% if filter_form.tags.choices %}
+            <b>{{ filter_form.tags.label }}</b>
+            {{ filter_form.tags(id="tag-checkbox") }}
+            {% endif %}
+        </form>
+    </div>
     <div class="attractions-container">
-        <div class="categories-container">
-            <form id="category-form">
-                <div class="form-group">
-                    {{ filter_form.categories.label }}
-                    {{ filter_form.categories }}
-                </div>
-            </form>
-        </div>
-        <div class="attractions-grid" id="filteredResults">
+        {% if attractions == [] %}
+        <br>
+        <h2>Sorry, we couldn't find any attractions based on «{{ search_form.search_text.data }}».</h2>
+        <h3>Please try again or <a href="{{ url_for('attractions.get_attractions') }}">go back</a>.</h3>
+        {% endif %}
+
+        <div class="attractions-grid" id="filtered-results">
             <!-- Filtered results will be displayed here -->
             {% for attraction in attractions %}
-                {% include 'attractions_items.html' %}
+            {% include 'attractions_items.html' %}
             {% endfor %}
         </div>
     </div>
