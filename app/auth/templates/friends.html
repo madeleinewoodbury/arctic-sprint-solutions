@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/attraction.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="attraction-info">
+    <div class="text-container">
+        <h3>Friends</h3>
+        <form class="placeholder_friend_search" method="POST" action="{{ url_for('auth.friends') }}">
+            {{ form.hidden_tag() }}
+            {{ form.search_text.label }} {{ form.search_text }}
+            {{ form.submit }}
+        </form>
+        {% if users %}
+        {% for user in users %}
+        <p>{{ user.username }}</p>
+        <img src="{{ user.gravatar() }}" alt="Gravatar" class="gravatar-img">
+
+        {% for initiated_friendship in current_user.initiated_friendships %}
+        {% if initiated_friendship.user_2 == user.id %}
+        <p>Friend request already sent.</p>
+        {% else %}
+        <form class="request-form" method="POST" action="{{ url_for('auth.send_friend_request', user_id=user.id) }}">
+            <button type="submit">Send friend request</button>
+        </form>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

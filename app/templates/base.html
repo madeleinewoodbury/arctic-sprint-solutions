@@ -31,7 +31,7 @@
                 {% else %}
                 <li>
                   <!-- TODO: Add dashboard/profile -->
-                    <a href="#">{{ current_user.username }}</a>
+                    <a href="{{ url_for('auth.friends') }}">{{ current_user.username }}</a>
                 </li>
                 {% if current_user.is_admin %}
                 <li>
