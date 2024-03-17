@@ -1,4 +1,6 @@
+import hashlib
 from flask_sqlalchemy import SQLAlchemy
+from flask import request
 from datetime import datetime
 from app import db, login_manager
 from flask_login import UserMixin, AnonymousUserMixin, current_user
@@ -155,6 +157,25 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
+    
+    ''' might use dont know
+    friends = db.relationship('User',
+                             secondary='friendship',
+                              primaryjoin=(Friendship.user_1_id == id),
+                              secondaryjoin=(Friendship.user_2_id == id),
+                              backref=db.backref('friendships', lazy='True')
+    )
+    '''
+    initiated_friendships = db.relationship('Friendship',
+                                            foreign_keys='Friendship.user_1',
+                                            backref=db.backref('initiator', lazy=True)
+    )
+
+    received_friendships = db.relationship('Friendship',
+                                           foreign_keys='Friendship.user_2',
+                                           backref=db.backref('recipient',lazy=True)
+    )
+    
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -171,6 +192,14 @@ class User(UserMixin, db.Model):
     @property
     def is_admin(self):
         return self.role_rel.is_admin
+    
+    def gravatar(self, size=100, default='identicon', rating='g'):
+        if request.is_secure:
+            url = 'https://secure.gravatar.com/avatar'
+        else:
+            url = 'http://www.gravatar.com/avatar'
+        hash = hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
+        return f'{url}/{hash}?s={size}&d={default}&r={rating}'
 
 
 class Anonymous(AnonymousUserMixin):
