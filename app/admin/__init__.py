@@ -13,77 +13,43 @@ class AdminModelView(ModelView):
 
     def inaccessible_callback(self, name, **kwargs):
         """Redirects to login page if user is not admin"""
-        return redirect(url_for("auth.login", next=request.url))
+        return redirect(url_for('auth.login', next=request.url))
 
 
 class UserView(AdminModelView):
-    can_create = False
-    can_edit = False
-    column_exclude_list = ["password"]
-    form_columns = [
-        "username",
-        "first_name",
-        "last_name",
-        "email",
-        "created_at",
-        "role_rel",
-    ]
-    column_list = [
-        "id",
-        "username",
-        "first_name",
-        "last_name",
-        "email",
-        "created_at",
-        "role_rel",
-    ]
+    form_columns = ['username', 'first_name', 'last_name',
+                    'email', 'password', 'created_at', 'role_rel']
+    column_list = ['id', 'username', 'first_name', 'last_name',
+                   'email', 'password', 'created_at', 'role_rel']
 
 
 class CategoryView(AdminModelView):
-    form_columns = ["name"]
-    column_list = ["id", "name"]
+    form_columns = ['name']
+    column_list = ['id', 'name']
 
 
 class TagView(AdminModelView):
-    form_columns = ["name"]
-    column_list = ["id", "name"]
+    form_columns = ['name']
+    column_list = ['id', 'name']
 
 
 class AgeGroupView(AdminModelView):
-    form_columns = ["name"]
-    column_list = ["id", "name"]
+    form_columns = ['name']
+    column_list = ['id', 'name']
 
 
 class AttractionView(AdminModelView):
-    form_columns = [
-        "name",
-        "city_rel",
-        "location",
-        "description",
-        "image",
-        "points",
-        "age_groups",
-        "category",
-        "tags",
-    ]
-    column_list = [
-        "id",
-        "name",
-        "city_rel",
-        "location",
-        "description",
-        "image",
-        "points",
-        "age_groups",
-        "category",
-        "tags",
-    ]
+    form_columns = ['name', 'city', 'location',
+                    'description', 'image', 'points']
+    column_list = ['id', 'name', 'city', 'location',
+                   'description', 'image', 'points']
 
 
-admin_manager.add_view(UserView(User, db.session, category="DB"))
-admin_manager.add_view(
-    CategoryView(Category, db.session, category="DB"),
-)
-admin_manager.add_view(TagView(Tag, db.session, category="DB"))
-admin_manager.add_view(AgeGroupView(AgeGroup, db.session, category="DB"))
-admin_manager.add_view(AttractionView(Attraction, db.session, category="DB"))
+admin_manager.add_view(UserView(User, db.session, category="Edit Database"))
+admin_manager.add_view(CategoryView(
+    Category, db.session, category="Edit Database"),)
+admin_manager.add_view(TagView(Tag, db.session, category="Edit Database"))
+admin_manager.add_view(AgeGroupView(
+    AgeGroup, db.session, category="Edit Database"))
+admin_manager.add_view(AttractionView(
+    Attraction, db.session, category="Edit Database"))
