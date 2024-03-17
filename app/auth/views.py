@@ -1,7 +1,7 @@
 from . import auth
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, SearchUsersForm
 from .. import db
-from ..models import User
+from ..models import User, Friendship
 from flask import render_template, request, redirect, url_for, session, flash
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -42,3 +42,40 @@ def logout():
 	logout_user()
 	flash('You have been logged out.')
 	return redirect(url_for('main.index'))
+
+
+
+
+
+
+
+'''
+FRIENDSHIP STUFF
+'''
+
+@auth.route('/friends', methods=['GET', 'POST'])
+@login_required
+def friends():
+    form = SearchUsersForm()
+    search_text = form.search_text.data
+    if form.validate_on_submit() and search_text:
+        users = User.query.filter(User.username.contains(search_text)).all()
+        return render_template('friends.html', form=form, users=users)
+    return render_template('friends.html', form=form)
+
+
+
+@auth.route('/friends/send-request/<int:user_id>', methods=['POST'])
+@login_required
+def send_friend_request(user_id):
+    
+    friendship = Friendship(
+        user_1 = current_user.id,
+        user_2 = user_id,
+        status = 'pending'
+        )
+    
+    db.session.add(friendship)
+    db.session.commit()
+    return redirect('auth.friends')
+

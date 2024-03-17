@@ -33,3 +33,8 @@ class RegistrationForm(Form):
 		user = User.query.filter_by(email=email.data).first()
 		if user is not None:
 			raise ValidationError('This email is already taken.')
+
+
+class SearchUsersForm(Form):
+    search_text = StringField('Search users', render_kw={'placeholder': 'Search users'})
+    submit = SubmitField('Search', render_kw={'class': 'search-btn'})
