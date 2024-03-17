@@ -1,10 +1,12 @@
 import hashlib
+from flask import request
 from flask_sqlalchemy import SQLAlchemy
 from flask import request
 from datetime import datetime
 from app import db, login_manager
 from flask_login import UserMixin, AnonymousUserMixin, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
+
 
 
 class Achievement(db.Model):
@@ -141,8 +143,13 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
+    user_preferences = db.relationship("UserTagPreference", back_populates="tag")
+    
     def __repr__(self) -> str:
         return self.name
+
+    def get_id(self):
+        return (self.id)
 
 
 class User(UserMixin, db.Model):
@@ -157,6 +164,7 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
+    tag_preferences = db.relationship("UserTagPreference", back_populates="user")
     
     ''' might use dont know
     friends = db.relationship('User',
@@ -189,10 +197,21 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    def get_id(self):
+        return (self.id)
+    
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
     @property
     def is_admin(self):
         return self.role_rel.is_admin
-    
+
     def gravatar(self, size=100, default='identicon', rating='g'):
         if request.is_secure:
             url = 'https://secure.gravatar.com/avatar'
@@ -239,3 +258,12 @@ class VisitedAttraction(db.Model):
         db.Integer, db.ForeignKey("attraction.id"), primary_key=True
     )
     time_visited = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class UserTagPreference(db.Model):
+    __tablename__ = "userTagPreference"
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
+
+    user = db.relationship("User", back_populates="tag_preferences")
+    tag = db.relationship("Tag", back_populates="user_preferences")
