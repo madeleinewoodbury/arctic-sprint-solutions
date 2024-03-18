@@ -40,3 +40,14 @@ class ProfileForm(Form):
     gravatar_url = HiddenField('Gravatar URL')
     tag = SelectMultipleField('Select Tags', coerce=int)
     submit = SubmitField('Update profile', render_kw={'class': 'btn btn-primary'})
+
+
+class SearchUsersForm(Form):
+    search_text = StringField('Search users', render_kw={'placeholder': 'Search users'})
+    submit = SubmitField('Search', render_kw={'class': 'btn btn-primary'})
+    
+    
+class FriendRequestForm(Form):
+    search_text = StringField('Search users', render_kw={'placeholder': 'Search users'})
+    submit = SubmitField('Search', render_kw={'class': 'search-btn'})
+    
