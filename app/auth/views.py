@@ -90,7 +90,7 @@ def profile():
 
 
 '''
-FRIENDSHIP STUFF
+Friendship related routes
 '''
 @auth.route('/friends', methods=['GET', 'POST'])
 @login_required
