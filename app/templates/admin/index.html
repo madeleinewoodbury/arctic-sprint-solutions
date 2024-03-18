@@ -1,5 +1,10 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-  <p>Hello world</p>
+
+<div class="container">
+  <h2>Welcome to the Admin Page</h2>
+  <a class="btn btn-primary my-3" href="{{ url_for('attractions.get_attractions') }}">Back to the app</a>
+</div>
+
 {% endblock %}
