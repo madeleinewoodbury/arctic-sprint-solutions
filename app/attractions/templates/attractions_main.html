@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<script defer
+src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/attractions.css') }}">
+{% endblock %}
+
+{% set categories_visible = filter_form.categories.choices %}
+{% set age_groups_visible = filter_form.age_groups.choices %}
+{% set tags_visible = filter_form.tags.choices %}
+
+{% block content %}
+<div class="wrapper attractions">
+    <div class="title-container">
+        <div class="title">
+            <h1>Explore Attractions in Tromsø</h1>
+        </div>
+    </div>
+    <div class="content">
+        <div class="form-wrapper" id="search-attractions-form" x-data="attractionFilters()" x-init="initFilters">
+            <form class="search" method="POST" action="{{ url_for('attractions.get_attractions') }}">
+                {{ search_form.hidden_tag() }}
+                <div class="search-text form-control">
+                    {{ search_form.search_text }}
+                    {{ search_form.submit }}
+                </div>
+            </form>
+            <div class="filters-btn-container">
+                <button @click="showFilters = !showFilters" class="filters-btn">
+                    <template x-if="!showFilters">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    </template>
+                    <template x-if="showFilters">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-filter-x"><path d="M13.013 3H2l8 9.46V19l4 2v-8.54l.9-1.055"/><path d="m22 3-5 5"/><path d="m17 3 5 5"/></svg>
+                    </template>
+                    <span x-text="showFilters ? 'Hide Filters' : 'Show Filters'"></span>
+                </button>
+            </div>
+            {% if categories_visible or age_groups_visible or tags_visible %}
+            <div class="filter-wrapper" id="filter-attractions-form" x-show="showFilters">
+                <form class="filter">
+                    {{ filter_form.hidden_tag() }}
+                    <p><a href="{{ url_for('attractions.get_attractions') }}">Clear all filters</a></p>
+                    <div class="filters-container">
+                        <div class="form-control">
+                            {% if filter_form.categories.choices %}
+                            <b>{{ filter_form.categories.label }}</b>
+                            {{ filter_form.categories(id="category-checkbox") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-control">
+                            {% if filter_form.age_groups.choices %}
+                            <b>{{ filter_form.age_groups.label }}</b>
+                            {{ filter_form.age_groups(id="age-group-checkbox") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-control">
+                            {% if filter_form.tags.choices %}
+                            <b>{{ filter_form.tags.label }}</b>
+                            {{ filter_form.tags(id="tag-checkbox") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    
+        <div class="attractions-container">
+            {% if attractions == [] %}
+            <br>
+            <h2>Sorry, we couldn't find any attractions based on «{{ search_form.search_text.data }}».</h2>
+            <h3>Please try again or <a href="{{ url_for('attractions.get_attractions') }}">go back</a>.</h3>
+            {% endif %}
+    
+            <div class="attractions-grid" id="filtered-results">
+                <!-- Filtered results will be displayed here -->
+                {% for attraction in attractions %}
+                {% include 'attractions_items.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

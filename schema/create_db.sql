@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Feb 20, 2024 at 07:07 PM
--- Server version: 10.11.2-MariaDB-1:10.11.2+maria~ubu2204
--- PHP Version: 8.1.15
+-- Generation Time: Mar 11, 2024 at 11:23 PM
+-- Server version: 11.2.3-MariaDB-1:11.2.3+maria~ubu2204
+-- PHP Version: 8.1.17
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,10 +18,44 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
+--
 -- Database: `arcticSprintSolutionsDB`
 --
 
+CREATE DATABASE IF NOT EXISTS `arcticSprintSolutionsDB` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `arcticSprintSolutionsDB`;
+
 -- --------------------------------------------------------
+
+
+--
+-- DROP TABLES
+--
+
+DROP TABLE IF EXISTS friendship;
+DROP TABLE IF EXISTS userAchievement;
+DROP TABLE IF EXISTS achievement;
+DROP TABLE IF EXISTS visitedAttraction;
+DROP TABLE IF EXISTS groupedAttraction;
+DROP TABLE IF EXISTS attractionTag;
+DROP TABLE IF EXISTS attractionCategory;
+DROP TABLE IF EXISTS attractionAgeGroup;
+DROP TABLE IF EXISTS attractionGroup;
+DROP TABLE IF EXISTS userAgeGroupPreference;
+DROP TABLE IF EXISTS userTagPreference;
+DROP TABLE IF EXISTS userCategoryPreference;
+DROP TABLE IF EXISTS tag;
+DROP TABLE IF EXISTS category;
+DROP TABLE IF EXISTS ageGroup;
+DROP TABLE IF EXISTS attraction;
+DROP TABLE IF EXISTS userProfile;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS userRole;
+DROP TABLE IF EXISTS city;
+DROP TABLE IF EXISTS country;
+DROP TABLE IF EXISTS language;
+--
+-- Table structure for table `achievement`
 
 --
 -- Table structure for table `achievement`
@@ -131,10 +165,10 @@ CREATE TABLE `attractionCategory` (
 --
 
 INSERT INTO `attractionCategory` (`category_id`, `attraction_id`) VALUES
+(9, 1),
 (3, 2),
 (7, 3),
-(8, 3),
-(9, 1);
+(8, 3);
 
 -- --------------------------------------------------------
 
@@ -166,14 +200,14 @@ CREATE TABLE `attractionTag` (
 --
 
 INSERT INTO `attractionTag` (`tag_id`, `attraction_id`) VALUES
+(5, 1),
+(17, 1),
 (1, 2),
 (3, 2),
-(3, 3),
-(5, 1),
-(7, 3),
 (8, 2),
-(17, 1),
 (17, 2),
+(3, 3),
+(7, 3),
 (17, 3);
 
 -- --------------------------------------------------------
@@ -311,9 +345,16 @@ CREATE TABLE `user` (
   `last_name` varchar(50) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
-  `role` int(11) DEFAULT NULL,
+  `role` int(11) DEFAULT 2,
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`id`, `username`, `first_name`, `last_name`, `email`, `password`, `role`, `created_at`) VALUES
+(1, 'superuser', 'Ford', 'Prefect', 'admin@mail.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 1, '2024-03-05 18:13:57');
 
 -- --------------------------------------------------------
 
@@ -326,6 +367,28 @@ CREATE TABLE `userAchievement` (
   `user_id` int(11) NOT NULL,
   `time_achieved` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `userAgeGroupPreference`
+--
+
+CREATE TABLE `userAgeGroupPreference` (
+  `user_id` int(11) NOT NULL,
+  `age_group_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `userCategoryPreference`
+--
+
+CREATE TABLE `userCategoryPreference` (
+  `user_id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -345,7 +408,19 @@ CREATE TABLE `userRole` (
 
 INSERT INTO `userRole` (`id`, `title`, `is_admin`) VALUES
 (1, 'Administrator', 1),
-(2, 'Bruker', 0);
+(2, 'Bruker', 0),
+(3, 'Moderator', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `userTagPreference`
+--
+
+CREATE TABLE `userTagPreference` (
+  `user_id` int(11) NOT NULL,
+  `tag_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -464,10 +539,31 @@ ALTER TABLE `userAchievement`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- Indexes for table `userAgeGroupPreference`
+--
+ALTER TABLE `userAgeGroupPreference`
+  ADD PRIMARY KEY (`user_id`,`age_group_id`),
+  ADD KEY `age_group_id` (`age_group_id`);
+
+--
+-- Indexes for table `userCategoryPreference`
+--
+ALTER TABLE `userCategoryPreference`
+  ADD PRIMARY KEY (`user_id`,`category_id`),
+  ADD KEY `category_id` (`category_id`);
+
+--
 -- Indexes for table `userRole`
 --
 ALTER TABLE `userRole`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `userTagPreference`
+--
+ALTER TABLE `userTagPreference`
+  ADD PRIMARY KEY (`user_id`,`tag_id`),
+  ADD KEY `tag_id` (`tag_id`);
 
 --
 -- Indexes for table `visitedAttraction`
@@ -532,13 +628,13 @@ ALTER TABLE `tag`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `userRole`
 --
 ALTER TABLE `userRole`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -603,6 +699,27 @@ ALTER TABLE `user`
 ALTER TABLE `userAchievement`
   ADD CONSTRAINT `userAchievement_ibfk_1` FOREIGN KEY (`achievement_id`) REFERENCES `achievement` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `userAchievement_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `userAgeGroupPreference`
+--
+ALTER TABLE `userAgeGroupPreference`
+  ADD CONSTRAINT `userAgeGroupPreference_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
+  ADD CONSTRAINT `userAgeGroupPreference_ibfk_2` FOREIGN KEY (`age_group_id`) REFERENCES `ageGroup` (`id`);
+
+--
+-- Constraints for table `userCategoryPreference`
+--
+ALTER TABLE `userCategoryPreference`
+  ADD CONSTRAINT `userCategoryPreference_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
+  ADD CONSTRAINT `userCategoryPreference_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`);
+
+--
+-- Constraints for table `userTagPreference`
+--
+ALTER TABLE `userTagPreference`
+  ADD CONSTRAINT `userTagPreference_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
+  ADD CONSTRAINT `userTagPreference_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`);
 
 --
 -- Constraints for table `visitedAttraction`
