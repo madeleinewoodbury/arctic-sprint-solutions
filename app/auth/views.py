@@ -1,8 +1,8 @@
 from . import auth
-from .forms import LoginForm, RegistrationForm, ProfileForm
+from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm
 from .. import db
-from ..models import User, Tag, UserTagPreference
-from flask import render_template, request, redirect, url_for, session, flash
+from ..models import User, Tag, UserTagPreference, Friendship
+from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 
 
@@ -45,11 +45,7 @@ def logout():
 	return redirect(url_for('main.index'))
 
 
-#@auth.route('/profile', methods=['GET', 'POST'])
-#def profile() -> 'html':
-#	form = ProfileForm()
-#	tags = Tag.query.all()
-#	return render_template('profile.html', form=form, tags=tags)
+
 
 
 @auth.route('/profile', methods=['GET', 'POST'])
@@ -85,6 +81,121 @@ def profile():
     user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
     user_preferences = [Tag.query.get(preference.tag_id).name for preference in user_tag_preferences]
 
-
-
     return render_template('profile.html', form=form, tags=tags, user_preferences=user_preferences)
+
+
+
+
+
+
+
+'''
+Friendship related routes
+'''
+@auth.route('/friends', methods=['GET', 'POST'])
+@login_required
+def friends():
+    form = SearchUsersForm()
+    search_text = form.search_text.data
+    if form.validate_on_submit() and search_text:
+        users = User.query.filter(User.username.contains(search_text)) \
+            .filter(User.id != current_user.id).all()
+    else:
+        users = None
+    
+    users_requesting = User.query.join(User.initiated_friendships) \
+                             .filter(Friendship.user_2 == current_user.id,
+                                     Friendship.status == 'pending') \
+                             .all()
+    
+    users_awaiting = User.query.join(User.received_friendships) \
+                             .filter(Friendship.user_1 == current_user.id,
+                                     Friendship.status == 'pending') \
+                             .all()
+                             
+    friends = User.query.join(User.initiated_friendships) \
+                   .filter(
+                       (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
+                       Friendship.status == 'accepted') \
+                   .union(
+                       User.query.join(User.received_friendships) \
+                           .filter(
+                               (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
+                               Friendship.status == 'accepted') \
+                           ).filter(User.id != current_user.id).all()
+                             
+    return render_template('friends.html', form=form,
+                           users=users,
+                           users_requesting=users_requesting, 
+                           users_awaiting=users_awaiting,
+                           friends=friends)
+
+
+@auth.route('/friends/send-request/<int:user_id>', methods=['POST'])
+@login_required
+def send_friend_request(user_id):
+    
+    friendship = Friendship(
+        user_1 = current_user.id,
+        user_2 = user_id,
+        status = 'pending'
+        )
+    
+    db.session.add(friendship)
+    db.session.commit()
+    flash('The friend request has been sent.')
+    return redirect(url_for('auth.friends'))
+
+
+@auth.route('/friends/accept-request/<int:user_id>', methods=['POST'])
+@login_required
+def accept_friend_request(user_id):
+    friendship = Friendship.query.filter(
+        (Friendship.user_1 == user_id) | (Friendship.user_2 == user_id),
+        (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
+        Friendship.status == 'pending'
+    ).first()
+
+    if friendship is None:
+        abort(404)  # Friendship request not found or already accepted
+
+    friendship.status = 'accepted'
+    db.session.commit()
+    flash('The friend request has been accepted.')
+    return redirect(url_for('auth.friends'))
+
+
+@auth.route('/friends/remove-request/<int:user_id>', methods=['POST'])
+@login_required
+def remove_friend_request(user_id):
+    friendship = Friendship.query.filter(
+        (Friendship.user_1 == user_id) | (Friendship.user_2 == user_id),
+        (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
+        Friendship.status == 'pending'
+    ).first()
+
+    if friendship is None:
+        abort(404)  # Friendship request not found or already accepted
+    
+    db.session.delete(friendship) 
+    db.session.commit()
+    flash('The friend request has been ended.')
+    return redirect(url_for('auth.friends'))
+
+
+@auth.route('/friends/remove-friend/<int:user_id>', methods=['POST'])
+@login_required
+def remove_friend(user_id):
+    friendship = Friendship.query.filter(
+        (Friendship.user_1 == user_id) | (Friendship.user_2 == user_id),
+        (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
+        Friendship.status == 'accepted'
+    ).first()
+
+    if friendship is None:
+        abort(404)  # Friendship request not found or already accepted
+    
+    db.session.delete(friendship) 
+    db.session.commit()
+    flash('The friend has been removed.')
+    return redirect(url_for('auth.friends'))

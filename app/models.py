@@ -1,6 +1,7 @@
 import hashlib
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
+from flask import request
 from datetime import datetime
 from app import db, login_manager
 from flask_login import UserMixin, AnonymousUserMixin, current_user
@@ -164,6 +165,17 @@ class User(UserMixin, db.Model):
 
     role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
     tag_preferences = db.relationship("UserTagPreference", back_populates="user")
+    
+    initiated_friendships = db.relationship('Friendship',
+                                            foreign_keys='Friendship.user_1',
+                                            backref=db.backref('initiator', lazy=True)
+    )
+
+    received_friendships = db.relationship('Friendship',
+                                           foreign_keys='Friendship.user_2',
+                                           backref=db.backref('recipient',lazy=True)
+    )
+    
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
