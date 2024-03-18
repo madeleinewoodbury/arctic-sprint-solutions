@@ -44,4 +44,10 @@ class ProfileForm(Form):
 
 class SearchUsersForm(Form):
     search_text = StringField('Search users', render_kw={'placeholder': 'Search users'})
+    submit = SubmitField('Search', render_kw={'class': 'btn btn-primary'})
+    
+    
+class FriendRequestForm(Form):
+    search_text = StringField('Search users', render_kw={'placeholder': 'Search users'})
     submit = SubmitField('Search', render_kw={'class': 'search-btn'})
+    

@@ -45,11 +45,7 @@ def logout():
 	return redirect(url_for('main.index'))
 
 
-#@auth.route('/profile', methods=['GET', 'POST'])
-#def profile() -> 'html':
-#	form = ProfileForm()
-#	tags = Tag.query.all()
-#	return render_template('profile.html', form=form, tags=tags)
+
 
 
 @auth.route('/profile', methods=['GET', 'POST'])
@@ -96,7 +92,6 @@ def profile():
 '''
 FRIENDSHIP STUFF
 '''
-
 @auth.route('/friends', methods=['GET', 'POST'])
 @login_required
 def friends():
@@ -105,8 +100,10 @@ def friends():
     if form.validate_on_submit() and search_text:
         users = User.query.filter(User.username.contains(search_text)) \
             .filter(User.id != current_user.id).all()
-        return render_template('friends.html', form=form, users=users)
+    else:
+        users = None
     
+    print(users)
     
     users_requesting = User.query.join(User.initiated_friendships) \
                              .filter(Friendship.user_2 == current_user.id,
@@ -129,13 +126,11 @@ def friends():
                                Friendship.status == 'accepted') \
                            ).filter(User.id != current_user.id).all()
                              
-    return render_template('friends.html', form=form, 
+    return render_template('friends.html', form=form,
+                           users=users,
                            users_requesting=users_requesting, 
                            users_awaiting=users_awaiting,
                            friends=friends)
-
-
-
 
 @auth.route('/friends/send-request/<int:user_id>', methods=['POST'])
 @login_required
@@ -151,7 +146,6 @@ def send_friend_request(user_id):
     db.session.commit()
     flash('Friend request sent.')
     return redirect(url_for('auth.friends'))
-
 
 @auth.route('/friends/accept-request/<int:user_id>', methods=['POST'])
 @login_required
@@ -169,7 +163,6 @@ def accept_friend_request(user_id):
     db.session.commit()
     return redirect(url_for('auth.friends'))
 
-
 @auth.route('/friends/remove-request/<int:user_id>', methods=['POST'])
 @login_required
 def remove_friend_request(user_id):
@@ -186,7 +179,6 @@ def remove_friend_request(user_id):
     db.session.commit()
     return redirect(url_for('auth.friends'))
 
-
 @auth.route('/friends/remove-friend/<int:user_id>', methods=['POST'])
 @login_required
 def remove_friend(user_id):
@@ -202,5 +194,3 @@ def remove_friend(user_id):
     db.session.delete(friendship) 
     db.session.commit()
     return redirect(url_for('auth.friends'))
-
-

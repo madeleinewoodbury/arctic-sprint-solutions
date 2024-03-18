@@ -166,14 +166,6 @@ class User(UserMixin, db.Model):
     role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
     tag_preferences = db.relationship("UserTagPreference", back_populates="user")
     
-    ''' might use dont know
-    friends = db.relationship('User',
-                             secondary='friendship',
-                              primaryjoin=(Friendship.user_1_id == id),
-                              secondaryjoin=(Friendship.user_2_id == id),
-                              backref=db.backref('friendships', lazy='True')
-    )
-    '''
     initiated_friendships = db.relationship('Friendship',
                                             foreign_keys='Friendship.user_1',
                                             backref=db.backref('initiator', lazy=True)
