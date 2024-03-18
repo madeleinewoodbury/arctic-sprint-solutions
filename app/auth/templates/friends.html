@@ -1,100 +1,121 @@
 {% extends "base.html" %}
 
 {% block styles %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/attraction.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/friends.css') }}">
 {% endblock %}
 
 {% block content %}
 
-<div class="attraction-info">
-    <div class="text-container">
-        <h3>Friends</h3>
-        <form class="placeholder_friend_search" method="POST" action="{{ url_for('auth.friends') }}">
-            {{ form.hidden_tag() }}
-            {{ form.search_text.label }} {{ form.search_text }}
-            {{ form.submit }}
-        </form>
+<div class="wrapper-friends">
+    <div class="title-container">
+        <div class="title">
+            <h1>Friends information</h1>
+            <p>The page for all friend related information:</p>
+            <p>Add friends and compare your exploration achievements!</p>
+        </div>
+    </div>
 
+    <div class="content">
 
-        {% if users %}
-        {% for user in users %}
-        <p>{{ user.username }}</p>
-        <img src="{{ user.gravatar() }}" alt="Gravatar" class="gravatar-img">
-
-
-        {% if current_user.initiated_friendships %}
-        {% for initiated_friendship in current_user.initiated_friendships %}
-
-        {% if initiated_friendship.user_2 == user.id %}
-        <p>Friend request already sent.</p>
-        {% else %}
-        <form class="request-form" method="POST" action="{{ url_for('auth.send_friend_request', user_id=user.id) }}">
-            <button type="submit">Send friend request</button>
-        </form>
-        {% endif %}
-        {% endfor %}
-
-        {% else %}
-        <form class="request-form" method="POST" action="{{ url_for('auth.send_friend_request', user_id=user.id) }}">
-            <button type="submit">Send friend request</button>
-        </form>
-
-        {% endif %}
-   
-        {% endfor %}
-        {% endif %}
-
-
-
-
-
-        <div class="pending-requests">
+        {% if not (users_requesting == [] and users_awaiting == []) %}
+        <div class="friend-requests-container">
             <h3>Pending friend requests</h3>
-            {% if users_requesting or users_awaiting %}
 
             {% for user in users_requesting %}
             <p>Incoming friend request from {{ user.username }}</p>
-            <form class="request-accept-form" method="POST" action="{{ url_for('auth.accept_friend_request', user_id=user.id) }}">
+            <form class="request-accept-form" method="POST"
+                action="{{ url_for('auth.accept_friend_request', user_id=user.id) }}">
                 <button type="submit">Accept friend request</button>
             </form>
-            <form class="request-decline-form" method="POST" action="{{ url_for('auth.remove_friend_request', user_id=user.id) }}">
+            <form class="request-decline-form" method="POST"
+                action="{{ url_for('auth.remove_friend_request', user_id=user.id) }}">
                 <button type="submit">Decline friend request</button>
             </form>
             {% endfor %}
 
+            <br>
             {% for user in users_awaiting %}
-            <p>Pending friend request apporval from {{ user.username }}</p>
-            <form class="request-accept-form" method="POST" action="{{ url_for('auth.remove_friend_request', user_id=user.id) }}">
+            <p>Pending friend request approval from {{ user.username }}</p>
+            <form class="request-accept-form" method="POST"
+                action="{{ url_for('auth.remove_friend_request', user_id=user.id) }}">
                 <button type="submit">Cancel friend request</button>
             </form>
             {% endfor %}
-
-            {% else %}
-            <p>No pending friend requests.</p>
-            {% endif %}
         </div>
+        {% endif %}
+        
 
-
-        <div class="friendlist">
-            <h3>Friendlist</h3>
-            {% if friends %}
-            {% for user in friends %}
-                {{ user.username }}
-                <p>Achievement points: WorkInProgress</p>
-                <form class="request-accept-form" method="POST" action="{{ url_for('auth.remove_friend', user_id=user.id) }}">
-                    <button type="submit">Remove friend</button>
+        <div class="friends-container">
+            <h2>Friends list</h2>
+            {% if friends == [] %}
+            <p>Seems like you haven't added any friends yet. Start adding friends to compare your exploration
+                progression and achievements!</p>
+            {% else %}
+            <div class="friends-grid">
+                {% for user in friends %}
+                <div class="friend">
+                    <div class="image-container">
+                        <img src="{{ user.gravatar() }}" alt="Gravatar" class="gravatar-img">
+                    </div>
+                    <div class="text-container">
+                        <h3>{{ user.username }}</h3>
+                        <p><span>Achievement points: </span>WorkInProgress</p>
+                    </div>
+                    <form class="remove-friend" method="POST" action="{{ url_for('auth.remove_friend', user_id=user.id) }}">
+                    <button class="remove-friend-btn" type="submit">Remove friend</button>
                 </form>
-            {% endfor %}
-            {% else %}
-            <p>No friends! haha</p>
+                </div>
+                {% endfor %}
+            </div>
             {% endif %}
         </div>
 
+    
+        <div class="add-friend-container">
+            <h2>Add friends</h2>
+            <div class="form-wrapper" id="search-users-form">
+                <form class="search-users" method="POST" action="{{ url_for('auth.friends') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="search-text form-control">
+                        {{ form.search_text }}
+                        {{ form.submit }}
+                    </div>
+                </form>
+            </div>
+        {% if users %}
+            {% for user in users %}
+                {% set ns = namespace(active_request=false) %}
+                <p>{{ user.username }}</p>
+                {% if current_user.initiated_friendships %}
+                    {% for initiated_friendship in current_user.initiated_friendships %}
+                        {% if initiated_friendship.user_2 == user.id %}
+                            <p>Friend request already sent.</p>
+                            {% set ns.active_request = true %}
+                            {{ active_request }}
+                        {% endif %}
+                    {% endfor %}
 
+                {% elif current_user.received_friendships %}
+                    {% for received_friendships in current_user.received_friendships %}
+                        {% if received_friendships.user_1 == user.id %}
+                            <p>Pending friend request already received.</p>
+                            {% set ns.active_request = true %}
+                            {{ active_request }}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                
+                {% if not ns.active_request %}
+                <form class="request-form" method="POST" action="{{ url_for('auth.send_friend_request', user_id=user.id) }}">
+                    <button class="send-request-btn" type="submit">Send friend request</button>
+                </form>
+                {{ active_request }}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+            
 
-
+        </div>
     </div>
 </div>
-
 {% endblock %}
