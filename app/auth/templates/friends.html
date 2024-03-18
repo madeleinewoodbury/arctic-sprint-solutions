@@ -84,36 +84,43 @@
             </div>
         {% if users %}
             {% for user in users %}
-                {% set ns = namespace(active_request=false) %}
-                <p>{{ user.username }}</p>
-                {% if current_user.initiated_friendships %}
+                {% set ns = namespace(active_friendship=false) %}
+                <div class="user-container">
+                <h2>{{ user.username }}</h2>
+
+                {% if current_user.initiated_friendships and ns.active_friendship == false %}
                     {% for initiated_friendship in current_user.initiated_friendships %}
-                        {% if initiated_friendship.user_2 == user.id %}
+                        {% if initiated_friendship.user_2 == user.id and initiated_friendship.status == 'accepted' %}
+                            <p>You are already friends.</p>
+                            {% set ns.active_friendship = true %}
+                        {% elif initiated_friendship.user_2 == user.id %}
                             <p>Friend request already sent.</p>
-                            {% set ns.active_request = true %}
-                            {{ active_request }}
+                            {% set ns.active_friendship = true %}
                         {% endif %}
                     {% endfor %}
+                {% endif %}
 
-                {% elif current_user.received_friendships %}
-                    {% for received_friendships in current_user.received_friendships %}
-                        {% if received_friendships.user_1 == user.id %}
+                {% if current_user.received_friendships and ns.active_friendship == false %}
+                    {% for received_friendship in current_user.received_friendships %}
+                        {% if received_friendship.user_2 == current_user.id and received_friendship.status == 'accepted' %}
+                            <p>You are already friends.</p>
+                            {% set ns.active_friendship = true %}
+                        {% elif received_friendship.user_2 == current_user.id %}
                             <p>Pending friend request already received.</p>
-                            {% set ns.active_request = true %}
-                            {{ active_request }}
+                            {% set ns.active_friendship = true %}
                         {% endif %}
                     {% endfor %}
                 {% endif %}
                 
-                {% if not ns.active_request %}
+                {% if not ns.active_friendship %}
                 <form class="request-form" method="POST" action="{{ url_for('auth.send_friend_request', user_id=user.id) }}">
                     <button class="send-request-btn" type="submit">Send friend request</button>
                 </form>
-                {{ active_request }}
                 {% endif %}
+            </div>
             {% endfor %}
         {% endif %}
-            
+
 
         </div>
     </div>

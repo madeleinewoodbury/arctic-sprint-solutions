@@ -65,6 +65,19 @@
 
 
 
+.user-container {
+  margin-bottom: 10px;
+}
+
+.user-container p {
+  display: inline;
+  margin-right: 10px; 
+}
+
+.user-container form {
+  display: inline;
+  margin-right: 10px; 
+}
 
 
 .friends-grid {

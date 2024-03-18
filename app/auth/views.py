@@ -103,8 +103,6 @@ def friends():
     else:
         users = None
     
-    print(users)
-    
     users_requesting = User.query.join(User.initiated_friendships) \
                              .filter(Friendship.user_2 == current_user.id,
                                      Friendship.status == 'pending') \
@@ -132,6 +130,7 @@ def friends():
                            users_awaiting=users_awaiting,
                            friends=friends)
 
+
 @auth.route('/friends/send-request/<int:user_id>', methods=['POST'])
 @login_required
 def send_friend_request(user_id):
@@ -144,8 +143,9 @@ def send_friend_request(user_id):
     
     db.session.add(friendship)
     db.session.commit()
-    flash('Friend request sent.')
+    flash('The friend request has been sent.')
     return redirect(url_for('auth.friends'))
+
 
 @auth.route('/friends/accept-request/<int:user_id>', methods=['POST'])
 @login_required
@@ -161,7 +161,9 @@ def accept_friend_request(user_id):
 
     friendship.status = 'accepted'
     db.session.commit()
+    flash('The friend request has been accepted.')
     return redirect(url_for('auth.friends'))
+
 
 @auth.route('/friends/remove-request/<int:user_id>', methods=['POST'])
 @login_required
@@ -177,7 +179,9 @@ def remove_friend_request(user_id):
     
     db.session.delete(friendship) 
     db.session.commit()
+    flash('The friend request has been ended.')
     return redirect(url_for('auth.friends'))
+
 
 @auth.route('/friends/remove-friend/<int:user_id>', methods=['POST'])
 @login_required
@@ -193,4 +197,5 @@ def remove_friend(user_id):
     
     db.session.delete(friendship) 
     db.session.commit()
+    flash('The friend has been removed.')
     return redirect(url_for('auth.friends'))
