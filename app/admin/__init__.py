@@ -39,7 +39,7 @@ class UserView(AdminModelView):
 
 class CategoryView(AdminModelView):
     form_columns = ["name"]
-    column_list = ["name"]
+    column_list = ["name", "attraction_count"]
 
 
 class TagView(AdminModelView):
@@ -49,7 +49,7 @@ class TagView(AdminModelView):
 
 class AgeGroupView(AdminModelView):
     form_columns = ["name"]
-    column_list = ["name"]
+    column_list = ["name", "attraction_count"]
 
 
 class AttractionView(AdminModelView):
@@ -61,6 +61,7 @@ class AttractionView(AdminModelView):
         "image",
         "tags",
         "points",
+        "age_groups",
     ]
     column_list = [
         "name",
@@ -70,6 +71,7 @@ class AttractionView(AdminModelView):
         "image",
         "tags",
         "points",
+        "age_groups",
         "visit_count",
     ]
 

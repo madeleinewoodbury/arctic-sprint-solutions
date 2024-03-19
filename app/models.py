@@ -21,6 +21,12 @@ class AgeGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
+    @property
+    def attraction_count(self):
+        return Attraction.query.filter(
+            Attraction.age_groups.any(AgeGroup.id == self.id)
+        ).count()
+
     def __repr__(self) -> str:
         return self.name
 
@@ -35,7 +41,6 @@ class Attraction(db.Model):
     image = db.Column(db.String(255))
     points = db.Column(db.Integer)
     city_rel = db.relationship("City", backref=db.backref("attractions", lazy=True))
-    # Counts occurences in VistedAttraction to get number of times each attraction is visited
     age_groups = db.relationship(
         "AgeGroup",
         secondary="attractionAgeGroup",
@@ -102,6 +107,12 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
+    @property
+    def attraction_count(self):
+        return Attraction.query.filter(
+            Attraction.category.any(Category.id == self.id)
+        ).count()
+
     def __repr__(self) -> str:
         return self.name
 
@@ -112,6 +123,10 @@ class City(db.Model):
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text)
     image = db.Column(db.String(255))
+
+    @property
+    def attractions_count(self):
+        return Attraction.query.filter_by(city=self.id).all()
 
     def __repr__(self) -> str:
         return self.name
@@ -146,6 +161,10 @@ class Tag(db.Model):
     name = db.Column(db.String(50), nullable=False)
 
     user_preferences = db.relationship("UserTagPreference", back_populates="tag")
+
+    @property
+    def attraction_count(self):
+        return Attraction.query.filter(Attraction.tags.any(Tag.id == self.id)).count()
 
     def __repr__(self) -> str:
         return self.name
