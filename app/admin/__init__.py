@@ -25,6 +25,8 @@ class UserView(AdminModelView):
         "created_at",
         "role_rel",
     ]
+    column_searchable_list = ["username", "email"]
+    column_filters = ["created_at", "email"]
     column_list = [
         "username",
         "first_name",
@@ -68,6 +70,7 @@ class AttractionView(AdminModelView):
         "image",
         "tags",
         "points",
+        "visit_count",
     ]
 
 

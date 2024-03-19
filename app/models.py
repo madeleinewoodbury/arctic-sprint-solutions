@@ -8,7 +8,6 @@ from flask_login import UserMixin, AnonymousUserMixin, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
-
 class Achievement(db.Model):
     __tablename__ = "achievement"
     id = db.Column(db.Integer, primary_key=True)
@@ -35,9 +34,8 @@ class Attraction(db.Model):
     description = db.Column(db.Text)
     image = db.Column(db.String(255))
     points = db.Column(db.Integer)
-
     city_rel = db.relationship("City", backref=db.backref("attractions", lazy=True))
-
+    # Counts occurences in VistedAttraction to get number of times each attraction is visited
     age_groups = db.relationship(
         "AgeGroup",
         secondary="attractionAgeGroup",
@@ -49,16 +47,20 @@ class Attraction(db.Model):
         backref=db.backref("attractions", lazy=True),
     )
     tags = db.relationship(
-        "Tag",
-        secondary="attractionTag",
-        backref=db.backref("attractions", lazy=True)
+        "Tag", secondary="attractionTag", backref=db.backref("attractions", lazy=True)
     )
-    
+
+    @property
+    def visit_count(self):
+        return VisitedAttraction.query.filter_by(attraction_id=self.id).count()
+
     def to_dict(self):
-        data = {column.name: getattr(self, column.name) for column in self.__table__.columns}
-        data['age_groups'] = [age_group.name for age_group in self.age_groups]
-        data['category'] = [category.name for category in self.category]
-        data['tags'] = [tag.name for tag in self.tags]
+        data = {
+            column.name: getattr(self, column.name) for column in self.__table__.columns
+        }
+        data["age_groups"] = [age_group.name for age_group in self.age_groups]
+        data["category"] = [category.name for category in self.category]
+        data["tags"] = [tag.name for tag in self.tags]
         return data
 
 
@@ -144,12 +146,12 @@ class Tag(db.Model):
     name = db.Column(db.String(50), nullable=False)
 
     user_preferences = db.relationship("UserTagPreference", back_populates="tag")
-    
+
     def __repr__(self) -> str:
         return self.name
 
     def get_id(self):
-        return (self.id)
+        return self.id
 
 
 class User(UserMixin, db.Model):
@@ -165,17 +167,18 @@ class User(UserMixin, db.Model):
 
     role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
     tag_preferences = db.relationship("UserTagPreference", back_populates="user")
-    
-    initiated_friendships = db.relationship('Friendship',
-                                            foreign_keys='Friendship.user_1',
-                                            backref=db.backref('initiator', lazy=True)
+
+    initiated_friendships = db.relationship(
+        "Friendship",
+        foreign_keys="Friendship.user_1",
+        backref=db.backref("initiator", lazy=True),
     )
 
-    received_friendships = db.relationship('Friendship',
-                                           foreign_keys='Friendship.user_2',
-                                           backref=db.backref('recipient',lazy=True)
+    received_friendships = db.relationship(
+        "Friendship",
+        foreign_keys="Friendship.user_2",
+        backref=db.backref("recipient", lazy=True),
     )
-    
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -190,8 +193,8 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password, password)
 
     def get_id(self):
-        return (self.id)
-    
+        return self.id
+
     @property
     def is_authenticated(self):
         return True
@@ -204,13 +207,13 @@ class User(UserMixin, db.Model):
     def is_admin(self):
         return self.role_rel.is_admin
 
-    def gravatar(self, size=100, default='identicon', rating='g'):
+    def gravatar(self, size=100, default="identicon", rating="g"):
         if request.is_secure:
-            url = 'https://secure.gravatar.com/avatar'
+            url = "https://secure.gravatar.com/avatar"
         else:
-            url = 'http://www.gravatar.com/avatar'
-        hash = hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
-        return f'{url}/{hash}?s={size}&d={default}&r={rating}'
+            url = "http://www.gravatar.com/avatar"
+        hash = hashlib.md5(self.email.lower().encode("utf-8")).hexdigest()
+        return f"{url}/{hash}?s={size}&d={default}&r={rating}"
 
 
 class Anonymous(AnonymousUserMixin):
@@ -254,8 +257,8 @@ class VisitedAttraction(db.Model):
 
 class UserTagPreference(db.Model):
     __tablename__ = "userTagPreference"
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"), primary_key=True)
 
     user = db.relationship("User", back_populates="tag_preferences")
     tag = db.relationship("Tag", back_populates="user_preferences")
