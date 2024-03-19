@@ -51,8 +51,24 @@ class AgeGroupView(AdminModelView):
 
 
 class AttractionView(AdminModelView):
-    form_columns = ["name", "city_rel", "location", "description", "image", "points"]
-    column_list = ["name", "city_rel", "location", "description", "image", "points"]
+    form_columns = [
+        "name",
+        "city_rel",
+        "location",
+        "description",
+        "image",
+        "tags",
+        "points",
+    ]
+    column_list = [
+        "name",
+        "city_rel",
+        "location",
+        "description",
+        "image",
+        "tags",
+        "points",
+    ]
 
 
 admin_manager.add_view(UserView(User, db.session, category="Edit Database"))
