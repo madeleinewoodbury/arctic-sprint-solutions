@@ -54,6 +54,10 @@ class Attraction(db.Model):
     tags = db.relationship(
         "Tag", secondary="attractionTag", backref=db.backref("attractions", lazy=True)
     )
+    visited_by = db.relationship("VisitedAttraction", back_populates="attraction")
+
+    def __repr__(self) -> str:
+        return self.name
 
     @property
     def visit_count(self):
@@ -186,6 +190,7 @@ class User(UserMixin, db.Model):
 
     role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
     tag_preferences = db.relationship("UserTagPreference", back_populates="user")
+    visited_attractions = db.relationship("VisitedAttraction", back_populates="user")
 
     initiated_friendships = db.relationship(
         "Friendship",
@@ -272,6 +277,9 @@ class VisitedAttraction(db.Model):
         db.Integer, db.ForeignKey("attraction.id"), primary_key=True
     )
     time_visited = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship("User", back_populates="visited_attractions")
+    attraction = db.relationship("Attraction", back_populates="visited_by")
 
 
 class UserTagPreference(db.Model):

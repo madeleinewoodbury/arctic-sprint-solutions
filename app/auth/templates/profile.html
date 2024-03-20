@@ -13,7 +13,11 @@
                 class="gravatar-img">
             <div class="title">
                 <h2>Hello {{ current_user.username }}!</h2>
-                <p class="lead">Welcome to your profile page</p>
+                <div class="stats">
+                    <span>Attractions Visited: <strong>{{number_of_visited_attractions}}</strong></span>
+                    <span>Points: <strong>{{points}}</span></strong>
+                </div>
+                <!-- <p class="lead">Welcome to your profile page</p> -->
             </div>
         </div>
 
@@ -48,19 +52,36 @@
 
                 </form>
             </div>
-            <div class="user-preferences">
-                <h2>Your Preferences</h2>
-                {%if user_preferences %}
-                <ul>
-                    {% for preference in user_preferences %}
-                    <li>{{ preference }}</li>
-                    {% endfor %}
-                </ul>
-                {% else %}
-                <p>You have not set any preferences</p>
-                {% endif %}
+            <div class="content-info">
+                <div class="user-preferences">
+                    <h2>Your Preferences</h2>
+                    {%if user_preferences %}
+                    <ul>
+                        {% for preference in user_preferences %}
+                        <li>{{ preference }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>You have not set any preferences</p>
+                    {% endif %}
+                </div>
+                <div class="visited-attractions">
+        
+                    {% if visited_attractions %}
+                    <h2>Visited Attractions</h2>
+                    <ul>
+                        {% for attraction in visited_attractions %}
+                        <li>{{ attraction.name }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>You have not visited any attractions</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
+
+
     </div>
 </section>
 {% endblock %}

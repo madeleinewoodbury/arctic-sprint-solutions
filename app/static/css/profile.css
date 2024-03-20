@@ -32,6 +32,19 @@
   color: var(--primary);
 }
 
+.profile .top .title .stats {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  font-size: 1rem;
+  font-family: var(--secondary-font);
+}
+
+.profile .top .title .stats span strong {
+  font-family: var(--main-font);
+  color: var(--bg-light);
+}
+
 .profile .top .title p.lead {
   font-size: 1.2rem;
 }
@@ -115,19 +128,28 @@
   margin-top: 1rem;
 }
 
-.profile .user-preferences {
+.profile .content-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile .user-preferences,
+.profile .visited-attractions {
   color: var(--white);
   border: 2px solid var(--primary);
   border-radius: 1rem;
   padding: 2rem;
 }
 
-.profile .user-preferences h2{
+.profile .user-preferences h2,
+.profile .visited-attractions h2 {
   font-size: 1.5rem;
   color: var(--primary);
 }
 
-.profile .user-preferences ul {
+.profile .user-preferences ul,
+.profile .visited-attractions ul {
   font-size: 1rem;
   display: flex;
   flex-direction: column;
@@ -140,6 +162,16 @@
   padding-top: .5rem;  
   font-size: 1rem;
   font-style: italic;
+}
+
+
+@media (min-width: 768px) {
+  .profile .top .title .stats {
+    flex-direction: row;
+    gap: 2rem;
+    font-size: 1.1rem;
+  }
+  
 }
 
 @media (min-width: 992px) {
@@ -174,10 +206,15 @@
     width: 50%;
   }
 
-  .profile .user-preferences {
+  .profile .content-info {
     width: 50%;
-    height: fit-content;
   }
+
+  .profile .user-preferences {
+    height: fit-content;
+    margin: 0;
+  }
+
 }
 
 
