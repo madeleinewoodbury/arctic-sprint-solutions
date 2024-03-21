@@ -1,7 +1,7 @@
 from . import auth
 from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm
 from .. import db
-from ..models import User, Tag, UserTagPreference, Friendship
+from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -81,7 +81,24 @@ def profile():
     user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
     user_preferences = [Tag.query.get(preference.tag_id).name for preference in user_tag_preferences]
 
-    return render_template('profile.html', form=form, tags=tags, user_preferences=user_preferences)
+    # Fetch visited attractions for user
+    visited_attractions = [
+        Attraction.query.get(attraction.attraction_id)
+        for attraction in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
+    ]
+
+    points = sum(attraction.points for attraction in visited_attractions)
+
+    return render_template(
+        'profile.html',
+        form=form,
+        tags=tags,
+        user_preferences=user_preferences,
+        visited_attractions=visited_attractions,
+        number_of_visited_attractions=len(visited_attractions),
+        points=points
+)
+
 
 
 
