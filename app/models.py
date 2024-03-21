@@ -14,6 +14,15 @@ class Achievement(db.Model):
     title = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text)
     points_needed = db.Column(db.Integer, nullable=False)
+    users = db.relationship(
+        "User", secondary="userAchievement", back_populates="achievements"
+    )
+
+    @property
+    def user_count(self):
+        return User.query.filter(
+            User.achievements.any(Achievement.id == self.id)
+        ).count()
 
 
 class AgeGroup(db.Model):
@@ -187,8 +196,11 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.Integer, db.ForeignKey("userRole.id"), default=2)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    achievements = db.relationship(
+        "Achievement", secondary="userAchievement", back_populates="users"
+    )
 
-    role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
+    role_rel = db.relationship("UserRole", backref=db.backref("user", lazy=True))
     tag_preferences = db.relationship("UserTagPreference", back_populates="user")
     visited_attractions = db.relationship("VisitedAttraction", back_populates="user")
 
@@ -206,6 +218,11 @@ class User(UserMixin, db.Model):
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
+
+    @property
+    def list_of_achievements(self):
+        print(self.achievements)
+        return [a.title for a in self.achievements]
 
     def __repr__(self):
         return "<User {}>".format(self.username)
