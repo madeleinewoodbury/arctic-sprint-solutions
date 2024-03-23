@@ -4,8 +4,8 @@ from .. import db
 from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
+import json
 from flask_babel import _
-
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register() -> 'html':
@@ -81,14 +81,20 @@ def profile():
     user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
     user_preferences = [Tag.query.get(preference.tag_id).name for preference in user_tag_preferences]
 
-    # Fetch visited attractions for user
     visited_attractions = [
-        Attraction.query.get(attraction.attraction_id)
+        {
+            'attraction': Attraction.query.get(attraction.attraction_id),
+            'time_visited': attraction.time_visited
+        }
         for attraction in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
     ]
 
-    points = sum(attraction.points for attraction in visited_attractions)
+    # points = sum(attraction['points'] for attraction in visited_attractions)
+    points = sum(item['attraction'].points for item in visited_attractions)
 
+    # Tabs for profile page sections, only one section should be active
+    tabs = ['Visited Attractions', 'Profile']
+    
     return render_template(
         'profile.html',
         form=form,
@@ -96,7 +102,8 @@ def profile():
         user_preferences=user_preferences,
         visited_attractions=visited_attractions,
         number_of_visited_attractions=len(visited_attractions),
-        points=points
+        points=points,
+        tabs=tabs
 )
 
 

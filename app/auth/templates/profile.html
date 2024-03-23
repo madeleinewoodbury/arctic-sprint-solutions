@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="profile wrapper">
+<section class="profile" x-data="profileTabs({{tabs}})">
     <div class="top">
         <div class="user-info">
             <img src="{{ current_user.gravatar() }}" alt="Gravatar"
@@ -20,39 +20,72 @@
                 <!-- <p class="lead">Welcome to your profile page</p> -->
             </div>
         </div>
+    </div>  
 
-        <div class="content">
-            <div class="form-wrapper">
-                <form action="{{ url_for('auth.profile') }}" method="post">
-                    <div class="form-control">
-                        {{ form.email.label }}
-                        {{ form.email(size=50) }}
-                        {% for error in form.email.errors %}
-                        <span style="color: red;">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                    <div class="form-control">
-                        {{ form.tag.label }}
-                        <select name="tag" class="form-select" multiple>
-                            {% for tag in tags %}
-                            <option value="{{ tag.id }}">{{ tag.name }}</option>
-                            {% endfor %}
-                        </select>
-                        {% for error in form.tag.errors %}
-                        <span style="color: red;">{{ error }}</span>
-                        {% endfor %}
-                    </div>
+    <ul class="profile-tabs">
+        <template x-for="tab in tabs" :key="tab">
+            <li :class="activeTab === tab ? 'active' : ''" @click="setActiveTab(tab)" x-text="tab"></li>
+        </template>
+    </ul>
 
-                    <div class="btn-container">
-                        <button class="btn btn-primary" type="submit">{{ _("Update
-                            Profile") }}</button>
-                    </div>
-                    {{ form.hidden_tag() }}
-
-
-                </form>
-            </div>
+    <div class="content">
+        <template x-if="activeTab === tabs[0]">
             <div class="content-info">
+                <div class="visited-attractions">
+    
+                    {% if visited_attractions %}
+                    <h2>Visited Attractions</h2>
+                    <div class="card-container">
+                        {% for visited in visited_attractions %}
+                        <div class="attraction-card">
+                            <img src="{{ visited.attraction.image }}" alt="Attraction Image">
+                            <div>
+                                <h3>{{ visited.attraction.name }}</h3>
+                                <!-- TODO: Fix date -->
+                                <p>Visited on {{ visited.time_visited }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+            
+                    {% else %}
+                    <p>You have not visited any attractions</p>
+                    {% endif %}
+                </div>
+            </div>
+
+        </template>
+
+        <template x-if="activeTab === tabs[1]">
+            <div class="content-info">
+                <div class="form-wrapper">
+                    <form action="{{ url_for('auth.profile') }}" method="post">
+                        <div class="form-control">
+                            {{ form.email.label }}
+                            {{ form.email(size=50) }}
+                            {% for error in form.email.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="form-control">
+                            {{ form.tag.label }}
+                            <select name="tag" class="form-select" multiple>
+                                {% for tag in tags %}
+                                <option value="{{ tag.id }}">{{ tag.name }}</option>
+                                {% endfor %}
+                            </select>
+                            {% for error in form.tag.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+        
+                        <div class="btn-container">
+                            <button class="btn btn-primary" type="submit">{{ _("Update
+                                Profile") }}</button>
+                        </div>
+                        {{ form.hidden_tag() }}
+                    </form>
+                </div>
                 <div class="user-preferences">
                     <h2>{{ _("Your Preferences") }}</h2>
                     {%if user_preferences %}
@@ -65,23 +98,11 @@
                     <p>{{ _("You have not set any preferences") }}</p>
                     {% endif %}
                 </div>
-                <div class="visited-attractions">
-        
-                    {% if visited_attractions %}
-                    <h2>{{ _("Visited Attractions") }}</h2>
-                    <ul>
-                        {% for attraction in visited_attractions %}
-                        <li>{{ attraction.name }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                    <p>{{ _("You have not visited any attractions") }}</p>
-                    {% endif %}
-                </div>
             </div>
-        </div>
 
-
+        </template>
+    
     </div>
 </section>
+
 {% endblock %}
