@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm as Form
 from wtforms import StringField, SelectField, SubmitField, SelectMultipleField, SubmitField, widgets
-from flask_babel import _
+from flask_babel import lazy_gettext as _
 
 class SearchForm(Form):
     search_text = StringField(_('Search Attractions'), render_kw={'placeholder': _('Search Attractions')})

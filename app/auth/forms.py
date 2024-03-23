@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm as Form
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField, SelectMultipleField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, Regexp, Email
 from app.models import User
-from flask_babel import _
+from flask_babel import lazy_gettext as _
 
 class LoginForm(Form):
 	email = StringField(_('Email'), validators=[DataRequired(), Email()], render_kw={"autocomplete": "username"})
