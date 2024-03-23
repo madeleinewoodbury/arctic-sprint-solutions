@@ -1,6 +1,7 @@
-.profile.wrapper {
+.profile {
   max-width: 700px;
   margin: 3rem auto 0;
+  flex-direction: column;
 }
 
 .profile .top {
@@ -54,11 +55,43 @@
   flex-direction: column;
   gap: 1rem;
   margin-top: 2rem;
+  padding: 1rem;
 }
 
+/* Tabs */
+.profile-tabs{
+  display: flex;
+  gap: 1rem;
+  color: var(--white);
+  font-family: var(--secondary-font);
+  padding: 0 1rem;
+}
+
+.profile-tabs li {
+  cursor: pointer;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+  font-weight: .9rem;
+}
+
+.profile-tabs li.active {
+  font-weight: bold;
+  border-color: var(--primary);
+}
+
+.profile-tabs li:hover {
+  border-color: var(--primary);
+}
+
+
+.profile .content-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+
 /* Form */
-
-
 .profile form {
   display: flex;
   flex-direction: column;
@@ -128,28 +161,69 @@
   margin-top: 1rem;
 }
 
-.profile .content-info {
+/* Visited Attractions */
+.profile .visited-attractions{
+  width: 100%;
+}
+
+.profile .visited-attractions h2{
+  color: var(--white);
+  font-size: 1.75rem;
+  font-weight: normal;
+  padding-bottom: 1rem;
+
+}
+
+.profile .card-container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 100%;
 }
 
-.profile .user-preferences,
-.profile .visited-attractions {
+.profile .attraction-card {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-light);
+  padding: 1rem;
+  gap: 1rem;
+  border-radius: .5rem;
+  box-shadow: 3px 6px 25px -18px rgba(0,0,0,0.75);
+}
+
+.profile .attraction-card img {
+  width: 100px;
+  height: 75px;
+  border-radius: .5rem;
+  object-fit: cover;
+  object-position: center;
+}
+.profile .attraction-card div {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+
+.profile .attraction-card h3 {
+  font-size: 1.3rem;
+}
+
+
+/* User Preferences */
+.profile .user-preferences {
   color: var(--white);
   border: 2px solid var(--primary);
   border-radius: 1rem;
   padding: 2rem;
+  width: 100%;
 }
 
-.profile .user-preferences h2,
-.profile .visited-attractions h2 {
+.profile .user-preferences h2{
   font-size: 1.5rem;
   color: var(--primary);
 }
 
-.profile .user-preferences ul,
-.profile .visited-attractions ul {
+.profile .user-preferences ul{
   font-size: 1rem;
   display: flex;
   flex-direction: column;
@@ -175,7 +249,7 @@
 }
 
 @media (min-width: 992px) {
-  .profile.wrapper {
+  .profile {
     max-width: 1300px;
     padding: 0 1rem;
     margin-top: 4rem;
@@ -198,19 +272,25 @@
     font-size: 1.3rem;
   }
 
-  .profile .content {
+
+  .profile .content-info {
     flex-direction: row;
+  }
+
+  .profile .card-container {
+    flex-direction: row;
+  }
+  
+  .profile .attraction-card {
+    width: 50%;
   }
 
   .profile .form-wrapper {
     width: 50%;
   }
 
-  .profile .content-info {
-    width: 50%;
-  }
-
   .profile .user-preferences {
+    width: 50%;
     height: fit-content;
     margin: 0;
   }
