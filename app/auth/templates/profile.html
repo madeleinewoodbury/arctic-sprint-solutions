@@ -12,10 +12,10 @@
             <img src="{{ current_user.gravatar() }}" alt="Gravatar"
                 class="gravatar-img">
             <div class="title">
-                <h2>Hello {{ current_user.username }}!</h2>
+                <h2>{{ _("Hello") }} {{ current_user.username }}!</h2>
                 <div class="stats">
-                    <span>Attractions Visited: <strong>{{number_of_visited_attractions}}</strong></span>
-                    <span>Points: <strong>{{points}}</span></strong>
+                    <span>{{ _("Attractions Visited:") }} <strong>{{number_of_visited_attractions}}</strong></span>
+                    <span>{{ _("Points:") }} <strong>{{points}}</span></strong>
                 </div>
                 <!-- <p class="lead">Welcome to your profile page</p> -->
             </div>
@@ -44,8 +44,8 @@
                     </div>
 
                     <div class="btn-container">
-                        <button class="btn btn-primary" type="submit">Update
-                            Profile</button>
+                        <button class="btn btn-primary" type="submit">{{ _("Update
+                            Profile") }}</button>
                     </div>
                     {{ form.hidden_tag() }}
 
@@ -54,7 +54,7 @@
             </div>
             <div class="content-info">
                 <div class="user-preferences">
-                    <h2>Your Preferences</h2>
+                    <h2>{{ _("Your Preferences") }}</h2>
                     {%if user_preferences %}
                     <ul>
                         {% for preference in user_preferences %}
@@ -62,20 +62,20 @@
                         {% endfor %}
                     </ul>
                     {% else %}
-                    <p>You have not set any preferences</p>
+                    <p>{{ _("You have not set any preferences") }}</p>
                     {% endif %}
                 </div>
                 <div class="visited-attractions">
         
                     {% if visited_attractions %}
-                    <h2>Visited Attractions</h2>
+                    <h2>{{ _("Visited Attractions") }}</h2>
                     <ul>
                         {% for attraction in visited_attractions %}
                         <li>{{ attraction.name }}</li>
                         {% endfor %}
                     </ul>
                     {% else %}
-                    <p>You have not visited any attractions</p>
+                    <p>{{ _("You have not visited any attractions") }}</p>
                     {% endif %}
                 </div>
             </div>

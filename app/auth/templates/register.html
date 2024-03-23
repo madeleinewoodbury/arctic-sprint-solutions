@@ -14,7 +14,7 @@
             <div class="content">
                 <div class="title">
                     <h1>The Hitchhiker's Guide to Earth</h1>
-                    <p>Register your account</p>
+                    <p>{{ _("Register your account") }}</p>
                 </div>
                 <form action="" method="post">
                     {{ form.hidden_tag() }}
@@ -69,7 +69,7 @@
 
                     <div class="btn-container">
                         {{ form.submit() }}
-                        <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+                        <p>{{ _("Already have an account?") }}" <a href="{{ url_for('auth.login') }}">Login</a></p>
                     </div>
                 </form>
             </div>

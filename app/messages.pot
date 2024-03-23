@@ -1,0 +1,329 @@
+# Translations template for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-03-24 00:02+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: attractions/forms.py:6
+msgid "Search Attractions"
+msgstr ""
+
+#: attractions/forms.py:7 auth/forms.py:48 auth/forms.py:53
+msgid "Search"
+msgstr ""
+
+#: attractions/forms.py:14
+msgid "Category"
+msgstr ""
+
+#: attractions/forms.py:15
+msgid "Age group"
+msgstr ""
+
+#: attractions/forms.py:16
+msgid "Tag"
+msgstr ""
+
+#: attractions/templates/attractions_main.html:45
+msgid "Clear all filters"
+msgstr ""
+
+#: auth/forms.py:8 auth/forms.py:20 auth/forms.py:40
+msgid "Email"
+msgstr ""
+
+#: auth/forms.py:9
+msgid "Password"
+msgstr ""
+
+#: auth/forms.py:10
+msgid "Remember me"
+msgstr ""
+
+#: auth/forms.py:11 templates/base.html:31
+msgid "Login"
+msgstr ""
+
+#: auth/forms.py:14
+msgid "First Name"
+msgstr ""
+
+#: auth/forms.py:15
+msgid "Last Name"
+msgstr ""
+
+#: auth/forms.py:16
+msgid "Username"
+msgstr ""
+
+#: auth/forms.py:19
+msgid ""
+"Username must be at least 10 characters long and only contain letters, "
+"numbers, and underscores."
+msgstr ""
+
+#: auth/forms.py:24
+msgid ""
+"Password must be at least 10 characters long while containing at least "
+"one uppercase letter, one lowercase letter, and one number."
+msgstr ""
+
+#: auth/forms.py:26
+msgid "Register"
+msgstr ""
+
+#: auth/forms.py:31
+msgid "This username is already taken."
+msgstr ""
+
+#: auth/forms.py:36
+msgid "This email is already taken."
+msgstr ""
+
+#: auth/forms.py:41
+msgid "Gravatar URL"
+msgstr ""
+
+#: auth/forms.py:42
+msgid "Select Tags"
+msgstr ""
+
+#: auth/forms.py:43
+msgid "Update profile"
+msgstr ""
+
+#: auth/forms.py:47 auth/forms.py:52
+msgid "Search users"
+msgstr ""
+
+#: auth/views.py:23
+msgid "User has been registrated."
+msgstr ""
+
+#: auth/views.py:36
+msgid "Invalid username or password."
+msgstr ""
+
+#: auth/views.py:44
+msgid "You have been logged out."
+msgstr ""
+
+#: auth/views.py:75
+msgid "Your preferences have been updated!"
+msgstr ""
+
+#: auth/views.py:78
+msgid "User with provided email does not exist"
+msgstr ""
+
+#: auth/views.py:163
+msgid "The friend request has been sent."
+msgstr ""
+
+#: auth/views.py:181
+msgid "The friend request has been accepted."
+msgstr ""
+
+#: auth/views.py:199
+msgid "The friend request has been ended."
+msgstr ""
+
+#: auth/views.py:217
+msgid "The friend has been removed."
+msgstr ""
+
+#: auth/templates/friends.html:12
+msgid "Friends information"
+msgstr ""
+
+#: auth/templates/friends.html:13
+msgid "The page for all friend related information:"
+msgstr ""
+
+#: auth/templates/friends.html:14
+msgid "Add friends and compare your exploration achievements!"
+msgstr ""
+
+#: auth/templates/friends.html:22
+msgid "Pending friend requests"
+msgstr ""
+
+#: auth/templates/friends.html:25
+msgid "Incoming friend request from"
+msgstr ""
+
+#: auth/templates/friends.html:38
+msgid "Pending friend request approval from"
+msgstr ""
+
+#: auth/templates/friends.html:49
+msgid "Friends list"
+msgstr ""
+
+#: auth/templates/friends.html:51
+msgid ""
+"Seems like you haven't added any friends yet. Start adding friends to "
+"compare your exploration progression and achievements!"
+msgstr ""
+
+#: auth/templates/friends.html:61
+msgid "Achievement points"
+msgstr ""
+
+#: auth/templates/friends.html:61
+msgid "WorkInProgress"
+msgstr ""
+
+#: auth/templates/friends.html:64
+msgid "Remove friend"
+msgstr ""
+
+#: auth/templates/friends.html:74
+msgid "Add friends"
+msgstr ""
+
+#: auth/templates/friends.html:93 auth/templates/friends.html:105
+msgid "You are already friends."
+msgstr ""
+
+#: auth/templates/friends.html:96
+msgid "Friend request already sent."
+msgstr ""
+
+#: auth/templates/friends.html:108
+msgid "Pending friend request already received."
+msgstr ""
+
+#: auth/templates/friends.html:116
+msgid "Send friend request"
+msgstr ""
+
+#: auth/templates/login.html:17
+msgid "Login with Email"
+msgstr ""
+
+#: auth/templates/login.html:43
+msgid "Forgot Password?"
+msgstr ""
+
+#: auth/templates/login.html:50
+msgid "Don't have an account?"
+msgstr ""
+
+#: auth/templates/login.html:50
+msgid "Register now"
+msgstr ""
+
+#: auth/templates/profile.html:15
+msgid "Hello"
+msgstr ""
+
+#: auth/templates/profile.html:17
+msgid "Attractions Visited:"
+msgstr ""
+
+#: auth/templates/profile.html:18
+msgid "Points:"
+msgstr ""
+
+#: auth/templates/profile.html:47
+msgid ""
+"Update\n"
+"                            Profile"
+msgstr ""
+
+#: auth/templates/profile.html:57
+msgid "Your Preferences"
+msgstr ""
+
+#: auth/templates/profile.html:65
+msgid "You have not set any preferences"
+msgstr ""
+
+#: auth/templates/profile.html:71
+msgid "Visited Attractions"
+msgstr ""
+
+#: auth/templates/profile.html:78
+msgid "You have not visited any attractions"
+msgstr ""
+
+#: auth/templates/register.html:17
+msgid "Register your account"
+msgstr ""
+
+#: auth/templates/register.html:72
+msgid "Already have an account?"
+msgstr ""
+
+#: main/views.py:19
+msgid "Language changed to "
+msgstr ""
+
+#: main/views.py:22
+msgid "Language not recognized."
+msgstr ""
+
+#: main/templates/change_language.html:14
+msgid "Change Babel Fish"
+msgstr ""
+
+#: main/templates/change_language.html:22
+msgid "Change babelfish settings:"
+msgstr ""
+
+#: main/templates/index.html:9
+msgid ""
+"The answer to the ultimate question of <span>cities</span>, "
+"<span>attractions</span> and <span>tourists</span> is… 42”"
+msgstr ""
+
+#: main/templates/index.html:13
+msgid "Start Your Journey"
+msgstr ""
+
+#: templates/base.html:12
+msgid "Welcome to WorkingTitle"
+msgstr ""
+
+#: templates/base.html:24
+msgid "Home"
+msgstr ""
+
+#: templates/base.html:27
+msgid "Attractions"
+msgstr ""
+
+#: templates/base.html:38
+msgid "Friends"
+msgstr ""
+
+#: templates/base.html:42
+msgid "Admin"
+msgstr ""
+
+#: templates/base.html:45
+msgid "Logout"
+msgstr ""
+
+#: templates/base.html:49
+msgid "Babel Fish"
+msgstr ""
+
+#: templates/admin/index.html:6
+msgid "Welcome to the admin page"
+msgstr ""
+
