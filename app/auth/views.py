@@ -5,23 +5,22 @@ from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 import json
-
-
+from flask_babel import _
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register() -> 'html':
 	form = RegistrationForm()
 	if form.validate_on_submit():
 		user = User(
-			username = form.username.data,
-			first_name = form.first_name.data,
-			last_name = form.last_name.data,
-			email = form.email.data
+            username = form.username.data,
+            first_name = form.first_name.data,
+            last_name = form.last_name.data,
+            email = form.email.data
 		)
 		user.set_password(form.password.data)
 		db.session.add(user)
 		db.session.commit()
-		flash('User has been registrated.')
+		flash(_('User has been registrated.'))
 		return redirect(url_for('auth.login'))
 	return render_template('register.html', form=form)
 
@@ -34,7 +33,7 @@ def login() -> 'html':
 		if user is not None and user.check_password(form.password.data):
 			login_user(user, form.remember_me.data)
 			return redirect(url_for('attractions.get_attractions'))
-		flash('Invalid username or password.')
+		flash(_('Invalid username or password.'))
 	return render_template('login.html', form=form)
 
 
@@ -42,7 +41,7 @@ def login() -> 'html':
 @login_required
 def logout():
 	logout_user()
-	flash('You have been logged out.')
+	flash(_('You have been logged out.'))
 	return redirect(url_for('main.index'))
 
 
@@ -73,10 +72,10 @@ def profile():
                 db.session.add(user_preference)
 
             db.session.commit()
-            flash('Your preferences have been updated!', 'success')
+            flash(_('Your preferences have been updated!', 'success'))
             return redirect(url_for('auth.profile'))  # Redirect to avoid form resubmission
         else:
-            flash('User with provided email does not exist', 'error')
+            flash(_('User with provided email does not exist', 'error'))
 
     # Fetch the user preferences from the database
     user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
@@ -168,7 +167,7 @@ def send_friend_request(user_id):
     
     db.session.add(friendship)
     db.session.commit()
-    flash('The friend request has been sent.')
+    flash(_('The friend request has been sent.'))
     return redirect(url_for('auth.friends'))
 
 
@@ -186,7 +185,7 @@ def accept_friend_request(user_id):
 
     friendship.status = 'accepted'
     db.session.commit()
-    flash('The friend request has been accepted.')
+    flash(_('The friend request has been accepted.'))
     return redirect(url_for('auth.friends'))
 
 
@@ -204,7 +203,7 @@ def remove_friend_request(user_id):
     
     db.session.delete(friendship) 
     db.session.commit()
-    flash('The friend request has been ended.')
+    flash(_('The friend request has been ended.'))
     return redirect(url_for('auth.friends'))
 
 
@@ -222,5 +221,5 @@ def remove_friend(user_id):
     
     db.session.delete(friendship) 
     db.session.commit()
-    flash('The friend has been removed.')
+    flash(_('The friend has been removed.'))
     return redirect(url_for('auth.friends'))
