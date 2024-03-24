@@ -96,6 +96,32 @@ def mark_as_visited(attraction_id):
     return jsonify({'status': 'error', 'message': 'An error occurred.'})
 
 
+# Function for marking an attraction as wishlist
+@attractions.route('/attractions/<int:attraction_id>/mark_as_wishlist', methods=['POST'])
+@login_required
+def mark_as_wishlist(attraction_id):
+    data = request.get_json()
+    wishlist_title = data.get('wishlist_title')
+    
+    # Check if the wishlist exists for the current user
+    wishlist = AttractionGroup.query.filter_by(owner=current_user.id, title=wishlist_title).first()
+    if not wishlist:
+        # If the wishlist doesn't exist, create it
+        wishlist = AttractionGroup(owner=current_user.id, title=wishlist_title, visibility="private")
+        db.session.add(wishlist)
+        db.session.commit()
+
+    # Check if the attraction is already in the wishlist
+    attraction = Attraction.query.get(attraction_id)
+    if attraction not in wishlist.attractions:
+        # Add the attraction to the wishlist
+        wishlist.attractions.append(attraction)
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Attraction added to wishlist.'})
+
+    return jsonify({'status': 'error', 'message': 'Attraction already in wishlist.'})
+
+
    
 # Filter and refresh attractions content with AJAX.
 @attractions.route('/attractions/filter', methods=['POST'])

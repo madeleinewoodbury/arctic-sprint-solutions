@@ -98,6 +98,22 @@
                     <p>You have not set any preferences</p>
                     {% endif %}
                 </div>
+                <div class="user-wishlist">
+                    <h2>Your Wishlist</h2>
+                    {% if current_user.attraction_groups %}
+                        <ul>
+                            {% for attraction_group in current_user.attraction_groups %}
+                                {% if attraction_group.title == "Your Wishlist" %}
+                                    {% for attraction in attraction_group.attractions %}
+                                        <li>{{ attraction.name }}</li>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>You have not added any attractions to your wishlist yet.</p>
+                    {% endif %}
+                </div>
             </div>
 
 
