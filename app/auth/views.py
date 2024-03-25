@@ -1,7 +1,7 @@
 from . import auth
 from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm
 from .. import db
-from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction
+from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction, Badge, BadgeRequirement, UserBadge, AttractionTag
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 import json
@@ -93,8 +93,44 @@ def profile():
     points = sum(item['attraction'].points for item in visited_attractions)
 
     # Tabs for profile page sections, only one section should be active
-    tabs = ['Visited Attractions', 'Profile']
+    tabs = ['Visited Attractions', 'Profile', 'Badges']
     
+    # Badge progression
+    def get_user_badge_progress(user_id):
+
+        badges = Badge.query.all()
+        user_progress = []
+
+        for badge in badges:
+            # Hent nødvendige tags for denne badgen
+            requirements = BadgeRequirement.query.filter_by(badge_id=badge.id).all()
+            badge_progress = {'badge_name': badge.name, 'tags_progress': []}
+
+            for req in requirements:
+                # Finn navnet på taggen
+                tag = Tag.query.get(req.tag_id)
+                tag_name = tag.name if tag else 'Unknown Tag'
+                
+                # Telle antall besøkte attraksjoner som matcher denne taggen
+                visited_count = db.session.query(db.func.count(VisitedAttraction.attraction_id)
+                ).join(AttractionTag, VisitedAttraction.attraction_id == AttractionTag.attraction_id
+                ).filter(VisitedAttraction.user_id == user_id, AttractionTag.tag_id == req.tag_id
+                ).scalar() or 0
+                
+                badge_progress['tags_progress'].append({
+                    'tag_name': tag_name,
+                    'description': badge.description,
+                    'visited_count': visited_count,
+                    'required_count': req.quantity_required
+                })
+
+            user_progress.append(badge_progress)
+
+        return user_progress
+
+    # Calculating badge progress for all badges.
+    badge_progress = get_user_badge_progress(current_user.id)
+
     return render_template(
         'profile.html',
         form=form,
@@ -103,8 +139,9 @@ def profile():
         visited_attractions=visited_attractions,
         number_of_visited_attractions=len(visited_attractions),
         points=points,
-        tabs=tabs
-)
+        tabs=tabs,
+        badge_progress=badge_progress
+        )
 
 
 
