@@ -48,21 +48,50 @@ def logout():
 
 
 
-
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    form = ProfileForm()
+    preferences_form = ProfileForm()
     tags = Tag.query.all()
-    form.tag.choices = [(tag.id, tag.name) for tag in tags]
+    preferences_form.tag.choices = [(tag.id, tag.name) for tag in tags]
 
-    if form.validate_on_submit():
+    friends_form = SearchUsersForm()
+    search_text = friends_form.search_text.data
+    
+    if friends_form.validate_on_submit() and search_text:
+        users = User.query.filter(User.username.contains(search_text)) \
+            .filter(User.id != current_user.id).all()
+    else:
+        users = None
+
+    users_requesting = User.query.join(User.initiated_friendships) \
+                             .filter(Friendship.user_2 == current_user.id,
+                                     Friendship.status == 'pending') \
+                             .all()
+    
+    users_awaiting = User.query.join(User.received_friendships) \
+                             .filter(Friendship.user_1 == current_user.id,
+                                     Friendship.status == 'pending') \
+                             .all()
+                             
+    friends = User.query.join(User.initiated_friendships) \
+                   .filter(
+                       (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
+                       Friendship.status == 'accepted') \
+                   .union(
+                       User.query.join(User.received_friendships) \
+                           .filter(
+                               (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
+                               Friendship.status == 'accepted') \
+                           ).filter(User.id != current_user.id).all()
+
+    if preferences_form.validate_on_submit():
         # Get the user based on the provided email
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(email=preferences_form.email.data).first()
 
         # Update user preferences if user is found
         if user:
-            selected_tag_ids = form.tag.data
+            selected_tag_ids = preferences_form.tag.data
 
             # Delete existing user preferences
             UserTagPreference.query.filter_by(user_id=user.id).delete()
@@ -73,10 +102,10 @@ def profile():
                 db.session.add(user_preference)
 
             db.session.commit()
-            flash(_('Your preferences have been updated!', 'success'))
+            flash(_('Your preferences have been updated!'), 'success')
             return redirect(url_for('auth.profile'))  # Redirect to avoid form resubmission
         else:
-            flash(_('User with provided email does not exist', 'error'))
+            flash(_('User with provided email does not exist'), 'error')
 
     # Fetch the user preferences from the database
     user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
@@ -94,26 +123,25 @@ def profile():
     points = sum(item['attraction'].points for item in visited_attractions)
 
     # Tabs for profile page sections, only one section should be active
-    tabs = ['Visited Attractions', 'Profile']
+    tabs = ['Visited Attractions', 'Profile', 'Friends']
 
 
     
     return render_template(
         'profile.html',
-        form=form,
+        preferences_form=preferences_form,
         tags=tags,
         user_preferences=user_preferences,
         visited_attractions=visited_attractions,
         number_of_visited_attractions=len(visited_attractions),
         points=points,
-        tabs=tabs
-)
-
-
-
-
-
-
+        tabs=tabs,
+        friends_form=friends_form,
+        users=users,
+        users_requesting=users_requesting, 
+        users_awaiting=users_awaiting,
+        friends=friends
+    )
 
 
 '''
