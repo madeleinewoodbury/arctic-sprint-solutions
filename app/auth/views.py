@@ -126,6 +126,49 @@ def get_visited_attractions():
 
     return visited_attractions
 
+def get_user_badge_progress(user_id):
+    badges = Badge.query.all()
+    user_progression = []
+
+    for badge in badges:
+        # Hent nødvendige tags for denne badgen
+        total_visited_count = 0
+        requirements = BadgeRequirement.query.filter_by(badge_id=badge.id).all()
+        badge_progress = {
+                'badge_name': badge.name, 
+                'tags_progress': [],
+                'description': badge.description,
+                'total_visited_count': 0
+                }
+
+        for req in requirements:
+            # Finn navnet på taggen
+            tag = Tag.query.get(req.tag_id)
+            tag_name = tag.name if tag else 'Unknown Tag'
+            
+            # Telle antall besøkte attraksjoner som matcher denne taggen
+            visited_count = db.session.query(db.func.count(VisitedAttraction.attraction_id)
+            ).join(AttractionTag, VisitedAttraction.attraction_id == AttractionTag.attraction_id
+            ).filter(VisitedAttraction.user_id == user_id, AttractionTag.tag_id == req.tag_id
+            ).scalar() or 0
+            
+            # Oppdaterer total_visited_count
+            total_visited_count += visited_count
+            
+            badge_progress['tags_progress'].append({
+                'tag_name': tag_name,
+                'visited_count': visited_count,
+                'required_count': req.quantity_required
+            })
+
+        badge_progress['total_visited_count'] = total_visited_count
+        user_progression.append(badge_progress)
+
+    # Sorterer basert på total_visited_count, fra høyeste til laveste slik at badgen man har høyest progresjon på vises først
+    user_progress = sorted(user_progression, key=lambda x: x['total_visited_count'], reverse=True)
+
+    return user_progress
+
 
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -163,51 +206,6 @@ def profile():
     friends = get_firends()
 
     # Badges tab
-    # Badge progression
-    def get_user_badge_progress(user_id):
-
-        badges = Badge.query.all()
-        user_progression = []
-
-        for badge in badges:
-            # Hent nødvendige tags for denne badgen
-            total_visited_count = 0
-            requirements = BadgeRequirement.query.filter_by(badge_id=badge.id).all()
-            badge_progress = {
-                 'badge_name': badge.name, 
-                 'tags_progress': [],
-                 'description': badge.description,
-                 'total_visited_count': 0
-                 }
-
-            for req in requirements:
-                # Finn navnet på taggen
-                tag = Tag.query.get(req.tag_id)
-                tag_name = tag.name if tag else 'Unknown Tag'
-                
-                # Telle antall besøkte attraksjoner som matcher denne taggen
-                visited_count = db.session.query(db.func.count(VisitedAttraction.attraction_id)
-                ).join(AttractionTag, VisitedAttraction.attraction_id == AttractionTag.attraction_id
-                ).filter(VisitedAttraction.user_id == user_id, AttractionTag.tag_id == req.tag_id
-                ).scalar() or 0
-                
-                # Oppdaterer total_visited_count
-                total_visited_count += visited_count
-                
-                badge_progress['tags_progress'].append({
-                    'tag_name': tag_name,
-                    'visited_count': visited_count,
-                    'required_count': req.quantity_required
-                })
-
-            badge_progress['total_visited_count'] = total_visited_count
-            user_progression.append(badge_progress)
-
-        # Sorterer basert på total_visited_count, fra høyeste til laveste slik at badgen man har høyest progresjon på vises først
-        user_progress = sorted(user_progression, key=lambda x: x['total_visited_count'], reverse=True)
-
-        return user_progress
-
     # Calculating badge progress for all badges.
     badge_progress = get_user_badge_progress(current_user.id)
 
