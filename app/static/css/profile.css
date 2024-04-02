@@ -16,6 +16,45 @@
   color: var(--white);
 }
 
+
+.progress-container {
+  display: flex;
+  align-items: center;
+}
+
+.progress-container .progress-label {
+  position: static;
+  left: auto;
+  top: auto;
+  transform: none;
+  background-color: transparent;
+  padding: 0;
+  gap: .25rem;
+  font-size: 1rem;
+  font-family: var(--secondary-font);
+  margin-right: 1rem;
+}
+
+.progress-container .progress-text {
+  gap: .25rem;
+  font-size: 1rem;
+  font-family: var(--secondary-font);
+  margin-left: 1rem;
+}
+
+.progress-container .progress-text strong {
+  font-family: var(--main-font);
+  color: var(--bg-light);
+}
+
+.progress-bar {
+  width: 20rem;
+  height: 1rem;
+  background-color: #f0f0f0; /* Background color */
+  border-radius: 10px;
+}
+
+
 .profile .top .gravatar-img {
   width: 75px;
   height: 75px;
