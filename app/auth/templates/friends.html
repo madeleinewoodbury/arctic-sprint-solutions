@@ -1,11 +1,3 @@
-{% extends "base.html" %}
-
-{% block styles %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/friends.css') }}">
-{% endblock %}
-
-{% block content %}
-
 <div class="wrapper-friends">
     <div class="title-container">
         <div class="title">
@@ -73,11 +65,11 @@
         <div class="add-friend-container">
             <h2>{{ _("Add friends") }}</h2>
             <div class="form-wrapper" id="search-users-form">
-                <form class="search-users" method="POST" action="{{ url_for('auth.friends') }}">
-                    {{ form.hidden_tag() }}
+                <form class="search-users" method="POST" action="{{ url_for('auth.profile') }}">
+                    {{ friends_form.hidden_tag() }}
                     <div class="search-text form-control">
-                        {{ form.search_text }}
-                        {{ form.submit }}
+                        {{ friends_form.search_text }}
+                        {{ friends_form.submit }}
                     </div>
                 </form>
             </div>
@@ -119,9 +111,6 @@
             </div>
             {% endfor %}
         {% endif %}
-
-
         </div>
     </div>
 </div>
-{% endblock %}
