@@ -37,14 +37,16 @@
                     <h2>Visited Attractions</h2>
                     <div class="card-container">
                         {% for visited in visited_attractions %}
-                        <div class="attraction-card">
+                        <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}" class="attraction-card">
                             <img src="{{ visited.attraction.image }}" alt="Attraction Image">
                             <div>
                                 <h3>{{ visited.attraction.name }}</h3>
-                                <!-- TODO: Fix date -->
                                 <p>Visited on {{ visited.time_visited }}</p>
+                                <div class="points">
+                                    <span>🏆</span> {{ visited.attraction.points }} {{ _("points") }}
+                                </div>
                             </div>
-                        </div>
+                        </a>
                         {% endfor %}
                     </div>
             

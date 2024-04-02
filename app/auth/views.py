@@ -6,6 +6,7 @@ from flask import render_template, request, redirect, url_for, session, flash, a
 from flask_login import login_user, logout_user, login_required, current_user
 import json
 from flask_babel import _
+from datetime import datetime
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register() -> 'html':
@@ -84,7 +85,7 @@ def profile():
     visited_attractions = [
         {
             'attraction': Attraction.query.get(attraction.attraction_id),
-            'time_visited': attraction.time_visited
+            'time_visited': attraction.time_visited.strftime("%d-%m-%Y")
         }
         for attraction in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
     ]
