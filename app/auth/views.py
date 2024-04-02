@@ -4,7 +4,6 @@ from .. import db
 from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
-import json
 from flask_babel import _
 from datetime import datetime
 
@@ -46,34 +45,62 @@ def logout():
 	return redirect(url_for('main.index'))
 
 
+def update_user_preferences(preferences_form, activeTab):
+    # Get the user based on the provided email
+    user = User.query.filter_by(email=preferences_form.email.data).first()
 
+    # Update user preferences if user is found
+    if user:
+        selected_tag_ids = preferences_form.tag.data
 
-@auth.route('/profile', methods=['GET', 'POST'])
-@login_required
-def profile():
-    preferences_form = ProfileForm()
-    tags = Tag.query.all()
-    preferences_form.tag.choices = [(tag.id, tag.name) for tag in tags]
+        # Delete existing user preferences
+        UserTagPreference.query.filter_by(user_id=user.id).delete()
 
-    friends_form = SearchUsersForm()
-    search_text = friends_form.search_text.data
-    
-    if friends_form.validate_on_submit() and search_text:
-        users = User.query.filter(User.username.contains(search_text)) \
-            .filter(User.id != current_user.id).all()
+        # Create new user preferences
+        for tag_id in selected_tag_ids:
+            user_preference = UserTagPreference(user_id=user.id, tag_id=tag_id)
+            db.session.add(user_preference)
+
+        db.session.commit()
+        flash(_('Your preferences have been updated!'), 'success')
+        return redirect(url_for('auth.profile', current_tab=activeTab))  # Redirect to avoid form resubmission
     else:
-        users = None
+        flash(_('User with provided email does not exist'), 'error')
 
+
+def get_user_preferences():
+    user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
+    user_preferences = [Tag.query.get(preference.tag_id).name for preference in user_tag_preferences]
+    
+    return user_preferences
+
+
+def search_users(search_text):
+     users = User.query.filter(User.username.contains(search_text)) \
+            .filter(User.id != current_user.id).all()
+
+     return users
+
+
+def get_users_requesting():
     users_requesting = User.query.join(User.initiated_friendships) \
                              .filter(Friendship.user_2 == current_user.id,
                                      Friendship.status == 'pending') \
                              .all()
-    
+
+    return users_requesting
+
+
+def get_users_awaiting():
     users_awaiting = User.query.join(User.received_friendships) \
                              .filter(Friendship.user_1 == current_user.id,
                                      Friendship.status == 'pending') \
                              .all()
-                             
+
+    return users_awaiting
+
+
+def get_firends():    
     friends = User.query.join(User.initiated_friendships) \
                    .filter(
                        (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
@@ -84,33 +111,11 @@ def profile():
                                (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
                                Friendship.status == 'accepted') \
                            ).filter(User.id != current_user.id).all()
+    
+    return friends
 
-    if preferences_form.validate_on_submit():
-        # Get the user based on the provided email
-        user = User.query.filter_by(email=preferences_form.email.data).first()
 
-        # Update user preferences if user is found
-        if user:
-            selected_tag_ids = preferences_form.tag.data
-
-            # Delete existing user preferences
-            UserTagPreference.query.filter_by(user_id=user.id).delete()
-
-            # Create new user preferences
-            for tag_id in selected_tag_ids:
-                user_preference = UserTagPreference(user_id=user.id, tag_id=tag_id)
-                db.session.add(user_preference)
-
-            db.session.commit()
-            flash(_('Your preferences have been updated!'), 'success')
-            return redirect(url_for('auth.profile'))  # Redirect to avoid form resubmission
-        else:
-            flash(_('User with provided email does not exist'), 'error')
-
-    # Fetch the user preferences from the database
-    user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
-    user_preferences = [Tag.query.get(preference.tag_id).name for preference in user_tag_preferences]
-
+def get_visited_attractions():
     visited_attractions = [
         {
             'attraction': Attraction.query.get(attraction.attraction_id),
@@ -119,14 +124,47 @@ def profile():
         for attraction in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
     ]
 
-    # points = sum(attraction['points'] for attraction in visited_attractions)
+    return visited_attractions
+
+
+@auth.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    current_tab = request.args.get('current_tab')
+    activeTab = current_tab if current_tab else 0
+
+    # Visited Attractions Tab
+    visited_attractions = get_visited_attractions()
     points = sum(item['attraction'].points for item in visited_attractions)
+
+    # Profile Tab
+    preferences_form = ProfileForm()
+    tags = Tag.query.all()
+    preferences_form.tag.choices = [(tag.id, tag.name) for tag in tags]
+    
+    if preferences_form.validate_on_submit():
+        activeTab = 1
+        update_user_preferences(preferences_form, activeTab)
+
+    # Fetch the user preferences from the database
+    user_preferences = get_user_preferences()
+
+    # Friends Tab
+    friends_form = SearchUsersForm()
+    search_text = friends_form.search_text.data
+    users = None
+
+    if friends_form.validate_on_submit() and search_text:
+        users = search_users(search_text)
+        activeTab = 2
+
+    users_requesting = get_users_requesting()
+    users_awaiting = get_users_awaiting()
+    friends = get_firends()
 
     # Tabs for profile page sections, only one section should be active
     tabs = ['Visited Attractions', 'Profile', 'Friends']
 
-
-    
     return render_template(
         'profile.html',
         preferences_form=preferences_form,
@@ -140,50 +178,9 @@ def profile():
         users=users,
         users_requesting=users_requesting, 
         users_awaiting=users_awaiting,
-        friends=friends
+        friends=friends,
+        activeTab=activeTab
     )
-
-
-'''
-Friendship related routes
-'''
-@auth.route('/friends', methods=['GET', 'POST'])
-@login_required
-def friends():
-    form = SearchUsersForm()
-    search_text = form.search_text.data
-    if form.validate_on_submit() and search_text:
-        users = User.query.filter(User.username.contains(search_text)) \
-            .filter(User.id != current_user.id).all()
-    else:
-        users = None
-    
-    users_requesting = User.query.join(User.initiated_friendships) \
-                             .filter(Friendship.user_2 == current_user.id,
-                                     Friendship.status == 'pending') \
-                             .all()
-    
-    users_awaiting = User.query.join(User.received_friendships) \
-                             .filter(Friendship.user_1 == current_user.id,
-                                     Friendship.status == 'pending') \
-                             .all()
-                             
-    friends = User.query.join(User.initiated_friendships) \
-                   .filter(
-                       (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
-                       Friendship.status == 'accepted') \
-                   .union(
-                       User.query.join(User.received_friendships) \
-                           .filter(
-                               (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
-                               Friendship.status == 'accepted') \
-                           ).filter(User.id != current_user.id).all()
-                             
-    return render_template('friends.html', form=form,
-                           users=users,
-                           users_requesting=users_requesting, 
-                           users_awaiting=users_awaiting,
-                           friends=friends)
 
 
 @auth.route('/friends/send-request/<int:user_id>', methods=['POST'])
@@ -199,7 +196,7 @@ def send_friend_request(user_id):
     db.session.add(friendship)
     db.session.commit()
     flash(_('The friend request has been sent.'))
-    return redirect(url_for('auth.friends'))
+    return redirect(url_for('auth.profile', current_tab=2))
 
 
 @auth.route('/friends/accept-request/<int:user_id>', methods=['POST'])
@@ -217,7 +214,7 @@ def accept_friend_request(user_id):
     friendship.status = 'accepted'
     db.session.commit()
     flash(_('The friend request has been accepted.'))
-    return redirect(url_for('auth.friends'))
+    return redirect(url_for('auth.profile', current_tab=2))
 
 
 @auth.route('/friends/remove-request/<int:user_id>', methods=['POST'])
@@ -235,7 +232,7 @@ def remove_friend_request(user_id):
     db.session.delete(friendship) 
     db.session.commit()
     flash(_('The friend request has been ended.'))
-    return redirect(url_for('auth.friends'))
+    return redirect(url_for('auth.profile', current_tab=2))
 
 
 @auth.route('/friends/remove-friend/<int:user_id>', methods=['POST'])
@@ -253,4 +250,4 @@ def remove_friend(user_id):
     db.session.delete(friendship) 
     db.session.commit()
     flash(_('The friend has been removed.'))
-    return redirect(url_for('auth.friends'))
+    return redirect(url_for('auth.profile', current_tab=2))
