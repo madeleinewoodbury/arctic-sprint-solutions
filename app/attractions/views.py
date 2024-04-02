@@ -101,25 +101,31 @@ def mark_as_visited(attraction_id):
 @login_required
 def mark_as_wishlist(attraction_id):
     data = request.get_json()
-    wishlist_title = data.get('wishlist_title')
-    
-    # Check if the wishlist exists for the current user
-    wishlist = AttractionGroup.query.filter_by(owner=current_user.id, title=wishlist_title).first()
-    if not wishlist:
-        # If the wishlist doesn't exist, create it
-        wishlist = AttractionGroup(owner=current_user.id, title=wishlist_title, visibility="private")
-        db.session.add(wishlist)
-        db.session.commit()
+    wished = data.get('wished', False)
 
-    # Check if the attraction is already in the wishlist
-    attraction = Attraction.query.get(attraction_id)
-    if attraction not in wishlist.attractions:
-        # Add the attraction to the wishlist
-        wishlist.attractions.append(attraction)
-        db.session.commit()
-        return jsonify({'status': 'success', 'message': 'Attraction added to wishlist.'})
 
-    return jsonify({'status': 'error', 'message': 'Attraction already in wishlist.'})
+    if wished:
+        # Mark attraction as visited
+        existing_record = AttractionGroup.query.filter_by(id=current_user.id, attraction_id=attraction_id).first()
+        if not existing_record:
+            wished_attraction = VisitedAttraction(id=current_user.id, attraction_id=attraction_id)
+            db.session.add(wished_attraction)
+            db.session.commit()
+            return jsonify({'status': 'success', 'message': 'Attraction marked as wished.'})
+        
+    else:
+        # Legg til logikk for å fjerne merkingen
+        existing_record = AttractionGroup.query.filter_by(id=current_user.id, attraction_id=attraction_id).first()
+        if existing_record:
+            db.session.delete(existing_record)
+            db.session.commit()
+            return jsonify({'status': 'success', 'message': 'Attraction wish mark removed.'})
+
+    return jsonify({'status': 'error', 'message': 'An error occurred.'})
+
+
+
+
 
 
    

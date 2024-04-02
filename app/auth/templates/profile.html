@@ -100,9 +100,9 @@
                 </div>
                 <div class="user-wishlist">
                     <h2>Your Wishlist</h2>
-                    {% if current_user.attraction_groups %}
+                    {% if attraction_groups %}
                         <ul>
-                            {% for attraction_group in current_user.attraction_groups %}
+                            {% for attraction_group in attraction_groups %}
                                 {% if attraction_group.title == "Your Wishlist" %}
                                     {% for attraction in attraction_group.attractions %}
                                         <li>{{ attraction.name }}</li>
