@@ -31,6 +31,17 @@
             {{ 'Visited' if visited else 'Mark as visited'}}
           </label>
       </div>
+      <div class="form-control wishlist">
+        <input 
+          type="checkbox" 
+          id="wishlistCheckbox" 
+          name="wishlist"
+          onchange="markAsVisited('{{ attraction.id }}')" 
+          {% if wishlist %}checked{%endif %}>
+          <label for="wishlistCheckbox" class="wishlist-text">
+            {{ 'Wishlist' if wishlist else 'Mark as wishlist'}}
+          </label>
+      </div>
   {% endif %}
   </div>
   

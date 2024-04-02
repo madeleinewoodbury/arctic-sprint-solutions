@@ -86,7 +86,6 @@ def mark_as_visited(attraction_id):
             return jsonify({'status': 'success', 'message': 'Attraction marked as visited.'})
         
     else:
-        # Legg til logikk for å fjerne merkingen
         existing_record = VisitedAttraction.query.filter_by(user_id=current_user.id, attraction_id=attraction_id).first()
         if existing_record:
             db.session.delete(existing_record)
@@ -105,7 +104,7 @@ def mark_as_wishlist(attraction_id):
 
 
     if wished:
-        # Mark attraction as visited
+        # Mark attraction as wishlist
         existing_record = AttractionGroup.query.filter_by(id=current_user.id, attraction_id=attraction_id).first()
         if not existing_record:
             wished_attraction = VisitedAttraction(id=current_user.id, attraction_id=attraction_id)
@@ -114,7 +113,6 @@ def mark_as_wishlist(attraction_id):
             return jsonify({'status': 'success', 'message': 'Attraction marked as wished.'})
         
     else:
-        # Legg til logikk for å fjerne merkingen
         existing_record = AttractionGroup.query.filter_by(id=current_user.id, attraction_id=attraction_id).first()
         if existing_record:
             db.session.delete(existing_record)
