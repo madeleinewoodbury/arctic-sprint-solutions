@@ -175,10 +175,20 @@ def get_user_badge_progress(user_id):
 def profile():
     current_tab = request.args.get('current_tab')
     activeTab = current_tab if current_tab else 0
-
+    
     # Visited Attractions Tab
     visited_attractions = get_visited_attractions()
     points = sum(item['attraction'].points for item in visited_attractions)
+    
+    # Achievement/Profile level
+    POINTS_PER_LEVEL = 50
+    current_level = (points // POINTS_PER_LEVEL) + 1
+    progress = points - ((current_level - 1) * POINTS_PER_LEVEL)
+    
+    level = {}
+    level["current_level"] = current_level
+    level["progress"] = progress
+    level["points_per_level"] = POINTS_PER_LEVEL
 
     # Profile Tab
     preferences_form = ProfileForm()
@@ -227,7 +237,8 @@ def profile():
         users_awaiting=users_awaiting,
         friends=friends,
         badge_progress=badge_progress,
-        activeTab=activeTab
+        activeTab=activeTab,
+        level=level
     )
 
 @auth.route('/friends/send-request/<int:user_id>', methods=['POST'])

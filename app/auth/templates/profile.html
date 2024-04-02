@@ -17,10 +17,16 @@
                 <div class="stats">
                     <span>{{ _("Attractions Visited:") }} <strong>{{number_of_visited_attractions}}</strong></span>
                     <span>{{ _("Points:") }} <strong>{{points}}</span></strong>
+                    <span>{{ _("Level:") }} <strong>{{level.current_level}}</span></strong>
+                </div>
+                <div class="progress-container">
+                    <label class="progress-label">{{ _("Progress to next level:") }}</label>
+                    <progress class="progress-bar" value="{{ level.progress }}" max="{{level.points_per_level}}"></progress>
+                    <span class="progress-text"> <strong>{{ level.progress }} / {{ level.points_per_level }}</strong> {{ _("Points") }}</span>
                 </div>
             </div>
         </div>
-    </div>  
+    </div> 
 
     <ul class="profile-tabs">
         <template x-for="tab in tabs" :key="tab">
