@@ -14,6 +14,10 @@ from flask_login import LoginManager
 from flask_admin import Admin
 from flask_babel import Babel
 
+from googletrans import Translator
+
+
+
 # Babel stuff
 def get_locale():
     # Sjekk om språket er lagret i sesjonen
@@ -25,7 +29,18 @@ def get_locale():
 
 db = SQLAlchemy()
 admin_manager = Admin()
+translator_manager = Translator()
 
+
+def translate_filter(text):
+    if ('language' in session) and (session['language'] != 'en'):
+        try:
+            translated_text = translator_manager.translate(text, dest=session['language'], src='en').text
+            return translated_text
+        except Exception as e:
+            print("Translation error: ", e)
+            return text
+    return text
 
 
 # Flask-login verdier
@@ -44,6 +59,9 @@ def create_app(config_name):
     login_manager.init_app(app)
     admin_manager.init_app(app)
     babel = Babel(app, locale_selector=get_locale)
+
+    # Register new filter for jinja
+    app.jinja_env.filters["translate"] = translate_filter
     
 
     from .admin import admin_manager as admin_bp

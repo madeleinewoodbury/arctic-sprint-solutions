@@ -8,12 +8,12 @@
         <div class="text-container">
             <div class="top">
                 <h5>{{ attraction.name }}</h5>
-                <p class="description">{{ attraction.description | truncate(150, true) }} </p>
+                <p class="description">{{ attraction.description | truncate(150, true) | translate }} </p>
             </div>
             <div class="info">
-                <p><span>Location: </span>{{ attraction.location }}</p>
-                <p><span>Points: </span>{{ attraction.points }}</p>
-                <p>Click for more info</p>
+                <p><span>{{ _("Location") }}: </span>{{ attraction.location }}</p>
+                <p><span>{{ _("Points") }}: </span>{{ attraction.points }}</p>
+                <p>{{ _("Click for more info") }}</p>
             </div>
         </div>
     </a>
