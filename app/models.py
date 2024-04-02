@@ -289,3 +289,32 @@ class UserTagPreference(db.Model):
 
     user = db.relationship("User", back_populates="tag_preferences")
     tag = db.relationship("Tag", back_populates="user_preferences")
+
+
+class Badge(db.Model):
+    __tablename__ = "badge"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f'<Badge {self.name}>'
+
+class BadgeRequirement(db.Model):
+    __tablename__ = 'badgeRequirement'
+    id = db.Column(db.Integer, primary_key=True)
+    badge_id = db.Column(db.Integer, db.ForeignKey('badge.id'), nullable=False)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), nullable=False)
+    quantity_required = db.Column(db.Integer, nullable=False)
+
+class UserBadge(db.Model):
+    __tablename__ = "userBadge"
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    badge_id = db.Column(db.Integer, db.ForeignKey("badge.id"), primary_key=True)
+    date_earned = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship("User", backref=db.backref("user_badges"))
+    badge = db.relationship("Badge", backref=db.backref("badge_users"))
+
+    def __repr__(self):
+        return f'<UserBadge {self.user_id} {self.badge_id}>'
