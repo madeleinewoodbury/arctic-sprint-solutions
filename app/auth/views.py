@@ -99,12 +99,18 @@ def profile():
     def get_user_badge_progress(user_id):
 
         badges = Badge.query.all()
-        user_progress = []
+        user_progression = []
 
         for badge in badges:
             # Hent nødvendige tags for denne badgen
+            total_visited_count = 0
             requirements = BadgeRequirement.query.filter_by(badge_id=badge.id).all()
-            badge_progress = {'badge_name': badge.name, 'tags_progress': []}
+            badge_progress = {
+                 'badge_name': badge.name, 
+                 'tags_progress': [],
+                 'description': badge.description,
+                 'total_visited_count': 0
+                 }
 
             for req in requirements:
                 # Finn navnet på taggen
@@ -117,14 +123,20 @@ def profile():
                 ).filter(VisitedAttraction.user_id == user_id, AttractionTag.tag_id == req.tag_id
                 ).scalar() or 0
                 
+                # Oppdaterer total_visited_count
+                total_visited_count += visited_count
+                
                 badge_progress['tags_progress'].append({
                     'tag_name': tag_name,
-                    'description': badge.description,
                     'visited_count': visited_count,
                     'required_count': req.quantity_required
                 })
 
-            user_progress.append(badge_progress)
+            badge_progress['total_visited_count'] = total_visited_count
+            user_progression.append(badge_progress)
+
+        # Sorterer basert på total_visited_count, fra høyeste til laveste slik at badgen man har høyest progresjon på vises først
+        user_progress = sorted(user_progression, key=lambda x: x['total_visited_count'], reverse=True)
 
         return user_progress
 
