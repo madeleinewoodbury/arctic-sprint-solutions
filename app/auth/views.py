@@ -101,7 +101,7 @@ def get_users_awaiting():
 
 
 def get_firends():    
-    friends = User.query.join(User.initiated_friendships) \
+    users = User.query.join(User.initiated_friendships) \
                    .filter(
                        (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
                        Friendship.status == 'accepted') \
@@ -112,16 +112,27 @@ def get_firends():
                                Friendship.status == 'accepted') \
                            ).filter(User.id != current_user.id).all()
     
+    
+    friends = []
+    # Get attraction info from friend
+    for user in users:
+        friend = {
+               'user': user,
+               'visited': get_visited_attractions(user.id)
+         }  
+        friend['points'] = sum(item['attraction'].points for item in friend['visited'])
+        friends.append(friend)
+
     return friends
 
 
-def get_visited_attractions():
+def get_visited_attractions(user_id):
     visited_attractions = [
         {
             'attraction': Attraction.query.get(attraction.attraction_id),
             'time_visited': attraction.time_visited.strftime("%d-%m-%Y")
         }
-        for attraction in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
+        for attraction in VisitedAttraction.query.filter_by(user_id=user_id).all()
     ]
 
     return visited_attractions
@@ -177,7 +188,7 @@ def profile():
     activeTab = current_tab if current_tab else 0
 
     # Visited Attractions Tab
-    visited_attractions = get_visited_attractions()
+    visited_attractions = get_visited_attractions(current_user.id)
     points = sum(item['attraction'].points for item in visited_attractions)
 
     # Profile Tab

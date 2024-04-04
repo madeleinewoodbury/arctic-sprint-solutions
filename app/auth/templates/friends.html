@@ -103,22 +103,38 @@
         {% if friends == [] %}
         <p>{{ _("Seems like you haven't added any friends yet. Start adding friends to compare your exploration progression and achievements!") }}</p>
         {% else %}
-        <div class="friends-grid">
-            {% for user in friends %}
-            <div class="friend">
-                <div class="image-container">
-                    <img src="{{ user.gravatar() }}" alt="Gravatar" class="gravatar-img">
-                </div>
-                <div class="text-container">
-                    <h3>{{ user.username }}</h3>
-                    <p><span>{{ _("Achievement points") }}: </span>{{ _("WorkInProgress") }}</p>
-                </div>
-                <form class="remove-friend" method="POST" action="{{ url_for('auth.remove_friend', user_id=user.id) }}">
-                <button class="remove-friend-btn" type="submit">{{ _("Remove friend") }}</button>
-            </form>
-            </div>
-            {% endfor %}
-        </div>
+        <table class="scoreboard">
+            <thead>
+                <tr>
+                    <th>{{ _("Username") }}</th>
+                    <th class="hide-sm">{{ _("Visited Attractions") }}</th>
+                    <th>{{ _("Points") }}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for friend in friends %}
+                <tr>
+                    <td class="friend-info">
+                        <div class="image-container">
+                            <img src="{{ friend.user.gravatar() }}" alt="Gravatar" class="gravatar-img">
+                        </div>
+                        <span>{{ friend.user.username }}</span>
+                    </td>
+                    <td class="hide-sm">{{ friend.visited|length }}</td>
+                    <td>{{ friend.points }}</td>
+                    <td>
+                        <form class="remove-friend-form" method="POST"
+                            action="{{ url_for('auth.remove_friend', user_id=friend.user.id) }}">
+                            <button class="icon-btn" type="submit">
+                                <svg class="delete-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#fff" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         {% endif %}
     </div>
 </div>

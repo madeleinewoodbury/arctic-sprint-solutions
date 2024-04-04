@@ -92,19 +92,6 @@ form.request-form {
   font-size: small;
 }
 
-.friend .remove-friend-btn {
-  background-color: red;
-  color: var(--white);
-  outline: none;
-  font-weight: bold;
-  font-size: .5rem;
-  padding: .5rem;
-  border-radius: 0 .5rem .5rem 0;
-  border: none;
-  width: 100%;
-  cursor: pointer;
-}
-
 .add-friend-container{
   background-color: var(--bg-light);
   box-shadow: none;
@@ -177,7 +164,65 @@ form.request-form {
   padding-bottom: .25rem;
 }
 
+/* Scoreboard */
+.scoreboard {
+  width: 100%;
+}
 
+.scoreboard tr {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: .5rem;
+}
+
+.scoreboard thead tr{
+  border-bottom: 2px solid var(--primary);
+  margin-bottom: .5rem;
+}
+
+.scoreboard th {
+  font-family: var(--secondary-font);
+  font-size: 1.1rem;
+  text-align: center;
+
+}
+
+.scoreboard th:first-of-type {
+  text-align: left;
+}
+
+.scoreboard td {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.scoreboard td.hide-sm {
+  display: none;
+}
+
+.scoreboard .friend-info {
+  align-items: center;
+  justify-content: start;
+  gap: .5rem;
+}
+
+.scoreboard .gravatar-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.scoreboard .remove-friend-form {
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+}
+
+.scoreboard .btn {
+  width: fit-content;
+}
 
 @media (min-width: 450px) {
   .request-container .request-actions {
@@ -198,8 +243,24 @@ form.request-form {
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 576px) {
+  .scoreboard tr {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
 
+  .scoreboard .friend-info {
+    gap: .75rem;
+  }
+
+  .scoreboard td.hide-sm {
+    display: flex;
+  }
+}
+
+@media (min-width: 768px) {
+  .scoreboard tr {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
 }
 
 @media(min-width: 992px) {
