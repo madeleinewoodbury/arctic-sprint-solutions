@@ -54,7 +54,11 @@ class Attraction(db.Model):
     tags = db.relationship(
         "Tag", secondary="attractionTag", backref=db.backref("attractions", lazy=True)
     )
+    groupedattraction = db.relationship(
+        "GroupedAttraction", secondary="attractionTag", backref=db.backref("groupedattraction", lazy=True)
+    )
     visited_by = db.relationship("VisitedAttraction", back_populates="attraction")
+    wishlist_by = db.relationship("Wishlist", back_populates="attraction")
 
     def __repr__(self) -> str:
         return self.name
@@ -311,7 +315,7 @@ class UserWishlist(db.Model):
     attraction_group_id = db.Column(db.Integer, db.ForeignKey("attractionGroup.id"), primary_key=True)
 
     user = db.relationship("User", backref=db.backref("wishlist_entries"))
-    attraction_group = db.relationship("AttractionGroup", backref=db.backref("user_wishlist"))
+    attraction_group = db.relationship("AttractionGroup", backref=db.backref("groupedattraction"))
 
     def __init__(self, user_id, attraction_group_id):
         self.user_id = user_id

@@ -36,7 +36,7 @@
           type="checkbox" 
           id="wishlistCheckbox" 
           name="wishlist"
-          onchange="markAsVisited('{{ attraction.id }}')" 
+          onchange="markAsWishlist('{{ attraction.id }}')" 
           {% if wishlist %}checked{%endif %}>
           <label for="wishlistCheckbox" class="wishlist-text">
             {{ 'Wishlist' if wishlist else 'Mark as wishlist'}}
@@ -81,10 +81,33 @@
     })
     .then(response => response.json())
     .then(data => {
-      console.log(data);  // Behandle serverresponsen her.
+      console.log(data);  // Handle server response here
     })
     .catch(error => console.error('Error:', error));
   }
-  </script>
-  {% endif %}
-  {% endblock %}
+
+  function addToWishlist(attractionGroupId) {
+    const wishlistCheckbox = document.getElementById('wishlistCheckbox');
+    const wishlistText = document.querySelector('.wishlist-text');
+    const isWishlistItem = wishlistCheckbox.checked;
+
+    // Update UI text based on checkbox state
+    wishlistText.innerHTML = isWishlistItem ? 'Added to Wishlist' : 'Add to Wishlist';
+
+    // Make a POST request to update the wishlist status on the server
+    fetch(`/attractionGroups/${attractionGroupId}/add_to_wishlist`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ isWishlistItem: isWishlistItem })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);  // Handle server response here
+    })
+    .catch(error => console.error('Error:', error));
+  }
+</script>
+{% endif %}
+{% endblock %}

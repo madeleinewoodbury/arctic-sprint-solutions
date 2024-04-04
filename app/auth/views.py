@@ -54,7 +54,7 @@ def logout():
 def profile():
     form = ProfileForm()
     tags = Tag.query.all()
-    group_id = GroupedAttraction.query.all()
+    groupedattraction = GroupedAttraction.query.all()
     form.tag.choices = [(tag.id, tag.name) for tag in tags]
 
     if form.validate_on_submit():
