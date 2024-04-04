@@ -152,6 +152,18 @@ class GroupedAttraction(db.Model):
         db.Integer, db.ForeignKey("attraction.id"), primary_key=True
     )
 
+    user_wishlist = db.relationship("UserWishlist", back_populates="groupedattraction")
+
+    @property
+    def attraction_count(self):
+        return Attraction.query.filter(Attraction.groupedattractions.any(UserWishlist.id == self.id)).count()
+
+    def __repr__(self) -> str:
+        return self.name
+
+    def get_id(self):
+        return self.id
+
 
 class Language(db.Model):
     __tablename__ = "language"
@@ -190,6 +202,7 @@ class User(UserMixin, db.Model):
 
     role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
     tag_preferences = db.relationship("UserTagPreference", back_populates="user")
+    wishlist = db.relationship("AttractionGroup", backref="owner_user", lazy=True)
     visited_attractions = db.relationship("VisitedAttraction", back_populates="user")
 
     initiated_friendships = db.relationship(
@@ -289,3 +302,17 @@ class UserTagPreference(db.Model):
 
     user = db.relationship("User", back_populates="tag_preferences")
     tag = db.relationship("Tag", back_populates="user_preferences")
+
+
+
+class UserWishlist(db.Model):
+    __tablename__ = "userWishlist"
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    attraction_group_id = db.Column(db.Integer, db.ForeignKey("attractionGroup.id"), primary_key=True)
+
+    user = db.relationship("User", backref=db.backref("wishlist_entries"))
+    attraction_group = db.relationship("AttractionGroup", backref=db.backref("user_wishlist"))
+
+    def __init__(self, user_id, attraction_group_id):
+        self.user_id = user_id
+        self.attraction_group_id = attraction_group_id
