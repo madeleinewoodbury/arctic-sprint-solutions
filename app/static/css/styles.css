@@ -8,6 +8,8 @@
   --darken-primary: #44b48b;
   --dark-blue: #273343;
   --medium-grey: #646464;
+  --danger: #e74c3c;
+  --success: #2ecc71;
   --black: #000;
   --white: #ffffff;
   --main-font: "Roboto", sans-serif;
@@ -59,6 +61,15 @@ img {
   transition: all .2s ease-in-out;
   cursor: pointer;
   text-decoration: none;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-small {
+  padding: .5rem 1.5rem;
+  font-size: .75rem;
 }
 
 .btn-primary {
@@ -78,6 +89,15 @@ img {
 .btn-primary-outline:hover {
   background-color: var(--primary);
   color: var(--dark-blue);
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  color: var(--white);
+}
+.btn-success {
+  background-color: var(--success);
+  color: var(--white);
 }
 
 .btn-container {

@@ -69,24 +69,31 @@
         <h3>{{ _("Pending friend requests") }}</h3>
 
         {% for user in users_requesting %}
-        <p>{{ _("Incoming friend request from") }} {{ user.username }}</p>
-        <form class="request-accept-form" method="POST"
-            action="{{ url_for('auth.accept_friend_request', user_id=user.id) }}">
-            <button type="submit">Accept friend request</button>
-        </form>
-        <form class="request-decline-form" method="POST"
-            action="{{ url_for('auth.remove_friend_request', user_id=user.id) }}">
-            <button type="submit">Decline friend request</button>
-        </form>
+        <div class="request-container">
+            <p>{{ _("Incoming friend request from") }} {{ user.username }}</p>
+            <div class="request-actions">
+                <form class="request-accept-form" method="POST"
+                    action="{{ url_for('auth.accept_friend_request', user_id=user.id) }}">
+                    <button class="btn btn-small btn-success" type="submit">Accept</button>
+                </form>
+                <form class="request-decline-form" method="POST"
+                    action="{{ url_for('auth.remove_friend_request', user_id=user.id) }}">
+                    <button class="btn btn-small btn-danger" type="submit">Decline</button>
+                </form>
+            </div>
+        </div>
         {% endfor %}
 
-        <br>
         {% for user in users_awaiting %}
-        <p>{{ _("Pending friend request approval from") }} {{ user.username }}</p>
-        <form class="request-accept-form" method="POST"
-            action="{{ url_for('auth.remove_friend_request', user_id=user.id) }}">
-            <button type="submit">Cancel friend request</button>
-        </form>
+        <div class="request-container">
+            <p>{{ _("Pending friend request approval from") }} {{ user.username }}</p>
+            <div class="request-actions">
+                <form class="request-accept-form" method="POST"
+                    action="{{ url_for('auth.remove_friend_request', user_id=user.id) }}">
+                    <button class="btn btn-small btn-danger" type="submit">Cancel</button>
+                </form>
+            </div>
+        </div>
         {% endfor %}
     </div>
     {% endif %}
