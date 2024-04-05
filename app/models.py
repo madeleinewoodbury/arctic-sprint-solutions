@@ -30,7 +30,6 @@ class AgeGroup(db.Model):
     def __repr__(self) -> str:
         return self.name
 
-
 class Attraction(db.Model):
     __tablename__ = "attraction"
     id = db.Column(db.Integer, primary_key=True)
@@ -40,7 +39,9 @@ class Attraction(db.Model):
     description = db.Column(db.Text)
     image = db.Column(db.String(255))
     points = db.Column(db.Integer)
+
     city_rel = db.relationship("City", backref=db.backref("attractions", lazy=True))
+
     age_groups = db.relationship(
         "AgeGroup",
         secondary="attractionAgeGroup",
@@ -52,28 +53,18 @@ class Attraction(db.Model):
         backref=db.backref("attractions", lazy=True),
     )
     tags = db.relationship(
-        "Tag", secondary="attractionTag", backref=db.backref("attractions", lazy=True)
+        "Tag",
+        secondary="attractionTag",
+        backref=db.backref("attractions", lazy=True)
     )
-    groupedattraction = db.relationship(
-        "GroupedAttraction", secondary="attractionTag", backref=db.backref("groupedattraction", lazy=True)
-    )
-    visited_by = db.relationship("VisitedAttraction", back_populates="attraction")
-    wishlist_by = db.relationship("GroupedAttraction", back_populates="attraction")
-
-    def __repr__(self) -> str:
-        return self.name
-
-    @property
-    def visit_count(self):
-        return VisitedAttraction.query.filter_by(attraction_id=self.id).count()
+    
+    grouped_attractions = db.relationship("GroupedAttraction", back_populates="attraction")
 
     def to_dict(self):
-        data = {
-            column.name: getattr(self, column.name) for column in self.__table__.columns
-        }
-        data["age_groups"] = [age_group.name for age_group in self.age_groups]
-        data["category"] = [category.name for category in self.category]
-        data["tags"] = [tag.name for tag in self.tags]
+        data = {column.name: getattr(self, column.name) for column in self.__table__.columns}
+        data['age_groups'] = [age_group.name for age_group in self.age_groups]
+        data['category'] = [category.name for category in self.category]
+        data['tags'] = [tag.name for tag in self.tags]
         return data
 
 
@@ -101,7 +92,10 @@ class AttractionGroup(db.Model):
     visibility = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    grouped_attractions = db.relationship("GroupedAttraction", back_populates="attraction_group")
 
+    def __repr__(self):
+        return f"<AttractionGroup {self.id}>"
 
 class AttractionTag(db.Model):
     __tablename__ = "attractionTag"
@@ -150,22 +144,13 @@ class Friendship(db.Model):
 
 class GroupedAttraction(db.Model):
     __tablename__ = "groupedAttraction"
-    group_id = db.Column(db.Integer, db.ForeignKey("attractionGroup.id"), primary_key=True, nullable=False)
-    attraction_id = db.Column(db.Integer, db.ForeignKey("attraction.id"), primary_key=True, nullable=False)
+    group_id = db.Column(db.Integer, db.ForeignKey("attractionGroup.id"), primary_key=True)
+    attraction_id = db.Column(db.Integer, db.ForeignKey("attraction.id"), primary_key=True)
 
-    groupid = db.relationship("AttractionGroup", back_populates="wishlist_attractions")
-    attraction = db.relationship("Attraction", back_populates="wishlist_by")
+    attraction_group = db.relationship("AttractionGroup", back_populates="grouped_attractions")
 
-    @property
-    def attraction_count(self):
-        return Attraction.query.filter(Attraction.groupedattractions.any(UserWishlist.id == self.id)).count()
-
-    def __repr__(self) -> str:
-        return self.name
-
-    def get_id(self):
-        return self.id
-
+    def __repr__(self):
+        return f"<GroupedAttraction {self.group_id}, {self.attraction_id}>"
 
 class Language(db.Model):
     __tablename__ = "language"
@@ -204,10 +189,8 @@ class User(UserMixin, db.Model):
 
     role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
     tag_preferences = db.relationship("UserTagPreference", back_populates="user")
-    wishlist_preferences = db.relationship("AttractionGroup", back_populates="user")
 
     visited_attractions = db.relationship("VisitedAttraction", back_populates="user")
-    wishlist_attractions = db.relationship("GroupedAttraction", back_populates="user")
 
     initiated_friendships = db.relationship(
         "Friendship",
@@ -219,6 +202,14 @@ class User(UserMixin, db.Model):
         "Friendship",
         foreign_keys="Friendship.user_2",
         backref=db.backref("recipient", lazy=True),
+    )
+
+    wishlist_attractions = db.relationship(
+        "GroupedAttraction",
+        secondary="attractionGroup",  
+        primaryjoin="User.id == AttractionGroup.owner",
+        secondaryjoin="AttractionGroup.id == GroupedAttraction.group_id",
+        backref="attraction_group",
     )
 
     def __init__(self, **kwargs):

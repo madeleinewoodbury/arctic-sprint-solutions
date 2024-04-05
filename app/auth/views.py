@@ -1,7 +1,7 @@
 from . import auth
 from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm
 from .. import db
-from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction
+from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction, GroupedAttraction, AttractionGroup
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 import json
@@ -58,28 +58,27 @@ def profile():
     form.tag.choices = [(tag.id, tag.name) for tag in tags]
 
     if form.validate_on_submit():
-        # Get the user based on the provided email
+
         user = User.query.filter_by(email=form.email.data).first()
 
-        # Update user preferences if user is found
+
         if user:
             selected_tag_ids = form.tag.data
 
-            # Delete existing user preferences
+
             UserTagPreference.query.filter_by(user_id=user.id).delete()
 
-            # Create new user preferences
             for tag_id in selected_tag_ids:
                 user_preference = UserTagPreference(user_id=user.id, tag_id=tag_id)
                 db.session.add(user_preference)
 
             db.session.commit()
             flash('Your preferences have been updated!', 'success')
-            return redirect(url_for('auth.profile'))  # Redirect to avoid form resubmission
+            return redirect(url_for('auth.profile'))  
         else:
             flash('User with provided email does not exist', 'error')
 
-    # Fetch the user preferences from the database
+    
     user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
     user_preferences = [Tag.query.get(preference.tag_id).name for preference in user_tag_preferences]
 
@@ -91,18 +90,27 @@ def profile():
         for attraction in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
     ]
 
+    user_wishlist = GroupedAttraction.query.filter_by(group_id=current_user.id).all()
+    wishlist_attractions = [
+        {
+            'attraction': attraction_group.attraction,
+            'time_added': attraction_group.created_at 
+        }
+        for attraction_group in user_wishlist
+    ]
+
     # points = sum(attraction['points'] for attraction in visited_attractions)
     points = sum(item['attraction'].points for item in visited_attractions)
 
     # Tabs for profile page sections, only one section should be active
-    tabs = ['Visited Attractions', 'Profile']
+    tabs = ['Wishlist Attractions', 'Visited Attractions', 'Profile']
     
     return render_template(
         'profile.html',
         form=form,
         tags=tags,
         user_preferences=user_preferences,
-        user_wishlist=user_wishlist,
+        wishlist_attractions=wishlist_attractions,
         visited_attractions=visited_attractions,
         number_of_visited_attractions=len(visited_attractions),
         points=points,
