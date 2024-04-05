@@ -54,6 +54,9 @@ DROP TABLE IF EXISTS userRole;
 DROP TABLE IF EXISTS city;
 DROP TABLE IF EXISTS country;
 DROP TABLE IF EXISTS language;
+DROP TABLE IF EXISTS badge;
+DROP TABLE IF EXISTS badgeRequirement;
+DROP TABLE IF EXISTS userBadge;
 --
 -- Table structure for table `achievement`
 
@@ -434,6 +437,83 @@ CREATE TABLE `visitedAttraction` (
   `time_visited` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `badge`
+--
+
+CREATE TABLE `badge` (
+  `id` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `description` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `badge`
+--
+
+INSERT INTO `badge` (`id`, `name`, `description`) VALUES
+(1, 'Outsider', 'Visit five outdoor attractions'),
+(2, 'Historian', 'Visit five historical attractions'),
+(3, 'Familiar', 'Visit five family friendly attractions'),
+(4, 'Big Spender', 'Visit five shopping attractions'),
+(5, 'Architect', 'Visit five architecture attractions'),
+(6, 'Foodie', 'Visit five culinary experience attractions'),
+(7, 'Nature Born', 'Visit five wildlife attractions'),
+(8, 'Magnificent', 'Visit five scenic beauty attractions'),
+(9, 'Winter explorer', 'Visit five winter attractions'),
+(10, 'Summer explorer', 'Visit five summer attractions'),
+(11, 'Fall explorer', 'Visit five fall attractions'),
+(12, 'Spring explorer', 'Visit five spring attractions'),
+(13, 'Ultimate explorer', 'Visit five year-round attractions');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `badgeRequirement`
+--
+
+CREATE TABLE `badgeRequirement` (
+  `id` int(11) NOT NULL,
+  `badge_id` int(11) NOT NULL,
+  `tag_id` int(11) NOT NULL,
+  `quantity_required` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `badgeRequirement`
+--
+
+INSERT INTO `badgeRequirement` (`id`,`badge_id`, `tag_id`,`quantity_required` ) VALUES
+(1, 1, 1, 5),
+(2, 2, 2, 5),
+(3, 3, 3, 5),
+(4, 4, 4, 5),
+(5, 5, 5, 5),
+(6, 6, 6, 5),
+(7, 7, 7, 5),
+(8, 8, 8, 5),
+(9, 9, 13, 5),
+(10, 10, 14, 5),
+(11, 11, 15, 5),
+(12, 12, 16, 5),
+(13, 13, 17, 5);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `userBadge`
+--
+
+CREATE TABLE `userBadge` (
+  `user_id` int(11) NOT NULL,
+  `badge_id` int(11) NOT NULL,
+  `date_earned` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
 --
 -- Indexes for dumped tables
 --
@@ -573,6 +653,24 @@ ALTER TABLE `visitedAttraction`
   ADD KEY `attraction_id` (`attraction_id`);
 
 --
+-- Indexes for table `badge`
+--
+ALTER TABLE `badge`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `badgeRequirement`
+--
+ALTER TABLE `badgeRequirement`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `userBadge`
+--
+ALTER TABLE `userBadge`
+  ADD PRIMARY KEY (`user_id`, `badge_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -636,6 +734,12 @@ ALTER TABLE `user`
 ALTER TABLE `userRole`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
+--
+-- AUTO_INCREMENT for table `badgeRequirement`
+--
+ALTER TABLE `badgeRequirement`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  
 --
 -- Constraints for dumped tables
 --
@@ -727,6 +831,21 @@ ALTER TABLE `userTagPreference`
 ALTER TABLE `visitedAttraction`
   ADD CONSTRAINT `visitedAttraction_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `visitedAttraction_ibfk_2` FOREIGN KEY (`attraction_id`) REFERENCES `attraction` (`id`) ON DELETE CASCADE;
+
+
+--
+-- Constraints for table `badgeRequirement`
+--
+ALTER TABLE `badgeRequirement`
+  ADD CONSTRAINT `badgeRequirement_ibfk_1` FOREIGN KEY (`badge_id`) REFERENCES `badge` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `badgeRequirement_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `userBadge`
+--
+ALTER TABLE `userBadge`
+  ADD CONSTRAINT `userbadge_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `userbadge_ibfk_2` FOREIGN KEY (`badge_id`) REFERENCES `badge` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

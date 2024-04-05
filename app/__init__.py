@@ -7,14 +7,26 @@ Return: flask application (with right configuration)
 """
 
 
-from flask import Flask
+from flask import Flask, request, session
 from config import config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_admin import Admin
+from flask_babel import Babel
+
+# Babel stuff
+def get_locale():
+    # Sjekk om språket er lagret i sesjonen
+    if 'language' in session:
+        return session['language']
+    # Dersom ingen language i session returner engelsk språk.
+    return 'en'  
+
 
 db = SQLAlchemy()
 admin_manager = Admin()
+
+
 
 # Flask-login verdier
 login_manager = LoginManager()
@@ -31,6 +43,8 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     admin_manager.init_app(app)
+    babel = Babel(app, locale_selector=get_locale)
+    
 
     from .admin import admin_manager as admin_bp
 
