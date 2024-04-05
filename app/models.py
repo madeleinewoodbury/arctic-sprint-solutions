@@ -49,7 +49,8 @@ class Attraction(db.Model):
     description = db.Column(db.Text)
     image = db.Column(db.String(255))
     points = db.Column(db.Integer)
-    city_rel = db.relationship("City", backref=db.backref("attractions", lazy=True))
+    city_rel = db.relationship(
+        "City", backref=db.backref("attractions", lazy=True))
     age_groups = db.relationship(
         "AgeGroup",
         secondary="attractionAgeGroup",
@@ -63,7 +64,8 @@ class Attraction(db.Model):
     tags = db.relationship(
         "Tag", secondary="attractionTag", backref=db.backref("attractions", lazy=True)
     )
-    visited_by = db.relationship("VisitedAttraction", back_populates="attraction")
+    visited_by = db.relationship(
+        "VisitedAttraction", back_populates="attraction")
 
     def __repr__(self) -> str:
         return self.name
@@ -87,12 +89,14 @@ class AttractionAgeGroup(db.Model):
     attraction_id = db.Column(
         db.Integer, db.ForeignKey("attraction.id"), primary_key=True
     )
-    age_group_id = db.Column(db.Integer, db.ForeignKey("ageGroup.id"), primary_key=True)
+    age_group_id = db.Column(db.Integer, db.ForeignKey(
+        "ageGroup.id"), primary_key=True)
 
 
 class AttractionCategory(db.Model):
     __tablename__ = "attractionCategory"
-    category_id = db.Column(db.Integer, db.ForeignKey("category.id"), primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey(
+        "category.id"), primary_key=True)
     attraction_id = db.Column(
         db.Integer, db.ForeignKey("attraction.id"), primary_key=True
     )
@@ -173,7 +177,8 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
-    user_preferences = db.relationship("UserTagPreference", back_populates="tag")
+    user_preferences = db.relationship(
+        "UserTagPreference", back_populates="tag")
 
     @property
     def attraction_count(self):
@@ -200,9 +205,12 @@ class User(UserMixin, db.Model):
         "Achievement", secondary="userAchievement", back_populates="users"
     )
 
-    role_rel = db.relationship("UserRole", backref=db.backref("user", lazy=True))
-    tag_preferences = db.relationship("UserTagPreference", back_populates="user")
-    visited_attractions = db.relationship("VisitedAttraction", back_populates="user")
+    role_rel = db.relationship(
+        "UserRole", backref=db.backref("user", lazy=True))
+    tag_preferences = db.relationship(
+        "UserTagPreference", back_populates="user")
+    visited_attractions = db.relationship(
+        "VisitedAttraction", back_populates="user")
 
     initiated_friendships = db.relationship(
         "Friendship",
@@ -320,6 +328,7 @@ class Badge(db.Model):
     def __repr__(self):
         return f'<Badge {self.name}>'
 
+
 class BadgeRequirement(db.Model):
     __tablename__ = 'badgeRequirement'
     id = db.Column(db.Integer, primary_key=True)
@@ -327,10 +336,12 @@ class BadgeRequirement(db.Model):
     tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), nullable=False)
     quantity_required = db.Column(db.Integer, nullable=False)
 
+
 class UserBadge(db.Model):
     __tablename__ = "userBadge"
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
-    badge_id = db.Column(db.Integer, db.ForeignKey("badge.id"), primary_key=True)
+    badge_id = db.Column(db.Integer, db.ForeignKey(
+        "badge.id"), primary_key=True)
     date_earned = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship("User", backref=db.backref("user_badges"))
