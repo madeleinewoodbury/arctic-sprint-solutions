@@ -1,7 +1,15 @@
 from app import db, admin_manager
 from flask import redirect, url_for, request
 from flask_admin.contrib.sqla import ModelView
-from app.models import User, Category, Tag, AgeGroup, Attraction, Achievement
+from app.models import (
+    User,
+    Category,
+    Tag,
+    AgeGroup,
+    Attraction,
+    Achievement,
+    UserAchievement,
+)
 from flask_login import current_user
 
 
@@ -18,24 +26,29 @@ class AdminModelView(ModelView):
 
 class UserView(AdminModelView):
 
-    form_columns = [
+    can_view_details = True
+    column_details_list = [
         "username",
         "first_name",
         "last_name",
+        "list_of_achievements",
+        "list_of_visited_attractions",
         "email",
         "created_at",
+    ]
+    form_columns = [
+        "username",
+        "email",
         "role_rel",
     ]
     column_searchable_list = ["username", "email"]
     column_filters = ["created_at", "email"]
     column_list = [
         "username",
-        "first_name",
-        "last_name",
         "email",
-        "created_at",
         "role_rel",
-        "list_of_achievements",
+        "number_of_achievements",
+        # "#attractions"
     ]
 
 

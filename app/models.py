@@ -221,8 +221,11 @@ class User(UserMixin, db.Model):
 
     @property
     def list_of_achievements(self):
-        print(self.achievements)
         return [a.title for a in self.achievements]
+
+    @property
+    def list_of_visited_attractions(self):
+        return [a.attraction.name for a in self.visited_attractions]
 
     def __repr__(self):
         return "<User {}>".format(self.username)
