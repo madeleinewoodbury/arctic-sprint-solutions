@@ -14,7 +14,7 @@
             <div class="content">
                 <div class="title">
                     <h1>The Hitchhiker's Guide to Earth</h1>
-                    <p>Login with Email</p>
+                    <p>{{ _("Login with Email") }}</p>
                 </div>
 
                 <form action="" method="post" novalidate>
@@ -40,14 +40,14 @@
                                 {{ form.remember_me() }} {{ form.remember_me.label }}
                             </div>
                             <div class="forgot-password">
-                                <a href="#!">Forgot Password?</a>
+                                <a href="#!">{{ _("Forgot Password?") }}</a>
                             </div>
                         </div>
                     </div>
 
                     <div class="btn-container">
                         {{ form.submit() }}
-                        <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register now</a></p>
+                        <p>{{ _("Don't have an account?") }} <a href="{{ url_for('auth.register') }}">{{ _("Register now") }}</a></p>
                     </div>
                 </form>
         

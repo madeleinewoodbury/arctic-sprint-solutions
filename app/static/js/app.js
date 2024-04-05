@@ -148,6 +148,18 @@ const filterAttractions = () => {
     })
 }
 
+// Displays the profile tabs and select active tab
+function profileTabs(tabs, activeTab=0) {    
+    return {
+        tabs,
+        activeTab: tabs[activeTab],
+        
+        setActiveTab(tab) {
+            this.activeTab = tab
+        },
+    }
+}
+
 // Function to update the availability and count labels of given checkboxes
 function updateCheckboxes(checkboxes, activeIDs) {
     checkboxes.forEach(checkbox => {

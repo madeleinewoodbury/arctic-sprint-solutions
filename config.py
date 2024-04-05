@@ -20,6 +20,14 @@ load_dotenv()
 class Config():
     SECRET_KEY = secrets.token_urlsafe(16)
 
+    # Translation
+    LANGUAGES = {
+        'en': 'English', 
+        'no': 'Norwegian'
+        }
+    BABEL_DEFAULT_LOCALE = 'en'
+    BABEL_TRANSLATION_DIRECTORIES = 'translations'
+
 
 class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI")
