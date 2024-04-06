@@ -82,6 +82,8 @@ def profile():
     user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
     user_preferences = [Tag.query.get(preference.tag_id).name for preference in user_tag_preferences]
 
+
+
     visited_attractions = [
         {
             'attraction': Attraction.query.get(attraction.attraction_id),
@@ -92,14 +94,13 @@ def profile():
 
 
     user_groups = AttractionGroup.query.filter_by(owner=current_user.id).all()
-
     wishlist_attractions = [
         {
-            'attraction': Attraction.query.get(attraction.attraction_id),
+            'attraction': Attraction.query.get(attraction.id),
         }
-        for attraction in user_groups
+        # looper gjennom attraction_group med index 0 (vil nok gi en error her om det er ingen grupper)
+        for attraction in user_groups[0].grouped_attractions
     ]
-
 
 
 
@@ -116,6 +117,7 @@ def profile():
         user_preferences=user_preferences,
         wishlist_attractions=wishlist_attractions,
         visited_attractions=visited_attractions,
+        number_of_wishlist_attractions=len(wishlist_attractions),
         number_of_visited_attractions=len(visited_attractions),
         points=points,
         tabs=tabs

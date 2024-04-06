@@ -86,21 +86,18 @@
     .catch(error => console.error('Error:', error));
   }
 
-  function addToWishlist(attractionGroupId) {
-    const wishlistCheckbox = document.getElementById('wishlistCheckbox');
+  function addToWishlist(attractionId) {
+    const wishlist = document.getElementById('wishlistCheckbox').checked;
     const wishlistText = document.querySelector('.wishlist-text');
-    const isWishlistItem = wishlistCheckbox.checked;
-
-    // Update UI text based on checkbox state
-    wishlistText.innerHTML = isWishlistItem ? 'Added to Wishlist' : 'Add to Wishlist';
+    wishlistText.innerHTML = wishlist ? 'Added to Wishlist' : 'Add to Wishlist';
 
     // Make a POST request to update the wishlist status on the server
-    fetch(`/attractionGroups/${attractionGroupId}/add_to_wishlist`, {
+    fetch(`/attractionGroups/${attractionId}/add_to_wishlist`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ isWishlistItem: isWishlistItem })
+      body: JSON.stringify({ wishlist: wishlist })
     })
     .then(response => response.json())
     .then(data => {

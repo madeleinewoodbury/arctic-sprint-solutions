@@ -14,6 +14,7 @@
             <div class="title">
                 <h2>Hello {{ current_user.username }}!</h2>
                 <div class="stats">
+                    <span>Attractions for wishlist: <strong>{{number_of_wishlist_attractions}}</strong></span>
                     <span>Attractions Visited: <strong>{{number_of_visited_attractions}}</strong></span>
                     <span>Points: <strong>{{points}}</span></strong>
                 </div>
@@ -53,7 +54,29 @@
                     {% endif %}
                 </div>
             </div>
-
+            <div class="content-info">
+                <div class="wishlist-attractions">
+    
+                    {% if wishlist_attractions %}
+                    <h2>Visited Attractions</h2>
+                    <div class="card-container">
+                        {% for wishlist in wishlist_attractions %}
+                        <div class="attraction-card">
+                            <img src="{{ wishlist.attraction.image }}" alt="Attraction Image">
+                            <div>
+                                <h3>{{ wishlist.attraction.name }}</h3>
+                                <!-- TODO: Fix date -->
+                                <p>Visited on {{ wishlist.time_visited }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+            
+                    {% else %}
+                    <p>You have not visited any attractions</p>
+                    {% endif %}
+                </div>
+            </div>
         </template>
 
         <template x-if="activeTab === tabs[1]">
@@ -100,23 +123,17 @@
                 </div>
                 <div class="user-wishlist">
                     <h2>Your Wishlist</h2>
-                    {% if attraction_groups %}
-                        <ul>
-                            {% for attraction_group in attraction_groups %}
-                                {% if attraction_group.title == "Your Wishlist" %}
-                                    {% for attraction in attraction_group.attractions %}
-                                        <li>{{ attraction.name }}</li>
-                                    {% endfor %}
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
+                    {%if user_groups %}
+                    <ul>
+                        {% for groups in user_groups %}
+                        <li>{{ groups }}</li>
+                        {% endfor %}
+                    </ul>
                     {% else %}
-                        <p>You have not added any attractions to your wishlist yet.</p>
+                    <p>You have not set any attractions as wishlist</p>
                     {% endif %}
                 </div>
             </div>
-
-
         </template>
     
     </div>
