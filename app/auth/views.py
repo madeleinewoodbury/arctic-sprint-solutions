@@ -221,19 +221,20 @@ def profile():
     # Calculating badge progress for all badges.
     badge_progress = get_user_badge_progress(current_user.id)
 
-    user_groups = AttractionGroup.query.filter_by(owner=current_user.id).all()
-    wishlist_attractions = [
-        {
-            'attraction': Attraction.query.get(attraction.id),
-        }
-        # looper gjennom attraction_group med index 0 (vil nok gi en error her om det er ingen grupper)
-        for attraction in user_groups[0].grouped_attractions
-    ]
+    # Wishlist Tab
+    user_wishlist = AttractionGroup.query.filter_by(owner=current_user.id).first()
+    wishlist_attractions = []
 
-    print(wishlist_attractions)
+    if user_wishlist:
+        wishlist_attractions = [
+            {
+                'attraction': Attraction.query.get(attraction.id)
+            }
+            for attraction in user_wishlist.grouped_attractions
+        ]
 
     # Tabs for profile page sections, only one section should be active
-    tabs = ['Visited Attractions', 'Profile', 'Wishlist''Friends', 'Badges']
+    tabs = ['Visited Attractions', 'Profile', 'Wishlist', 'Friends', 'Badges']
 
     return render_template(
         'profile.html',
@@ -243,6 +244,7 @@ def profile():
         visited_attractions=visited_attractions,
         wishlist_attractions=wishlist_attractions,
         number_of_visited_attractions=len(visited_attractions),
+        number_of_wishlist_attractions=len(wishlist_attractions),
         points=points,
         tabs=tabs,
         friends_form=friends_form,

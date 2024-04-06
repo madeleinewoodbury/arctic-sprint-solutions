@@ -118,11 +118,17 @@ def mark_as_wishlist(attraction_id):
         # Mark attraction as wishlist
         existing_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
         if existing_record:
+            # Add to wishlist
             existing_record.grouped_attractions.append(Attraction.query.get(attraction_id))
             db.session.commit()
             return jsonify({'status': 'success', 'message': 'Attraction marked as wishlist.'})
         if not existing_record:
-            # TODO: Create new wishlist and add attraction
+            # Create new wishlist
+            new_group = AttractionGroup(owner=current_user.id, title="Wishlist", visibility="private")
+            # Add to new wishlist
+            new_group.grouped_attractions.append(Attraction.query.get(attraction_id))
+            db.session.add(new_group)
+            db.session.commit()
             return jsonify({'status': 'success', 'message': 'Attraction marked as wishlist.'})
         
     else:

@@ -15,8 +15,8 @@
             <div class="title">
                 <h2>{{ _("Hello") }} {{ current_user.username }}</h2>
                 <div class="stats">
-                    <span>Attractions for wishlist: <strong>{{number_of_wishlist_attractions}}</strong></span>
-                    <span>{{ _("Attractions Visited:") }} <strong>{{number_of_visited_attractions}}</strong></span>
+                    <span>{{ _("Visited:") }} <strong>{{number_of_visited_attractions}}</strong></span>
+                    <span>{{ _("Wishlist:") }}<strong>{{number_of_wishlist_attractions}}</strong></span>
                     <span>{{ _("Points:") }} <strong>{{points}}</span></strong>
                 </div>
             </div>
@@ -108,13 +108,18 @@
                 <div class="user-wishlist">
                     <h2>Your Wishlist</h2>
                     {%if wishlist_attractions %}
-                    <ul>
+                    <div class="card-container">
                         {% for item in wishlist_attractions %}
-                        <li>{{ item.attraction.name }}</li>
+                        <a href="{{ url_for('attractions.get_attraction', attraction_id=item.attraction.id) }}" class="attraction-card">
+                            <img src="{{ item.attraction.image }}" alt="Attraction Image">
+                            <div>
+                                <h3>{{ item.attraction.name }}</h3>
+                            </div>
+                        </a>
                         {% endfor %}
-                    </ul>
+                    </div>
                     {% else %}
-                    <p>You have not set any attractions as wishlist</p>
+                    <p class="text-white">You have not added any attractions to your wishlist</p>
                     {% endif %}
                 </div>
             </div>
