@@ -90,14 +90,13 @@ def profile():
         for attraction in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
     ]
 
-    user_wishlist = GroupedAttraction.query.filter_by(group_id=current_user.id).all()
     wishlist_attractions = [
         {
-            'attraction': attraction_group.attraction,
-            'time_added': attraction_group.created_at 
+            'attraction': Attraction.query.get(attraction.attraction_id)
         }
-        for attraction_group in user_wishlist
+        for attraction in AttractionGroup.query.filter_by(owner=current_user.id).all()
     ]
+
 
     # points = sum(attraction['points'] for attraction in visited_attractions)
     points = sum(item['attraction'].points for item in visited_attractions)
