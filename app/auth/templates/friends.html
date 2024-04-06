@@ -99,7 +99,7 @@
     {% endif %}
 
     <div class="friends-container">
-        <h2>{{ _("Friends list") }}</h2>
+        <h2>{{ _("Your friends") }}</h2>
         {% if friends == [] %}
         <p>{{ _("Seems like you haven't added any friends yet. Start adding friends to compare your exploration progression and achievements!") }}</p>
         {% else %}
@@ -116,10 +116,12 @@
                 {% for friend in friends %}
                 <tr>
                     <td class="friend-info">
-                        <div class="image-container">
-                            <img src="{{ friend.user.gravatar() }}" alt="Gravatar" class="gravatar-img">
-                        </div>
-                        <span>{{ friend.user.username }}</span>
+                        <a href="{{ url_for('auth.friend_profile', user_id=friend.user.id) }}">
+                            <div class="image-container">
+                                <img src="{{ friend.user.gravatar() }}" alt="Gravatar" class="gravatar-img">
+                            </div>
+                            <span>{{ friend.user.username }}</span>
+                        </a>
                     </td>
                     <td class="hide-sm">{{ friend.visited|length }}</td>
                     <td>{{ friend.points }}</td>

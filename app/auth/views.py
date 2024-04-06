@@ -123,6 +123,7 @@ def get_firends():
         friend['points'] = sum(item['attraction'].points for item in friend['visited'])
         friends.append(friend)
 
+    friends = sorted(friends, key=lambda x: x['points'], reverse=True)
     return friends
 
 
@@ -309,3 +310,21 @@ def remove_friend(user_id):
     db.session.commit()
     flash(_('The friend has been removed.'))
     return redirect(url_for('auth.profile', current_tab=2))
+
+@auth.route('/friend/profile/<int:user_id>', methods=['GET'])
+@login_required
+def friend_profile(user_id):
+    friend = User.query.get(user_id)
+
+    if friend is None:
+        abort(404)
+
+    visited_attractions = get_visited_attractions(user_id)
+    points = sum(item['attraction'].points for item in visited_attractions)
+
+    return render_template(
+         'friendProfile.html', 
+         friend=friend, 
+         visited_attractions=visited_attractions, 
+         number_of_visited_attractions=len(visited_attractions),
+         points=points)

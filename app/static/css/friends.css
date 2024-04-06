@@ -205,7 +205,20 @@ form.request-form {
 .scoreboard .friend-info {
   align-items: center;
   justify-content: start;
-  gap: .5rem;
+}
+
+.scoreboard .friend-info a {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: var(--white);
+  font-weight: bold;
+  transition: all .2s ease-in-out;
+}
+
+.scoreboard .friend-info a:hover {
+  color: var(--primary);
 }
 
 .scoreboard .gravatar-img {

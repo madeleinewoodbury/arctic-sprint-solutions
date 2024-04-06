@@ -33,7 +33,7 @@
             </li>
             {% else %}
             <li>
-                <a href="{{ url_for('auth.profile', username=current_user.username) }}">{{ current_user.username }}</a>
+                <a href="{{ url_for('auth.profile')}}">{{ current_user.username }}</a>
             </li>
             {% if current_user.is_admin %}
             <li>

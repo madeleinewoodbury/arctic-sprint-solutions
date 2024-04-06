@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css"
+  href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="profile">
+  <div class="top">
+    <div class="user-info">
+      <img src="{{ friend.gravatar() }}" alt="Gravatar" class="gravatar-img">
+      <div class="title">
+        <h2>{{ friend.username }}</h2>
+        <div class="stats">
+          <span>{{ _("Attractions Visited:") }}
+            <strong>{{number_of_visited_attractions}}</strong></span>
+          <span>{{ _("Points:") }} <strong>{{points}}</span></strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="content-info">
+      <div class="visited-attractions">
+        {% if visited_attractions %}
+        <h2>Visited Attractions</h2>
+        <div class="card-container">
+          {% for visited in visited_attractions %}
+          <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}"
+            class="attraction-card">
+            <img src="{{ visited.attraction.image }}" alt="Attraction Image">
+            <div>
+              <h3>{{ visited.attraction.name }}</h3>
+              <p>Visited on {{ visited.time_visited }}</p>
+              <div class="points">
+                <span>🏆</span> {{ visited.attraction.points }} {{ _("points")
+                }}
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+
+        {% else %}
+        <p class="text-white">{{friend.username}} has not visited any attractions yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
