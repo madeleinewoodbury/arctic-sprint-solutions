@@ -121,12 +121,17 @@
                     <p>You have not set any preferences</p>
                     {% endif %}
                 </div>
+            </div>
+        </template>
+    
+        <template x-if="activeTab === tabs[2]">
+            <div class="content-info">
                 <div class="user-wishlist">
                     <h2>Your Wishlist</h2>
-                    {%if user_groups %}
+                    {%if wishlist_attractions %}
                     <ul>
-                        {% for groups in user_groups %}
-                        <li>{{ groups }}</li>
+                        {% for item in wishlist_attractions %}
+                        <li>{{ item.attraction.name }}</li>
                         {% endfor %}
                     </ul>
                     {% else %}
@@ -135,7 +140,6 @@
                 </div>
             </div>
         </template>
-    
     </div>
 </section>
 

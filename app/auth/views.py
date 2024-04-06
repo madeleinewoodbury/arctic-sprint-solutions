@@ -102,13 +102,16 @@ def profile():
         for attraction in user_groups[0].grouped_attractions
     ]
 
+    print(wishlist_attractions)
+
+    
 
 
     # points = sum(attraction['points'] for attraction in visited_attractions)
     points = sum(item['attraction'].points for item in visited_attractions)
 
     # Tabs for profile page sections, only one section should be active
-    tabs = ['Wishlist Attractions', 'Visited Attractions', 'Profile']
+    tabs = ['Visited Attractions', 'Profile', 'Wishlist']
     
     return render_template(
         'profile.html',
