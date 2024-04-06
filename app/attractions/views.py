@@ -60,7 +60,6 @@ def get_attraction(attraction_id):
         abort(404)  # Raise a 404 error if not found.
 
     visited = False
-
     wishlist = False
 
     if current_user.is_authenticated:
@@ -69,8 +68,14 @@ def get_attraction(attraction_id):
         visited = visited_record is not None
 
         # Check for users previous wishlists
-        wishlist_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
-        wishlist = wishlist_record is not None
+        #wishlist_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
+        #user_groups = AttractionGroup.query.filter_by(owner=current_user.id).all()
+        
+        for group in attraction.groups:
+            if group.owner == current_user.id:
+                wishlist = True
+
+        #wishlist = wishlist_record is not None
 
     return render_template('attraction.html', attraction=attraction, visited=visited, wishlist=wishlist)
 
@@ -103,7 +108,7 @@ def mark_as_visited(attraction_id):
 
 
 # Function for marking an attraction as wishlist
-@attractions.route('/attractions/<int:attraction_id>/mark_as_wishlist', methods=['POST'])
+@attractions.route('/attractions/<int:attraction_id>/add_to_wishlist', methods=['POST'])
 @login_required
 def mark_as_wishlist(attraction_id):
     data = request.get_json()
@@ -112,16 +117,19 @@ def mark_as_wishlist(attraction_id):
     if wishlist:
         # Mark attraction as wishlist
         existing_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
-        if not existing_record:
-            wishlist_attraction = AttractionGroup.query.filter_by(owner=current_user.id).all()
-            db.session.add(wishlist_attraction)
+        if existing_record:
+            existing_record.grouped_attractions.append(Attraction.query.get(attraction_id))
             db.session.commit()
+            return jsonify({'status': 'success', 'message': 'Attraction marked as wishlist.'})
+        if not existing_record:
+            # TODO: Create new wishlist and add attraction
             return jsonify({'status': 'success', 'message': 'Attraction marked as wishlist.'})
         
     else:
-        existing_record = AttractionGroup.query.filter_by(owner=current_user.id).all()
+        existing_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
         if existing_record:
-            db.session.delete(existing_record)
+            # Remove from wishlist
+            existing_record.grouped_attractions.remove(Attraction.query.get(attraction_id))
             db.session.commit()
             return jsonify({'status': 'success', 'message': 'Attraction wish removed.'})
 

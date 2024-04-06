@@ -36,7 +36,7 @@
           type="checkbox" 
           id="wishlistCheckbox" 
           name="wishlist"
-          onchange="markAsWishlist('{{ attraction.id }}')" 
+          onchange="addToWishlist('{{ attraction.id }}')" 
           {% if wishlist %}checked{%endif %}>
           <label for="wishlistCheckbox" class="wishlist-text">
             {{ 'Wishlist' if wishlist else 'Mark as wishlist'}}
@@ -90,9 +90,9 @@
     const wishlist = document.getElementById('wishlistCheckbox').checked;
     const wishlistText = document.querySelector('.wishlist-text');
     wishlistText.innerHTML = wishlist ? 'Added to Wishlist' : 'Add to Wishlist';
-
+    console.log(wishlist);
     // Make a POST request to update the wishlist status on the server
-    fetch(`/attractionGroups/${attractionId}/add_to_wishlist`, {
+    fetch(`/attractions/${attractionId}/add_to_wishlist`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
