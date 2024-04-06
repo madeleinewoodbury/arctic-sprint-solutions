@@ -170,6 +170,30 @@ def get_user_badge_progress(user_id):
     return user_progress
 
 
+def get_user_level(points):
+    #POINTS_PER_LEVEL_BASE = 42
+    #current_level = (points // POINTS_PER_LEVEL_BASE) + 1
+    #points_until_level = points - ((current_level - 1) * POINTS_PER_LEVEL_BASE)
+    
+    POINTS_PER_LEVEL = 50
+    current_level = (points // POINTS_PER_LEVEL) + 1
+    progress = points - ((current_level - 1) * POINTS_PER_LEVEL)
+    
+    
+    #level = {}
+    #level["current_level"] = current_level
+    #level["points_until_level"] = points_until_level
+    #level["points_per_level"] = POINTS_PER_LEVEL_BASE
+    
+    level = {}
+    level["current_level"] = current_level
+    level["progress"] = progress
+    level["points_per_level"] = POINTS_PER_LEVEL
+    
+    return level
+    
+
+
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -179,16 +203,7 @@ def profile():
     # Visited Attractions Tab
     visited_attractions = get_visited_attractions()
     points = sum(item['attraction'].points for item in visited_attractions)
-    
-    # Achievement/Profile level
-    POINTS_PER_LEVEL = 50
-    current_level = (points // POINTS_PER_LEVEL) + 1
-    progress = points - ((current_level - 1) * POINTS_PER_LEVEL)
-    
-    level = {}
-    level["current_level"] = current_level
-    level["progress"] = progress
-    level["points_per_level"] = POINTS_PER_LEVEL
+    level = get_user_level(points)
 
     # Profile Tab
     preferences_form = ProfileForm()
