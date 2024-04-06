@@ -211,7 +211,7 @@ def profile():
 
     if friends_form.validate_on_submit() and search_text:
         users = search_users(search_text)
-        activeTab = 2
+        activeTab = 3
 
     users_requesting = get_users_requesting()
     users_awaiting = get_users_awaiting()
@@ -269,7 +269,7 @@ def send_friend_request(user_id):
     db.session.add(friendship)
     db.session.commit()
     flash(_('The friend request has been sent.'))
-    return redirect(url_for('auth.profile', current_tab=2))
+    return redirect(url_for('auth.profile', current_tab=3))
 
 
 @auth.route('/friends/accept-request/<int:user_id>', methods=['POST'])
@@ -287,7 +287,7 @@ def accept_friend_request(user_id):
     friendship.status = 'accepted'
     db.session.commit()
     flash(_('The friend request has been accepted.'))
-    return redirect(url_for('auth.profile', current_tab=2))
+    return redirect(url_for('auth.profile', current_tab=3))
 
 
 @auth.route('/friends/remove-request/<int:user_id>', methods=['POST'])
@@ -305,7 +305,7 @@ def remove_friend_request(user_id):
     db.session.delete(friendship) 
     db.session.commit()
     flash(_('The friend request has been ended.'))
-    return redirect(url_for('auth.profile', current_tab=2))
+    return redirect(url_for('auth.profile', current_tab=3))
 
 
 @auth.route('/friends/remove-friend/<int:user_id>', methods=['POST'])
