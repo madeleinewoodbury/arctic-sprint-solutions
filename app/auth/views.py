@@ -1,7 +1,7 @@
 from . import auth
 from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm
 from .. import db
-from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction, Badge, BadgeRequirement, UserBadge, AttractionTag
+from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction, GroupedAttraction, AttractionGroup, Badge, BadgeRequirement, UserBadge, AttractionTag
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import _
@@ -221,8 +221,20 @@ def profile():
     # Calculating badge progress for all badges.
     badge_progress = get_user_badge_progress(current_user.id)
 
+    # Wishlist Tab
+    user_wishlist = AttractionGroup.query.filter_by(owner=current_user.id).first()
+    wishlist_attractions = []
+
+    if user_wishlist:
+        wishlist_attractions = [
+            {
+                'attraction': Attraction.query.get(attraction.id)
+            }
+            for attraction in user_wishlist.grouped_attractions
+        ]
+
     # Tabs for profile page sections, only one section should be active
-    tabs = ['Visited Attractions', 'Profile', 'Friends', 'Badges']
+    tabs = ['Visited Attractions', 'Profile', 'Wishlist', 'Friends', 'Badges']
 
     return render_template(
         'profile.html',
@@ -230,7 +242,9 @@ def profile():
         tags=tags,
         user_preferences=user_preferences,
         visited_attractions=visited_attractions,
+        wishlist_attractions=wishlist_attractions,
         number_of_visited_attractions=len(visited_attractions),
+        number_of_wishlist_attractions=len(wishlist_attractions),
         points=points,
         tabs=tabs,
         friends_form=friends_form,
