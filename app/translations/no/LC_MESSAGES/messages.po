@@ -1,0 +1,336 @@
+# Norwegian translations for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-03-24 00:02+0100\n"
+"PO-Revision-Date: 2024-03-21 23:16+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: no\n"
+"Language-Team: no <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#: attractions/forms.py:6
+msgid "Search Attractions"
+msgstr "Søk etter attraksjoner"
+
+#: attractions/forms.py:7 auth/forms.py:48 auth/forms.py:53
+msgid "Search"
+msgstr "Søk"
+
+#: attractions/forms.py:14
+msgid "Category"
+msgstr "Kategorier"
+
+#: attractions/forms.py:15
+msgid "Age group"
+msgstr "Aldersgrupper"
+
+#: attractions/forms.py:16
+msgid "Tag"
+msgstr "Emneknagger"
+
+#: attractions/templates/attractions_main.html:45
+msgid "Clear all filters"
+msgstr "Fjern alle filtere"
+
+#: auth/forms.py:8 auth/forms.py:20 auth/forms.py:40
+msgid "Email"
+msgstr ""
+
+#: auth/forms.py:9
+msgid "Password"
+msgstr "Passord"
+
+#: auth/forms.py:10
+msgid "Remember me"
+msgstr "Husk meg"
+
+#: auth/forms.py:11 templates/base.html:31
+msgid "Login"
+msgstr "Innlogging"
+
+#: auth/forms.py:14
+msgid "First Name"
+msgstr "Fornavn"
+
+#: auth/forms.py:15
+msgid "Last Name"
+msgstr "Etternavn"
+
+#: auth/forms.py:16
+msgid "Username"
+msgstr "Brukernavn"
+
+#: auth/forms.py:19
+msgid ""
+"Username must be at least 10 characters long and only contain letters, "
+"numbers, and underscores."
+msgstr ""
+
+#: auth/forms.py:24
+msgid ""
+"Password must be at least 10 characters long while containing at least "
+"one uppercase letter, one lowercase letter, and one number."
+msgstr ""
+
+#: auth/forms.py:26
+msgid "Register"
+msgstr "Registrer konto"
+
+#: auth/forms.py:31
+msgid "This username is already taken."
+msgstr "Denne brukeren er allerede tatt."
+
+#: auth/forms.py:36
+msgid "This email is already taken."
+msgstr "Denne emailen er allerede tatt."
+
+#: auth/forms.py:41
+msgid "Gravatar URL"
+msgstr ""
+
+#: auth/forms.py:42
+msgid "Select Tags"
+msgstr "Velg emneknagger"
+
+#: auth/forms.py:43
+msgid "Update profile"
+msgstr "Oppdater profil"
+
+#: auth/forms.py:47 auth/forms.py:52
+msgid "Search users"
+msgstr "Søk etter brukere"
+
+#: auth/views.py:23
+msgid "User has been registrated."
+msgstr "Brukeren har blitt registrert."
+
+#: auth/views.py:36
+msgid "Invalid username or password."
+msgstr "Ikke gyldig brukernavn eller passord."
+
+#: auth/views.py:44
+msgid "You have been logged out."
+msgstr "Du har blitt logget ut."
+
+#: auth/views.py:75
+msgid "Your preferences have been updated!"
+msgstr "Dine preferanser har blitt oppdatert."
+
+#: auth/views.py:78
+msgid "User with provided email does not exist"
+msgstr "Emailen er allerede i bruk."
+
+#: auth/views.py:163
+msgid "The friend request has been sent."
+msgstr "Du har en venneforespørsel."
+
+#: auth/views.py:181
+msgid "The friend request has been accepted."
+msgstr "Venneforspørselen har blitt godkjent."
+
+#: auth/views.py:199
+msgid "The friend request has been ended."
+msgstr "Venneforespørselen er ferdig."
+
+#: auth/views.py:217
+msgid "The friend has been removed."
+msgstr "Vennen har blitt fjernet."
+
+#: auth/templates/friends.html:12
+msgid "Friends information"
+msgstr "Venneinformasjon"
+
+#: auth/templates/friends.html:13
+msgid "The page for all friend related information:"
+msgstr "Siden for all vennerelatert informasjon"
+
+#: auth/templates/friends.html:14
+msgid "Add friends and compare your exploration achievements!"
+msgstr "Legg til venn og sammenlig deres prestasjoner"
+
+#: auth/templates/friends.html:22
+msgid "Pending friend requests"
+msgstr "Påventende venneforespørsler"
+
+#: auth/templates/friends.html:25
+msgid "Incoming friend request from"
+msgstr "Innkommende venneforespørsel fra"
+
+#: auth/templates/friends.html:38
+msgid "Pending friend request approval from"
+msgstr "Påventende venneforespørsel fra"
+
+#: auth/templates/friends.html:49
+msgid "Friends list"
+msgstr "Venneliste"
+
+#: auth/templates/friends.html:51
+msgid ""
+"Seems like you haven't added any friends yet. Start adding friends to "
+"compare your exploration progression and achievements!"
+msgstr ""
+"Ser ikke ut som du har noen venner ennå. Start å legge til venner for å "
+"sammenligne deres progresjon og prestasjoner!"
+
+#: auth/templates/friends.html:61
+msgid "Achievement points"
+msgstr "Prestasjonspoeng"
+
+#: auth/templates/friends.html:61
+msgid "WorkInProgress"
+msgstr ""
+
+#: auth/templates/friends.html:64
+msgid "Remove friend"
+msgstr "Fjern venn"
+
+#: auth/templates/friends.html:74
+msgid "Add friends"
+msgstr "Legg til venner"
+
+#: auth/templates/friends.html:93 auth/templates/friends.html:105
+msgid "You are already friends."
+msgstr "Dere er allerede venner"
+
+#: auth/templates/friends.html:96
+msgid "Friend request already sent."
+msgstr "Venneforespørsel allerede sendt."
+
+#: auth/templates/friends.html:108
+msgid "Pending friend request already received."
+msgstr "Påvente venneforespørsel allerede mottatt."
+
+#: auth/templates/friends.html:116
+msgid "Send friend request"
+msgstr "Send venneforespørsel"
+
+#: auth/templates/login.html:17
+msgid "Login with Email"
+msgstr "Innlogging med email"
+
+#: auth/templates/login.html:43
+msgid "Forgot Password?"
+msgstr "Glemt passord?"
+
+#: auth/templates/login.html:50
+msgid "Don't have an account?"
+msgstr "Har du ikke en konto?"
+
+#: auth/templates/login.html:50
+msgid "Register now"
+msgstr "Registrer konto"
+
+#: auth/templates/profile.html:15
+msgid "Hello"
+msgstr "Hallo"
+
+#: auth/templates/profile.html:17
+msgid "Attractions Visited:"
+msgstr "Attraksjoner besøkt"
+
+#: auth/templates/profile.html:18
+msgid "Points:"
+msgstr "Poeng"
+
+#: auth/templates/profile.html:47
+msgid ""
+"Update\n"
+"                            Profile"
+msgstr ""
+"Oppdater\n"
+"                            Profile"
+
+#: auth/templates/profile.html:57
+msgid "Your Preferences"
+msgstr "Dine preferanser"
+
+#: auth/templates/profile.html:65
+msgid "You have not set any preferences"
+msgstr "Du har ikke satt noen preferanser"
+
+#: auth/templates/profile.html:71
+msgid "Visited Attractions"
+msgstr "Besøkte attraksjoner"
+
+#: auth/templates/profile.html:78
+msgid "You have not visited any attractions"
+msgstr "Du har ikke besøkt noen attraksjoner"
+
+#: auth/templates/register.html:17
+msgid "Register your account"
+msgstr "Registrer konto"
+
+#: auth/templates/register.html:72
+msgid "Already have an account?"
+msgstr "Har du allerede en konto?"
+
+#: main/views.py:19
+msgid "Language changed to "
+msgstr "Språk byttet til"
+
+#: main/views.py:22
+msgid "Language not recognized."
+msgstr "Språk ikke gjenkjent"
+
+#: main/templates/change_language.html:14
+msgid "Change Babel Fish"
+msgstr "Bytt babel fisk"
+
+#: main/templates/change_language.html:22
+msgid "Change babelfish settings:"
+msgstr ""
+
+#: main/templates/index.html:9
+msgid ""
+"The answer to the ultimate question of <span>cities</span>, "
+"<span>attractions</span> and <span>tourists</span> is… 42”"
+msgstr ""
+"Svaret til det ultimate spørsmålet for <span>byer</span>, "
+"<span>attraksjoner</span> og <span>turister</span> er… 42”"
+
+#: main/templates/index.html:13
+msgid "Start Your Journey"
+msgstr "Start din reise"
+
+#: templates/base.html:12
+msgid "Welcome to WorkingTitle"
+msgstr ""
+
+#: templates/base.html:24
+msgid "Home"
+msgstr "Heim"
+
+#: templates/base.html:27
+msgid "Attractions"
+msgstr "Attraksjoner"
+
+#: templates/base.html:38
+msgid "Friends"
+msgstr "Venner"
+
+#: templates/base.html:42
+msgid "Admin"
+msgstr "Admin"
+
+#: templates/base.html:45
+msgid "Logout"
+msgstr "Logg Ut"
+
+#: templates/base.html:49
+msgid "Babel Fish"
+msgstr ""
+
+#: templates/admin/index.html:6
+msgid "Welcome to the admin page"
+msgstr "Velkommen til admin siden"
+

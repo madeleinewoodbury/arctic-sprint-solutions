@@ -16,6 +16,15 @@ class Achievement(db.Model):
     title = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text)
     points_needed = db.Column(db.Integer, nullable=False)
+    users = db.relationship(
+        "User", secondary="userAchievement", back_populates="achievements"
+    )
+
+    @property
+    def user_count(self):
+        return User.query.filter(
+            User.achievements.any(Achievement.id == self.id)
+        ).count()
 
 
 class AgeGroup(db.Model):
@@ -55,8 +64,16 @@ class Attraction(db.Model):
         backref=db.backref("attractions", lazy=True)
     )
 
+    visited_by = db.relationship("VisitedAttraction", back_populates="attraction")
     groups = db.relationship("AttractionGroup", secondary="groupedAttraction", back_populates="grouped_attractions")
     
+    def __repr__(self) -> str:
+        return self.name
+
+    @property
+    def visit_count(self):
+        return VisitedAttraction.query.filter_by(attraction_id=self.id).count()
+
     def to_dict(self):
         data = {column.name: getattr(self, column.name) for column in self.__table__.columns}
         data['age_groups'] = [age_group.name for age_group in self.age_groups]
@@ -105,6 +122,12 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
 
+    @property
+    def attraction_count(self):
+        return Attraction.query.filter(
+            Attraction.category.any(Category.id == self.id)
+        ).count()
+
     def __repr__(self) -> str:
         return self.name
 
@@ -115,6 +138,10 @@ class City(db.Model):
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text)
     image = db.Column(db.String(255))
+
+    @property
+    def attractions_count(self):
+        return Attraction.query.filter_by(city=self.id).all()
 
     def __repr__(self) -> str:
         return self.name
@@ -149,6 +176,10 @@ class Tag(db.Model):
     name = db.Column(db.String(50), nullable=False)
 
     user_preferences = db.relationship("UserTagPreference", back_populates="tag")
+
+    @property
+    def attraction_count(self):
+        return Attraction.query.filter(Attraction.tags.any(Tag.id == self.id)).count()
     
     def __repr__(self) -> str:
         return self.name
@@ -167,23 +198,38 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.Integer, db.ForeignKey("userRole.id"), default=2)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
-    tag_preferences = db.relationship("UserTagPreference", back_populates="user")
-    
-    initiated_friendships = db.relationship('Friendship',
-                                            foreign_keys='Friendship.user_1',
-                                            backref=db.backref('initiator', lazy=True)
+    achievements = db.relationship(
+        "Achievement", secondary="userAchievement", back_populates="users"
     )
-
-    received_friendships = db.relationship('Friendship',
-                                           foreign_keys='Friendship.user_2',
-                                           backref=db.backref('recipient',lazy=True)
+    role_rel = db.relationship("UserRole", backref=db.backref("user", lazy=True))
+    tag_preferences = db.relationship("UserTagPreference", back_populates="user")
+    visited_attractions = db.relationship("VisitedAttraction", back_populates="user")
+    initiated_friendships = db.relationship(
+        "Friendship",
+        foreign_keys="Friendship.user_1",
+        backref=db.backref("initiator", lazy=True),
+    )
+    received_friendships = db.relationship(
+        "Friendship",
+        foreign_keys="Friendship.user_2",
+        backref=db.backref("recipient", lazy=True),
     )
     
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+    @property
+    def list_of_achievements(self):
+        return [a.title for a in self.achievements]
+
+    @property
+    def list_of_visited_attractions(self):
+        return [a.attraction.name for a in self.visited_attractions]
 
     def __repr__(self):
         return "<User {}>".format(self.username)
@@ -255,6 +301,9 @@ class VisitedAttraction(db.Model):
         db.Integer, db.ForeignKey("attraction.id"), primary_key=True
     )
     time_visited = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship("User", back_populates="visited_attractions")
+    attraction = db.relationship("Attraction", back_populates="visited_by")
 
 
 class UserTagPreference(db.Model):
@@ -264,3 +313,34 @@ class UserTagPreference(db.Model):
 
     user = db.relationship("User", back_populates="tag_preferences")
     tag = db.relationship("Tag", back_populates="user_preferences")
+
+
+class Badge(db.Model):
+    __tablename__ = "badge"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f"<Badge {self.name}>"
+
+
+class BadgeRequirement(db.Model):
+    __tablename__ = "badgeRequirement"
+    id = db.Column(db.Integer, primary_key=True)
+    badge_id = db.Column(db.Integer, db.ForeignKey("badge.id"), nullable=False)
+    tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"), nullable=False)
+    quantity_required = db.Column(db.Integer, nullable=False)
+
+
+class UserBadge(db.Model):
+    __tablename__ = "userBadge"
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    badge_id = db.Column(db.Integer, db.ForeignKey("badge.id"), primary_key=True)
+    date_earned = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship("User", backref=db.backref("user_badges"))
+    badge = db.relationship("Badge", backref=db.backref("badge_users"))
+
+    def __repr__(self):
+        return f"<UserBadge {self.user_id} {self.badge_id}>"

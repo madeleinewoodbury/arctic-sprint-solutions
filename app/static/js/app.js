@@ -149,10 +149,10 @@ const filterAttractions = () => {
 }
 
 // Displays the profile tabs and select active tab
-function profileTabs(tabs) {    
+function profileTabs(tabs, activeTab=0) {    
     return {
         tabs,
-        activeTab: tabs[0],
+        activeTab: tabs[activeTab],
         
         setActiveTab(tab) {
             this.activeTab = tab

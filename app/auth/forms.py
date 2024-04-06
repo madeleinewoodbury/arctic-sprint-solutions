@@ -2,52 +2,53 @@ from flask_wtf import FlaskForm as Form
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField, SelectMultipleField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, Regexp, Email
 from app.models import User
+from flask_babel import lazy_gettext as _
 
 class LoginForm(Form):
-	email = StringField('Email', validators=[DataRequired(), Email()], render_kw={"autocomplete": "username"})
-	password = PasswordField('Password', validators=[DataRequired()])
-	remember_me = BooleanField('Remember me')
-	submit = SubmitField('Login', render_kw={'class': 'btn btn-primary'})
+	email = StringField(_('Email'), validators=[DataRequired(), Email()], render_kw={"autocomplete": "username"})
+	password = PasswordField(_('Password'), validators=[DataRequired()])
+	remember_me = BooleanField(_('Remember me'))
+	submit = SubmitField(_('Login'), render_kw={'class': 'btn btn-primary'})
 
 class RegistrationForm(Form):
-	first_name = StringField('First Name', validators=[DataRequired(), Length(max=50)])
-	last_name = StringField('Last Name', validators=[DataRequired(), Length(max=50)])
-	username = StringField('Username', validators=[
+	first_name = StringField(_('First Name'), validators=[DataRequired(), Length(max=50)])
+	last_name = StringField(_('Last Name'), validators=[DataRequired(), Length(max=50)])
+	username = StringField(_('Username'), validators=[
     	DataRequired(), Length(min=6, max=20), 
      	Regexp('^[a-zA-Z0-9_]+$', 
-            message='Username must be at least 10 characters long and only contain letters, numbers, and underscores.')])
-	email = StringField('Email', validators=[DataRequired(), Email(), Length(max=50)], render_kw={"autocomplete": "username"})
+            message=_('Username must be at least 10 characters long and only contain letters, numbers, and underscores.'))])
+	email = StringField(_('Email'), validators=[DataRequired(), Email(), Length(max=50)], render_kw={"autocomplete": "username"})
 	password = PasswordField('Password', validators=[
     	DataRequired(), Length(min=10, max=40), 
       	Regexp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,40}$', 
-            message='Password must be at least 10 characters long while containing at least one uppercase letter, one lowercase letter, and one number.')])
+            message=_('Password must be at least 10 characters long while containing at least one uppercase letter, one lowercase letter, and one number.'))])
 	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=10, max=40), EqualTo('password')])
-	submit = SubmitField('Register', render_kw={'class': 'btn btn-primary'})
+	submit = SubmitField(_('Register'), render_kw={'class': 'btn btn-primary'})
  
 	def validate_username(self, username):
 		user = User.query.filter_by(username=username.data).first()
 		if user is not None:
-			raise ValidationError('This username is already taken.')
+			raise ValidationError(_('This username is already taken.'))
 
 	def validate_email(self, email):
 		user = User.query.filter_by(email=email.data).first()
 		if user is not None:
-			raise ValidationError('This email is already taken.')
+			raise ValidationError(_('This email is already taken.'))
 
 
 class ProfileForm(Form):
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    gravatar_url = HiddenField('Gravatar URL')
-    tag = SelectMultipleField('Select Tags', coerce=int)
-    submit = SubmitField('Update profile', render_kw={'class': 'btn btn-primary'})
+    email = StringField(_('Email'), validators=[DataRequired(), Email()])
+    gravatar_url = HiddenField(_('Gravatar URL'))
+    tag = SelectMultipleField(_('Select Tags'), coerce=int)
+    submit = SubmitField(_('Update profile'), render_kw={'class': 'btn btn-primary'})
 
 
 class SearchUsersForm(Form):
-    search_text = StringField('Search users', render_kw={'placeholder': 'Search users'})
-    submit = SubmitField('Search', render_kw={'class': 'btn btn-primary'})
+    search_text = StringField(_('Search users'), render_kw={'placeholder': _('Search users')})
+    submit = SubmitField(_('Search'), render_kw={'class': 'btn btn-primary search-btn'})
     
     
 class FriendRequestForm(Form):
-    search_text = StringField('Search users', render_kw={'placeholder': 'Search users'})
-    submit = SubmitField('Search', render_kw={'class': 'search-btn'})
+    search_text = StringField(_('Search users'), render_kw={'placeholder': _('Search users')})
+    submit = SubmitField(_('Search'), render_kw={'class': 'search-btn'})
     
