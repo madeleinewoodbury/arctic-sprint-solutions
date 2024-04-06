@@ -14,6 +14,15 @@ class Achievement(db.Model):
     title = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text)
     points_needed = db.Column(db.Integer, nullable=False)
+    users = db.relationship(
+        "User", secondary="userAchievement", back_populates="achievements"
+    )
+
+    @property
+    def user_count(self):
+        return User.query.filter(
+            User.achievements.any(Achievement.id == self.id)
+        ).count()
 
 
 class AgeGroup(db.Model):
@@ -187,17 +196,17 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.Integer, db.ForeignKey("userRole.id"), default=2)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    role_rel = db.relationship("UserRole", backref=db.backref("users", lazy=True))
+    achievements = db.relationship(
+        "Achievement", secondary="userAchievement", back_populates="users"
+    )
+    role_rel = db.relationship("UserRole", backref=db.backref("user", lazy=True))
     tag_preferences = db.relationship("UserTagPreference", back_populates="user")
     visited_attractions = db.relationship("VisitedAttraction", back_populates="user")
-
     initiated_friendships = db.relationship(
         "Friendship",
         foreign_keys="Friendship.user_1",
         backref=db.backref("initiator", lazy=True),
     )
-
     received_friendships = db.relationship(
         "Friendship",
         foreign_keys="Friendship.user_2",
@@ -206,6 +215,18 @@ class User(UserMixin, db.Model):
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+    @property
+    def list_of_achievements(self):
+        return [a.title for a in self.achievements]
+
+    @property
+    def list_of_visited_attractions(self):
+        return [a.attraction.name for a in self.visited_attractions]
 
     def __repr__(self):
         return "<User {}>".format(self.username)
@@ -298,14 +319,16 @@ class Badge(db.Model):
     description = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
-        return f'<Badge {self.name}>'
+        return f"<Badge {self.name}>"
+
 
 class BadgeRequirement(db.Model):
-    __tablename__ = 'badgeRequirement'
+    __tablename__ = "badgeRequirement"
     id = db.Column(db.Integer, primary_key=True)
-    badge_id = db.Column(db.Integer, db.ForeignKey('badge.id'), nullable=False)
-    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), nullable=False)
+    badge_id = db.Column(db.Integer, db.ForeignKey("badge.id"), nullable=False)
+    tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"), nullable=False)
     quantity_required = db.Column(db.Integer, nullable=False)
+
 
 class UserBadge(db.Model):
     __tablename__ = "userBadge"
@@ -317,4 +340,4 @@ class UserBadge(db.Model):
     badge = db.relationship("Badge", backref=db.backref("badge_users"))
 
     def __repr__(self):
-        return f'<UserBadge {self.user_id} {self.badge_id}>'
+        return f"<UserBadge {self.user_id} {self.badge_id}>"

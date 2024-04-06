@@ -1,0 +1,63 @@
+<!-- templates/admin/report.html -->
+{% extends 'admin/master.html' %}
+{% block body %}
+<h2>Reports</h2>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.year.label }} {{ form.year(class='form-control') }}
+    </div>
+    <div class="form-group">
+        {{ form.month.label }} {{ form.month(class='form-control') }}
+    </div>
+    <div class="form-group">
+        {{ form.submit(class='btn btn-primary') }}
+    </div>
+</form>
+
+<h3>Achievements Overview</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Acquired in {{ month_name }}, {{ selected_year }}</th>
+            <th>Acquired in all of {{ selected_year }}</th>
+            <th>Total Acquired</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for achievement in achievements_data %}
+        <tr>
+            <td>{{ achievement.title }}</td>
+            <td>{{ achievement.monthly_acquired }}</td>
+            <td>{{ achievement.yearly_acquired }}</td>
+            <td>{{ achievement.total_acquired }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Attractions Overview</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Visited in {{ month_name }}</th>
+            <th>Visited in {{ selected_year }}</th>
+            <th>Total Visits</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for attraction in attractions_data %}
+        <tr>
+            <td>{{ attraction.name }}</td>
+            <td>{{ attraction.monthly_visits }}</td>
+            <td>{{ attraction.yearly_visits }}</td>
+            <td>{{ attraction.total_visits }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
