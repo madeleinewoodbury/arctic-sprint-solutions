@@ -2,7 +2,7 @@ from flask import render_template, abort, request, jsonify
 from flask_login import login_required, current_user
 from .forms import SearchForm, FilterAttractionsForm
 from . import attractions
-from app.models import Attraction, AttractionAgeGroup, AttractionCategory, AttractionTag, Category, AgeGroup, Tag, VisitedAttraction, GroupedAttraction
+from app.models import Attraction, AttractionAgeGroup, AttractionCategory, AttractionTag, Category, AgeGroup, Tag, VisitedAttraction, GroupedAttraction, AttractionGroup
 from app import db
 from sqlalchemy import and_
 
@@ -69,10 +69,10 @@ def get_attraction(attraction_id):
         visited = visited_record is not None
 
         # Check for users previous wishlists
-        wishlist_record = GroupedAttraction.query.filter_by(group_id=current_user.id, attraction_id=attraction_id).first()
+        wishlist_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
         wishlist = wishlist_record is not None
 
-    return render_template('attraction.html', attraction=attraction, visited=visited)
+    return render_template('attraction.html', attraction=attraction, visited=visited, wishlist=wishlist)
 
 
 # Function for marking an attraction as visited
@@ -85,7 +85,7 @@ def mark_as_visited(attraction_id):
     if visited:
         # Mark attraction as visited
         existing_record = VisitedAttraction.query.filter_by(user_id=current_user.id, attraction_id=attraction_id).first()
-        if not existing_record:
+        if not existing_record: 
             visited_attraction = VisitedAttraction(user_id=current_user.id, attraction_id=attraction_id)
             db.session.add(visited_attraction)
             db.session.commit()
@@ -111,15 +111,15 @@ def mark_as_wishlist(attraction_id):
 
     if wishlist:
         # Mark attraction as wishlist
-        existing_record = GroupedAttraction.query.filter_by(group_id=group_id, attraction_id=attraction_id).first()
+        existing_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
         if not existing_record:
-            wishlist_attraction = GroupedAttraction(group_id=group_id, attraction_id=attraction_id)
+            wishlist_attraction = AttractionGroup.query.filter_by(owner=current_user.id).all()
             db.session.add(wishlist_attraction)
             db.session.commit()
             return jsonify({'status': 'success', 'message': 'Attraction marked as wishlist.'})
         
     else:
-        existing_record = GroupedAttraction.query.filter_by(group_id=group_id, attraction_id=attraction_id).first()
+        existing_record = AttractionGroup.query.filter_by(owner=current_user.id).all()
         if existing_record:
             db.session.delete(existing_record)
             db.session.commit()
