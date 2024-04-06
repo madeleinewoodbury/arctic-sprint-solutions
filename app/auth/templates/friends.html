@@ -25,11 +25,11 @@
             <p>{{ _("Incoming friend request from") }} {{ user.username }}</p>
             <form class="request-accept-form" method="POST"
                 action="{{ url_for('auth.accept_friend_request', user_id=user.id) }}">
-                <button type="submit">Accept friend request</button>
+                <button type="submit">_("Accept friend request")</button>
             </form>
             <form class="request-decline-form" method="POST"
                 action="{{ url_for('auth.remove_friend_request', user_id=user.id) }}">
-                <button type="submit">Decline friend request</button>
+                <button type="submit">_("Decline friend request")</button>
             </form>
             {% endfor %}
 
@@ -38,7 +38,7 @@
             <p>{{ _("Pending friend request approval from") }} {{ user.username }}</p>
             <form class="request-accept-form" method="POST"
                 action="{{ url_for('auth.remove_friend_request', user_id=user.id) }}">
-                <button type="submit">Cancel friend request</button>
+                <button type="submit">_("Cancel friend request")</button>
             </form>
             {% endfor %}
         </div>

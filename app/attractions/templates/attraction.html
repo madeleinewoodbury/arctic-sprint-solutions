@@ -59,7 +59,7 @@
   function markAsVisited(attractionId) {
     const visited = document.getElementById('visitedCheckbox').checked;
     const visitedText = document.querySelector('.visited-text');
-    visitedText.innerHTML = visited ? 'Visited' : 'Mark as visited';
+    visitedText.innerHTML = visited ?  'Visited' : 'Mark as visited';
 
     fetch(`/attractions/${attractionId}/mark_as_visited`, {
       method: 'POST',

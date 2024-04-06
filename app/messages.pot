@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-03-24 00:02+0100\n"
+"POT-Creation-Date: 2024-04-06 13:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,7 +37,44 @@ msgstr ""
 msgid "Tag"
 msgstr ""
 
-#: attractions/templates/attractions_main.html:45
+#: attractions/templates/attraction.html:31
+msgid "Visited"
+msgstr ""
+
+#: attractions/templates/attraction.html:31
+msgid "Mark as visited"
+msgstr ""
+
+#: attractions/templates/attraction.html:40 auth/templates/profile.html:46
+msgid "points"
+msgstr ""
+
+#: attractions/templates/attraction.html:44
+msgid "About"
+msgstr ""
+
+#: attractions/templates/attraction.html:46
+#: attractions/templates/attractions_items.html:14
+msgid "Location"
+msgstr ""
+
+#: attractions/templates/attraction.html:48
+msgid "Suitable for"
+msgstr ""
+
+#: attractions/templates/attractions_items.html:15
+msgid "Points"
+msgstr ""
+
+#: attractions/templates/attractions_items.html:16
+msgid "Click for more info"
+msgstr ""
+
+#: attractions/templates/attractions_main.html:15
+msgid "Explore Attractions in Tromsø"
+msgstr ""
+
+#: attractions/templates/attractions_main.html:42
 msgid "Clear all filters"
 msgstr ""
 
@@ -53,7 +90,7 @@ msgstr ""
 msgid "Remember me"
 msgstr ""
 
-#: auth/forms.py:11 templates/base.html:31
+#: auth/forms.py:11 templates/base.html:32
 msgid "Login"
 msgstr ""
 
@@ -109,39 +146,39 @@ msgstr ""
 msgid "Search users"
 msgstr ""
 
-#: auth/views.py:23
+#: auth/views.py:24
 msgid "User has been registrated."
 msgstr ""
 
-#: auth/views.py:36
+#: auth/views.py:37
 msgid "Invalid username or password."
 msgstr ""
 
-#: auth/views.py:44
+#: auth/views.py:45
 msgid "You have been logged out."
 msgstr ""
 
-#: auth/views.py:75
+#: auth/views.py:76
 msgid "Your preferences have been updated!"
 msgstr ""
 
-#: auth/views.py:78
+#: auth/views.py:79
 msgid "User with provided email does not exist"
 msgstr ""
 
-#: auth/views.py:163
+#: auth/views.py:173
 msgid "The friend request has been sent."
 msgstr ""
 
-#: auth/views.py:181
+#: auth/views.py:191
 msgid "The friend request has been accepted."
 msgstr ""
 
-#: auth/views.py:199
+#: auth/views.py:209
 msgid "The friend request has been ended."
 msgstr ""
 
-#: auth/views.py:217
+#: auth/views.py:227
 msgid "The friend has been removed."
 msgstr ""
 
@@ -239,26 +276,26 @@ msgstr ""
 msgid "Points:"
 msgstr ""
 
-#: auth/templates/profile.html:47
-msgid ""
-"Update\n"
-"                            Profile"
-msgstr ""
-
-#: auth/templates/profile.html:57
-msgid "Your Preferences"
-msgstr ""
-
-#: auth/templates/profile.html:65
-msgid "You have not set any preferences"
-msgstr ""
-
-#: auth/templates/profile.html:71
+#: auth/templates/profile.html:37
 msgid "Visited Attractions"
 msgstr ""
 
-#: auth/templates/profile.html:78
-msgid "You have not visited any attractions"
+#: auth/templates/profile.html:44
+msgid "Visited on"
+msgstr ""
+
+#: auth/templates/profile.html:85
+msgid ""
+"Update\n"
+"                                Profile"
+msgstr ""
+
+#: auth/templates/profile.html:92
+msgid "Your Preferences"
+msgstr ""
+
+#: auth/templates/profile.html:100
+msgid "You have not set any preferences"
 msgstr ""
 
 #: auth/templates/register.html:17
@@ -267,10 +304,6 @@ msgstr ""
 
 #: auth/templates/register.html:72
 msgid "Already have an account?"
-msgstr ""
-
-#: main/views.py:19
-msgid "Language changed to "
 msgstr ""
 
 #: main/views.py:22
@@ -285,41 +318,45 @@ msgstr ""
 msgid "Change babelfish settings:"
 msgstr ""
 
+#: main/templates/change_language.html:28
+msgid "Change Language"
+msgstr ""
+
 #: main/templates/index.html:9
 msgid ""
 "The answer to the ultimate question of <span>cities</span>, "
-"<span>attractions</span> and <span>tourists</span> is… 42”"
+"<span>attractions</span> and <span>tourists</span> is… 42"
 msgstr ""
 
 #: main/templates/index.html:13
 msgid "Start Your Journey"
 msgstr ""
 
-#: templates/base.html:12
+#: templates/base.html:13
 msgid "Welcome to WorkingTitle"
 msgstr ""
 
-#: templates/base.html:24
+#: templates/base.html:25
 msgid "Home"
 msgstr ""
 
-#: templates/base.html:27
+#: templates/base.html:28
 msgid "Attractions"
 msgstr ""
 
-#: templates/base.html:38
+#: templates/base.html:39
 msgid "Friends"
 msgstr ""
 
-#: templates/base.html:42
+#: templates/base.html:43
 msgid "Admin"
 msgstr ""
 
-#: templates/base.html:45
+#: templates/base.html:46
 msgid "Logout"
 msgstr ""
 
-#: templates/base.html:49
+#: templates/base.html:50
 msgid "Babel Fish"
 msgstr ""
 
