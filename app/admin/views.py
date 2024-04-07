@@ -32,18 +32,6 @@ class AdminModelView(ModelView):
         return redirect(url_for("auth.login", next=request.url))
 
 
-class VisitCountFilter(filters.BaseSQLAFilter):
-    def apply(self, query, value, alias=None):
-        return (
-            query.outerjoin(VisitedAttraction)
-            .group_by(Attraction.id)
-            .having(func.count(VisitedAttraction.attraction_id) >= int(value))
-        )
-
-    def operation(self):
-        return "having at least"
-
-
 class UserView(AdminModelView):
 
     can_view_details = True
@@ -93,6 +81,7 @@ class AgeGroupView(AdminModelView):
 
 
 class AttractionView(AdminModelView):
+
     form_columns = [
         "name",
         "city_rel",
@@ -112,19 +101,10 @@ class AttractionView(AdminModelView):
         "tags",
         "points",
         "age_groups",
-        "visit_count",
+        "visit_count"
     ]
 
-    column_filters = [
-        VisitCountFilter(Attraction, "Visit Count"),
-        "tags",
-        "age_groups",
-    ]
-
-    def scaffold_filters(self, name):
-        if name == "visit_count":
-            return [VisitCountFilter(Attraction, "Visit Count")]
-        return super(AttractionView, self).scaffold_filters(name)
+    column_filters = ["tags", "age_groups", "visit_count"]
 
 
 class ReportView(BaseView):
