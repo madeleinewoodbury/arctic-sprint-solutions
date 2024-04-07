@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import flash, redirect, url_for, request
 from flask_login import current_user
 from flask_admin import BaseView, expose
+from flask_admin.contrib.sqla import filters
 from app.admin.forms import ReportForm
 from app.models import (
     UserAchievement,
@@ -17,6 +18,7 @@ from app.models import (
 )
 from flask_admin.contrib.sqla import ModelView
 from app.admin import db
+from sqlalchemy import func
 
 
 class AdminModelView(ModelView):
@@ -28,6 +30,18 @@ class AdminModelView(ModelView):
     def inaccessible_callback(self, name, **kwargs):
         """Redirects to login page if user is not admin"""
         return redirect(url_for("auth.login", next=request.url))
+
+
+class VisitCountFilter(filters.BaseSQLAFilter):
+    def apply(self, query, value, alias=None):
+        return (
+            query.outerjoin(VisitedAttraction)
+            .group_by(Attraction.id)
+            .having(func.count(VisitedAttraction.attraction_id) >= int(value))
+        )
+
+    def operation(self):
+        return "having at least"
 
 
 class UserView(AdminModelView):
@@ -100,6 +114,17 @@ class AttractionView(AdminModelView):
         "age_groups",
         "visit_count",
     ]
+
+    column_filters = [
+        VisitCountFilter(Attraction, "Visit Count"),
+        "tags",
+        "age_groups",
+    ]
+
+    def scaffold_filters(self, name):
+        if name == "visit_count":
+            return [VisitCountFilter(Attraction, "Visit Count")]
+        return super(AttractionView, self).scaffold_filters(name)
 
 
 class ReportView(BaseView):
