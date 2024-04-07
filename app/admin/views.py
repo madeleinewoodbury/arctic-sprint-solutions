@@ -160,9 +160,11 @@ class ReportView(BaseView):
                     db.case(
                         (
                             db.and_(
-                                db.extract("year", UserAchievement.time_achieved)
+                                db.extract(
+                                    "year", UserAchievement.time_achieved)
                                 == selected_year,
-                                db.extract("month", UserAchievement.time_achieved)
+                                db.extract(
+                                    "month", UserAchievement.time_achieved)
                                 == selected_month,
                             ),
                             1,
@@ -179,9 +181,8 @@ class ReportView(BaseView):
                         else_=0,
                     )
                 ).label("yearly_acquired"),
-                db.func.count(UserAchievement.achievement_id)
-                .over(partition_by=Achievement.title)
-                .label("total_acquired"),
+                db.func.count(UserAchievement.achievement_id).label(
+                    "total_acquired"),
             )
             .join(UserAchievement)
             .group_by(Achievement.title)
@@ -196,9 +197,11 @@ class ReportView(BaseView):
                     db.case(
                         (
                             db.and_(
-                                db.extract("year", VisitedAttraction.time_visited)
+                                db.extract(
+                                    "year", VisitedAttraction.time_visited)
                                 == selected_year,
-                                db.extract("month", VisitedAttraction.time_visited)
+                                db.extract(
+                                    "month", VisitedAttraction.time_visited)
                                 == selected_month,
                             ),
                             1,
@@ -216,7 +219,6 @@ class ReportView(BaseView):
                     )
                 ).label("yearly_visits"),
                 db.func.count(VisitedAttraction.attraction_id)
-                .over(partition_by=Attraction.name)
                 .label("total_visits"),
             )
             .join(VisitedAttraction)
