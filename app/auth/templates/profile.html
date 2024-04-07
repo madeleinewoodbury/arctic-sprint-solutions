@@ -20,9 +20,8 @@
                     <span>{{ _("Level:") }} <strong>{{level.current_level}}</span></strong>
                 </div>
                 <div class="progress-container">
-                    <label class="progress-label">{{ _("Progress to next level:") }}</label>
-                    <progress class="progress-bar" value="{{ level.progress }}" max="{{level.points_per_level}}"></progress>
-                    <span class="progress-text"> <strong>{{ level.progress }} / {{ level.points_per_level }}</strong> {{ _("Points") }}</span>
+                    <progress class="progress-bar" value="{{ level.progress }}" max="{{ level.points_required }}"></progress>
+                    <span class="progress-text"> <strong>{{ level.points_missing }}</strong> {{ _("points until level ") }}<strong>{{level.current_level + 1}}</strong></span>
                 </div>
             </div>
         </div>

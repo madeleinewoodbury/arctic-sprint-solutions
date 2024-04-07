@@ -109,6 +109,7 @@
                     <th>{{ _("Username") }}</th>
                     <th class="hide-sm">{{ _("Visited Attractions") }}</th>
                     <th>{{ _("Points") }}</th>
+                    <th>{{ _("Level") }}</th>
                     <th></th>
                 </tr>
             </thead>
@@ -125,6 +126,7 @@
                     </td>
                     <td class="hide-sm">{{ friend.visited|length }}</td>
                     <td>{{ friend.points }}</td>
+                    <td>{{ friend.level }}</td>
                     <td>
                         <form class="remove-friend-form" method="POST"
                             action="{{ url_for('auth.remove_friend', user_id=friend.user.id) }}">
