@@ -1,3 +1,4 @@
+import math
 from . import auth
 from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm
 from .. import db
@@ -112,7 +113,6 @@ def get_firends():
                                Friendship.status == 'accepted') \
                            ).filter(User.id != current_user.id).all()
     
-    
     friends = []
     # Get attraction info from friend
     for user in users:
@@ -121,6 +121,7 @@ def get_firends():
                'visited': get_visited_attractions(user.id)
          }  
         friend['points'] = sum(item['attraction'].points for item in friend['visited'])
+        friend['level'] = get_user_level(friend['points']).get('current_level')
         friends.append(friend)
 
     friends = sorted(friends, key=lambda x: x['points'], reverse=True)
@@ -183,24 +184,26 @@ def get_user_badge_progress(user_id):
 
 
 def get_user_level(points):
-    #POINTS_PER_LEVEL_BASE = 42
-    #current_level = (points // POINTS_PER_LEVEL_BASE) + 1
-    #points_until_level = points - ((current_level - 1) * POINTS_PER_LEVEL_BASE)
+    BASE_POINTS = 42
+    GROWTH_RATE = 1.05
     
-    POINTS_PER_LEVEL = 50
-    current_level = (points // POINTS_PER_LEVEL) + 1
-    progress = points - ((current_level - 1) * POINTS_PER_LEVEL)
+    current_level = 1
+    points_required = BASE_POINTS
+    points_remaining = points
     
+    while points_remaining >= points_required:
+        points_remaining -= points_required
+        current_level += 1
+        points_required = int((points_required + BASE_POINTS) * GROWTH_RATE - points_required)
+        
+    points_missing = points_required - points_remaining
     
-    #level = {}
-    #level["current_level"] = current_level
-    #level["points_until_level"] = points_until_level
-    #level["points_per_level"] = POINTS_PER_LEVEL_BASE
-    
-    level = {}
-    level["current_level"] = current_level
-    level["progress"] = progress
-    level["points_per_level"] = POINTS_PER_LEVEL
+    level = {
+        "current_level": current_level,
+        "points_required": points_required,
+        "points_missing": points_missing,
+        "progress": points_remaining
+    }
     
     return level
     
@@ -347,10 +350,13 @@ def friend_profile(user_id):
 
     visited_attractions = get_visited_attractions(user_id)
     points = sum(item['attraction'].points for item in visited_attractions)
+    level = get_user_level(points)
 
     return render_template(
          'friendProfile.html', 
          friend=friend, 
          visited_attractions=visited_attractions, 
          number_of_visited_attractions=len(visited_attractions),
-         points=points)
+         points=points,
+         level=level
+         )
