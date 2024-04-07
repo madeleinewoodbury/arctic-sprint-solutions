@@ -8,8 +8,6 @@ from flask_login import UserMixin, AnonymousUserMixin, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
-
-
 class Achievement(db.Model):
     __tablename__ = "achievement"
     id = db.Column(db.Integer, primary_key=True)
@@ -59,14 +57,16 @@ class Attraction(db.Model):
         backref=db.backref("attractions", lazy=True),
     )
     tags = db.relationship(
-        "Tag",
-        secondary="attractionTag",
-        backref=db.backref("attractions", lazy=True)
+        "Tag", secondary="attractionTag", backref=db.backref("attractions", lazy=True)
     )
 
     visited_by = db.relationship("VisitedAttraction", back_populates="attraction")
-    groups = db.relationship("AttractionGroup", secondary="groupedAttraction", back_populates="grouped_attractions")
-    
+    groups = db.relationship(
+        "AttractionGroup",
+        secondary="groupedAttraction",
+        back_populates="grouped_attractions",
+    )
+
     def __repr__(self) -> str:
         return self.name
 
@@ -75,10 +75,12 @@ class Attraction(db.Model):
         return VisitedAttraction.query.filter_by(attraction_id=self.id).count()
 
     def to_dict(self):
-        data = {column.name: getattr(self, column.name) for column in self.__table__.columns}
-        data['age_groups'] = [age_group.name for age_group in self.age_groups]
-        data['category'] = [category.name for category in self.category]
-        data['tags'] = [tag.name for tag in self.tags]
+        data = {
+            column.name: getattr(self, column.name) for column in self.__table__.columns
+        }
+        data["age_groups"] = [age_group.name for age_group in self.age_groups]
+        data["category"] = [category.name for category in self.category]
+        data["tags"] = [tag.name for tag in self.tags]
         return data
 
 
@@ -106,7 +108,9 @@ class AttractionGroup(db.Model):
     visibility = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    grouped_attractions = db.relationship("Attraction", secondary="groupedAttraction", back_populates="groups")
+    grouped_attractions = db.relationship(
+        "Attraction", secondary="groupedAttraction", back_populates="groups"
+    )
 
 
 class AttractionTag(db.Model):
@@ -180,12 +184,12 @@ class Tag(db.Model):
     @property
     def attraction_count(self):
         return Attraction.query.filter(Attraction.tags.any(Tag.id == self.id)).count()
-    
+
     def __repr__(self) -> str:
         return self.name
 
     def get_id(self):
-        return (self.id)
+        return self.id
 
 
 class User(UserMixin, db.Model):
@@ -214,7 +218,6 @@ class User(UserMixin, db.Model):
         foreign_keys="Friendship.user_2",
         backref=db.backref("recipient", lazy=True),
     )
-    
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -241,8 +244,8 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password, password)
 
     def get_id(self):
-        return (self.id)
-    
+        return self.id
+
     @property
     def is_authenticated(self):
         return True
@@ -255,13 +258,13 @@ class User(UserMixin, db.Model):
     def is_admin(self):
         return self.role_rel.is_admin
 
-    def gravatar(self, size=100, default='identicon', rating='g'):
+    def gravatar(self, size=100, default="identicon", rating="g"):
         if request.is_secure:
-            url = 'https://secure.gravatar.com/avatar'
+            url = "https://secure.gravatar.com/avatar"
         else:
-            url = 'http://www.gravatar.com/avatar'
-        hash = hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
-        return f'{url}/{hash}?s={size}&d={default}&r={rating}'
+            url = "http://www.gravatar.com/avatar"
+        hash = hashlib.md5(self.email.lower().encode("utf-8")).hexdigest()
+        return f"{url}/{hash}?s={size}&d={default}&r={rating}"
 
 
 class Anonymous(AnonymousUserMixin):
@@ -301,15 +304,15 @@ class VisitedAttraction(db.Model):
         db.Integer, db.ForeignKey("attraction.id"), primary_key=True
     )
     time_visited = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     user = db.relationship("User", back_populates="visited_attractions")
     attraction = db.relationship("Attraction", back_populates="visited_by")
 
 
 class UserTagPreference(db.Model):
     __tablename__ = "userTagPreference"
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"), primary_key=True)
 
     user = db.relationship("User", back_populates="tag_preferences")
     tag = db.relationship("Tag", back_populates="user_preferences")
