@@ -1,3 +1,4 @@
+import math
 from . import auth
 from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm
 from .. import db
@@ -112,7 +113,6 @@ def get_firends():
                                Friendship.status == 'accepted') \
                            ).filter(User.id != current_user.id).all()
     
-    
     friends = []
     # Get attraction info from friend
     for user in users:
@@ -121,6 +121,7 @@ def get_firends():
                'visited': get_visited_attractions(user.id)
          }  
         friend['points'] = sum(item['attraction'].points for item in friend['visited'])
+        friend['level'] = get_user_level(friend['points']).get('current_level')
         friends.append(friend)
 
     friends = sorted(friends, key=lambda x: x['points'], reverse=True)
@@ -182,15 +183,42 @@ def get_user_badge_progress(user_id):
     return user_progress
 
 
+def get_user_level(points):
+    BASE_POINTS = 42
+    GROWTH_RATE = 1.05
+    
+    current_level = 1
+    points_required = BASE_POINTS
+    points_remaining = points
+    
+    while points_remaining >= points_required:
+        points_remaining -= points_required
+        current_level += 1
+        points_required = int((points_required + BASE_POINTS) * GROWTH_RATE - points_required)
+        
+    points_missing = points_required - points_remaining
+    
+    level = {
+        "current_level": current_level,
+        "points_required": points_required,
+        "points_missing": points_missing,
+        "progress": points_remaining
+    }
+    
+    return level
+    
+
+
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     current_tab = request.args.get('current_tab')
     activeTab = current_tab if current_tab else 0
-
+    
     # Visited Attractions Tab
     visited_attractions = get_visited_attractions(current_user.id)
     points = sum(item['attraction'].points for item in visited_attractions)
+    level = get_user_level(points)
 
     # Profile Tab
     preferences_form = ProfileForm()
@@ -253,7 +281,8 @@ def profile():
         users_awaiting=users_awaiting,
         friends=friends,
         badge_progress=badge_progress,
-        activeTab=activeTab
+        activeTab=activeTab,
+        level=level
     )
 
 @auth.route('/friends/send-request/<int:user_id>', methods=['POST'])
@@ -335,10 +364,13 @@ def friend_profile(user_id):
 
     visited_attractions = get_visited_attractions(user_id)
     points = sum(item['attraction'].points for item in visited_attractions)
+    level = get_user_level(points)
 
     return render_template(
          'friendProfile.html', 
          friend=friend, 
          visited_attractions=visited_attractions, 
          number_of_visited_attractions=len(visited_attractions),
-         points=points)
+         points=points,
+         level=level
+         )

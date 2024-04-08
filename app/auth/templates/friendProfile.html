@@ -15,8 +15,17 @@
         <div class="stats">
           <span>{{ _("Attractions Visited:") }}
             <strong>{{number_of_visited_attractions}}</strong></span>
-          <span>{{ _("Points:") }} <strong>{{points}}</span></strong>
+          <span>{{ _("Points:") }} 
+            <strong>{{points}}</strong></span>
+          <span>{{ _("Level:") }} 
+            <strong>{{level.current_level}}</strong></span>
         </div>
+        <div class="progress-container">
+          <progress class="progress-bar" value="{{ level.progress }}" max="{{ level.points_required }}"></progress>
+          <span class="progress-text">
+            <strong>{{ level.points_missing }}</strong> {{ _("points until level ") }}
+            <strong>{{level.current_level + 1}}</strong></span>
+      </div>
       </div>
     </div>
   </div>

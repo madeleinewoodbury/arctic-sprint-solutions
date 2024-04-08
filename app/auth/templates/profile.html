@@ -18,10 +18,15 @@
                     <span>{{ _("Visited:") }} <strong>{{number_of_visited_attractions}}</strong></span>
                     <span>{{ _("Wishlist:") }}<strong>{{number_of_wishlist_attractions}}</strong></span>
                     <span>{{ _("Points:") }} <strong>{{points}}</span></strong>
+                    <span>{{ _("Level:") }} <strong>{{level.current_level}}</span></strong>
+                </div>
+                <div class="progress-container">
+                    <progress class="progress-bar" value="{{ level.progress }}" max="{{ level.points_required }}"></progress>
+                    <span class="progress-text"> <strong>{{ level.points_missing }}</strong> {{ _("points until level ") }}<strong>{{level.current_level + 1}}</strong></span>
                 </div>
             </div>
         </div>
-    </div>  
+    </div> 
 
     <ul class="profile-tabs">
         <template x-for="tab in tabs" :key="tab">
