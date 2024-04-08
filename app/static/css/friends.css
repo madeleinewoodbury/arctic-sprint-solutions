@@ -258,7 +258,7 @@ form.request-form {
 
 @media (min-width: 576px) {
   .scoreboard tr {
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   }
 
   .scoreboard .friend-info {
@@ -272,7 +272,7 @@ form.request-form {
 
 @media (min-width: 768px) {
   .scoreboard tr {
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   }
 }
 

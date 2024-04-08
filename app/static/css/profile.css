@@ -16,45 +16,6 @@
   color: var(--white);
 }
 
-
-.progress-container {
-  display: flex;
-  align-items: center;
-}
-
-.progress-container .progress-label {
-  position: static;
-  left: auto;
-  top: auto;
-  transform: none;
-  background-color: transparent;
-  padding: 0;
-  gap: .25rem;
-  font-size: 1rem;
-  font-family: var(--secondary-font);
-  margin-right: 1rem;
-}
-
-.progress-container .progress-text {
-  gap: .25rem;
-  font-size: 1rem;
-  font-family: var(--secondary-font);
-  margin-left: 1rem;
-}
-
-.progress-container .progress-text strong {
-  font-family: var(--main-font);
-  color: var(--bg-light);
-}
-
-.progress-bar {
-  width: 20rem;
-  height: 1rem;
-  background-color: #f0f0f0; /* Background color */
-  border-radius: 10px;
-}
-
-
 .profile .top .gravatar-img {
   width: 75px;
   height: 75px;
@@ -87,6 +48,44 @@
 
 .profile .top .title p.lead {
   font-size: 1.2rem;
+}
+
+.profile .top .title .progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  margin-top: .20rem;
+  font-size: 1rem;
+  font-family: var(--secondary-font);
+}
+
+.profile .top .title .progress-container span strong  {
+  font-family: var(--main-font);
+  color: var(--bg-light);
+}
+
+.profile .top .title .progress-container .progress-bar  {
+  --color: var(--primary);  /* the progress color */
+  --background: white; /* the background color */
+  
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  width: fit-content;
+  height: 1.2rem;
+  border-radius: 10em;
+  margin-top: .10rem;
+  background: var(--background);
+}
+.progress-bar::-webkit-progress-bar {
+  background: var(--background);
+}
+.progress-bar::-webkit-progress-value {
+  background: var(--color);
+}
+.progress-bar::-moz-progress-bar {
+  background: var(--color);
 }
 
 .profile .content {
@@ -304,6 +303,12 @@
     font-size: 1.1rem;
   }
 
+  .profile .top .title .progress-container {
+    flex-direction: row;
+    gap: 2rem;
+    font-size: 1.1rem;
+  }
+
   .profile .attraction-card .points {
     position: absolute;
     top: .5rem;
@@ -335,7 +340,6 @@
   .profile .top .title p.lead {
     font-size: 1.3rem;
   }
-
 
   .profile .content-info {
     flex-direction: row;
