@@ -199,12 +199,14 @@
   margin-top: 1rem;
 }
 
-/* Visited Attractions */
-.profile .visited-attractions{
+/* Visited Attractions and wishlist*/
+.profile .visited-attractions,
+.profile .user-wishlist{
   width: 100%;
 }
 
-.profile .visited-attractions h2{
+.profile .visited-attractions h2,
+.profile .user-wishlist h2 {
   color: var(--white);
   font-size: 1.75rem;
   font-weight: normal;

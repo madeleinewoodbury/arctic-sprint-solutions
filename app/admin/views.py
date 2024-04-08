@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import flash, redirect, url_for, request
 from flask_login import current_user
 from flask_admin import BaseView, expose
+from flask_admin.contrib.sqla import filters
 from app.admin.forms import ReportForm
 from app.models import (
     UserAchievement,
@@ -17,6 +18,7 @@ from app.models import (
 )
 from flask_admin.contrib.sqla import ModelView
 from app.admin import db
+from sqlalchemy import func
 
 
 class AdminModelView(ModelView):
@@ -79,6 +81,7 @@ class AgeGroupView(AdminModelView):
 
 
 class AttractionView(AdminModelView):
+
     form_columns = [
         "name",
         "city_rel",
@@ -98,8 +101,10 @@ class AttractionView(AdminModelView):
         "tags",
         "points",
         "age_groups",
-        "visit_count",
+        "visit_count"
     ]
+
+    column_filters = ["tags", "age_groups", "visit_count"]
 
 
 class ReportView(BaseView):
@@ -135,9 +140,11 @@ class ReportView(BaseView):
                     db.case(
                         (
                             db.and_(
-                                db.extract("year", UserAchievement.time_achieved)
+                                db.extract(
+                                    "year", UserAchievement.time_achieved)
                                 == selected_year,
-                                db.extract("month", UserAchievement.time_achieved)
+                                db.extract(
+                                    "month", UserAchievement.time_achieved)
                                 == selected_month,
                             ),
                             1,
@@ -154,9 +161,8 @@ class ReportView(BaseView):
                         else_=0,
                     )
                 ).label("yearly_acquired"),
-                db.func.count(UserAchievement.achievement_id)
-                .over(partition_by=Achievement.title)
-                .label("total_acquired"),
+                db.func.count(UserAchievement.achievement_id).label(
+                    "total_acquired"),
             )
             .join(UserAchievement)
             .group_by(Achievement.title)
@@ -171,9 +177,11 @@ class ReportView(BaseView):
                     db.case(
                         (
                             db.and_(
-                                db.extract("year", VisitedAttraction.time_visited)
+                                db.extract(
+                                    "year", VisitedAttraction.time_visited)
                                 == selected_year,
-                                db.extract("month", VisitedAttraction.time_visited)
+                                db.extract(
+                                    "month", VisitedAttraction.time_visited)
                                 == selected_month,
                             ),
                             1,
@@ -191,7 +199,6 @@ class ReportView(BaseView):
                     )
                 ).label("yearly_visits"),
                 db.func.count(VisitedAttraction.attraction_id)
-                .over(partition_by=Attraction.name)
                 .label("total_visits"),
             )
             .join(VisitedAttraction)

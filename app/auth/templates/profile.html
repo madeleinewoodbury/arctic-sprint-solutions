@@ -15,7 +15,8 @@
             <div class="title">
                 <h2>{{ _("Hello") }} {{ current_user.username }}</h2>
                 <div class="stats">
-                    <span>{{ _("Attractions Visited:") }} <strong>{{number_of_visited_attractions}}</strong></span>
+                    <span>{{ _("Visited:") }} <strong>{{number_of_visited_attractions}}</strong></span>
+                    <span>{{ _("Wishlist:") }}<strong>{{number_of_wishlist_attractions}}</strong></span>
                     <span>{{ _("Points:") }} <strong>{{points}}</span></strong>
                     <span>{{ _("Level:") }} <strong>{{level.current_level}}</span></strong>
                 </div>
@@ -47,8 +48,8 @@
                             <div>
                                 <h3>{{ visited.attraction.name }}</h3>
                                 <p>Visited on {{ visited.time_visited }}</p>
-                                <div class="points">
-                                    <span>🏆</span> {{ visited.attraction.points }} {{ _("points") }}
+                            <div class="points">
+                                <span>🏆</span> {{ visited.attraction.points }} {{ _("points") }}
                                 </div>
                             </div>
                         </a>
@@ -60,7 +61,6 @@
                     {% endif %}
                 </div>
             </div>
-
         </template>
 
         <template x-if="activeTab === tabs[1]">
@@ -109,10 +109,32 @@
         </template>
 
         <template x-if="activeTab === tabs[2]">
-            {%include 'friends.html'%}
+            <div class="content-info">
+                <div class="user-wishlist">
+                    <h2>Your Wishlist</h2>
+                    {%if wishlist_attractions %}
+                    <div class="card-container">
+                        {% for item in wishlist_attractions %}
+                        <a href="{{ url_for('attractions.get_attraction', attraction_id=item.attraction.id) }}" class="attraction-card">
+                            <img src="{{ item.attraction.image }}" alt="Attraction Image">
+                            <div>
+                                <h3>{{ item.attraction.name }}</h3>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-white">You have not added any attractions to your wishlist</p>
+                    {% endif %}
+                </div>
+            </div>
         </template>
 
         <template x-if="activeTab === tabs[3]">
+            {%include 'friends.html'%}
+        </template>
+
+        <template x-if="activeTab === tabs[4]">
             <div class="visited-attractions">
                 <h2>Badge Progress</h2>
                 <div class="card-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); grid-gap: 10px;"> 

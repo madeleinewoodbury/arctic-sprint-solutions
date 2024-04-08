@@ -2,7 +2,7 @@ from flask import render_template, abort, request, jsonify
 from flask_login import login_required, current_user
 from .forms import SearchForm, FilterAttractionsForm
 from . import attractions
-from app.models import Attraction, AttractionAgeGroup, AttractionCategory, AttractionTag, Category, AgeGroup, Tag, VisitedAttraction
+from app.models import Attraction, AttractionAgeGroup, AttractionCategory, AttractionTag, Category, AgeGroup, Tag, VisitedAttraction, GroupedAttraction, AttractionGroup
 from app import db
 from sqlalchemy import and_
 
@@ -60,13 +60,24 @@ def get_attraction(attraction_id):
         abort(404)  # Raise a 404 error if not found.
 
     visited = False
+    wishlist = False
 
     if current_user.is_authenticated:
         # Check for users previous visits
         visited_record = VisitedAttraction.query.filter_by(user_id=current_user.id, attraction_id=attraction_id).first()
         visited = visited_record is not None
 
-    return render_template('attraction.html', attraction=attraction, visited=visited)
+        # Check for users previous wishlists
+        #wishlist_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
+        #user_groups = AttractionGroup.query.filter_by(owner=current_user.id).all()
+        
+        for group in attraction.groups:
+            if group.owner == current_user.id:
+                wishlist = True
+
+        #wishlist = wishlist_record is not None
+
+    return render_template('attraction.html', attraction=attraction, visited=visited, wishlist=wishlist)
 
 
 # Function for marking an attraction as visited
@@ -79,14 +90,13 @@ def mark_as_visited(attraction_id):
     if visited:
         # Mark attraction as visited
         existing_record = VisitedAttraction.query.filter_by(user_id=current_user.id, attraction_id=attraction_id).first()
-        if not existing_record:
+        if not existing_record: 
             visited_attraction = VisitedAttraction(user_id=current_user.id, attraction_id=attraction_id)
             db.session.add(visited_attraction)
             db.session.commit()
             return jsonify({'status': 'success', 'message': 'Attraction marked as visited.'})
         
     else:
-        # Legg til logikk for å fjerne merkingen
         existing_record = VisitedAttraction.query.filter_by(user_id=current_user.id, attraction_id=attraction_id).first()
         if existing_record:
             db.session.delete(existing_record)
@@ -94,6 +104,43 @@ def mark_as_visited(attraction_id):
             return jsonify({'status': 'success', 'message': 'Attraction mark removed.'})
 
     return jsonify({'status': 'error', 'message': 'An error occurred.'})
+
+
+
+# Function for marking an attraction as wishlist
+@attractions.route('/attractions/<int:attraction_id>/add_to_wishlist', methods=['POST'])
+@login_required
+def mark_as_wishlist(attraction_id):
+    data = request.get_json()
+    wishlist = data.get('wishlist', False)
+
+    if wishlist:
+        # Mark attraction as wishlist
+        existing_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
+        if existing_record:
+            # Add to wishlist
+            existing_record.grouped_attractions.append(Attraction.query.get(attraction_id))
+            db.session.commit()
+            return jsonify({'status': 'success', 'message': 'Attraction marked as wishlist.'})
+        if not existing_record:
+            # Create new wishlist
+            new_group = AttractionGroup(owner=current_user.id, title="Wishlist", visibility="private")
+            # Add to new wishlist
+            new_group.grouped_attractions.append(Attraction.query.get(attraction_id))
+            db.session.add(new_group)
+            db.session.commit()
+            return jsonify({'status': 'success', 'message': 'Attraction marked as wishlist.'})
+        
+    else:
+        existing_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
+        if existing_record:
+            # Remove from wishlist
+            existing_record.grouped_attractions.remove(Attraction.query.get(attraction_id))
+            db.session.commit()
+            return jsonify({'status': 'success', 'message': 'Attraction wish removed.'})
+
+    return jsonify({'status': 'error', 'message': 'An error occurred.'})
+
 
 
    

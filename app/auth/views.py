@@ -2,7 +2,7 @@ import math
 from . import auth
 from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm
 from .. import db
-from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction, Badge, BadgeRequirement, UserBadge, AttractionTag
+from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction, GroupedAttraction, AttractionGroup, Badge, BadgeRequirement, UserBadge, AttractionTag
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import _
@@ -239,7 +239,7 @@ def profile():
 
     if friends_form.validate_on_submit() and search_text:
         users = search_users(search_text)
-        activeTab = 2
+        activeTab = 3
 
     users_requesting = get_users_requesting()
     users_awaiting = get_users_awaiting()
@@ -249,8 +249,20 @@ def profile():
     # Calculating badge progress for all badges.
     badge_progress = get_user_badge_progress(current_user.id)
 
+    # Wishlist Tab
+    user_wishlist = AttractionGroup.query.filter_by(owner=current_user.id).first()
+    wishlist_attractions = []
+
+    if user_wishlist:
+        wishlist_attractions = [
+            {
+                'attraction': Attraction.query.get(attraction.id)
+            }
+            for attraction in user_wishlist.grouped_attractions
+        ]
+
     # Tabs for profile page sections, only one section should be active
-    tabs = ['Visited Attractions', 'Profile', 'Friends', 'Badges']
+    tabs = ['Visited Attractions', 'Profile', 'Wishlist', 'Friends', 'Badges']
 
     return render_template(
         'profile.html',
@@ -258,7 +270,9 @@ def profile():
         tags=tags,
         user_preferences=user_preferences,
         visited_attractions=visited_attractions,
+        wishlist_attractions=wishlist_attractions,
         number_of_visited_attractions=len(visited_attractions),
+        number_of_wishlist_attractions=len(wishlist_attractions),
         points=points,
         tabs=tabs,
         friends_form=friends_form,
@@ -284,7 +298,7 @@ def send_friend_request(user_id):
     db.session.add(friendship)
     db.session.commit()
     flash(_('The friend request has been sent.'))
-    return redirect(url_for('auth.profile', current_tab=2))
+    return redirect(url_for('auth.profile', current_tab=3))
 
 
 @auth.route('/friends/accept-request/<int:user_id>', methods=['POST'])
@@ -302,7 +316,7 @@ def accept_friend_request(user_id):
     friendship.status = 'accepted'
     db.session.commit()
     flash(_('The friend request has been accepted.'))
-    return redirect(url_for('auth.profile', current_tab=2))
+    return redirect(url_for('auth.profile', current_tab=3))
 
 
 @auth.route('/friends/remove-request/<int:user_id>', methods=['POST'])
@@ -320,7 +334,7 @@ def remove_friend_request(user_id):
     db.session.delete(friendship) 
     db.session.commit()
     flash(_('The friend request has been ended.'))
-    return redirect(url_for('auth.profile', current_tab=2))
+    return redirect(url_for('auth.profile', current_tab=3))
 
 
 @auth.route('/friends/remove-friend/<int:user_id>', methods=['POST'])
