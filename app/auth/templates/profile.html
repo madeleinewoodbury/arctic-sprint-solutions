@@ -1,58 +1,156 @@
 {% extends "base.html" %}
 
 {% block styles %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
+<link rel="stylesheet" type="text/css"
+    href="{{ url_for('static', filename='css/profile.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/friends.css') }}">
 {% endblock %}
 
 {% block content %}
-<section class="profile wrapper">
-    <div class="auth-card">
-        <div class="text-container">
-            <div class="content">
-                <div class="title">
-                    <h2>Hello {{ current_user.username }}!</h2>
-                    <h2>Welcome to your profile page</h2>
+<section class="profile" x-data="profileTabs({{tabs}}, {{activeTab}})">
+    <div class="top">
+        <div class="user-info">
+            <img src="{{ current_user.gravatar() }}" alt="Gravatar"
+                class="gravatar-img">
+            <div class="title">
+                <h2>{{ _("Hello") }} {{ current_user.username }}</h2>
+                <div class="stats">
+                    <span>{{ _("Visited:") }} <strong>{{number_of_visited_attractions}}</strong></span>
+                    <span>{{ _("Wishlist:") }}<strong>{{number_of_wishlist_attractions}}</strong></span>
+                    <span>{{ _("Points:") }} <strong>{{points}}</span></strong>
+                    <span>{{ _("Level:") }} <strong>{{level.current_level}}</span></strong>
                 </div>
-
-                <img src="{{ current_user.gravatar() }}" alt="Gravatar" class="gravatar-img">
-
-                <form action="{{ url_for('auth.profile') }}" method="post">
-
-                    <div class="form-control">
-                        {{ form.email.label }}
-                        {{ form.email(size=50) }}
-                        {% for error in form.email.errors %}
-                            <span style="color: red;">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                    <div class="form-control">
-                        {{ form.tag.label }}
-                        <select name="tag" class="form-select" multiple>
-                            {% for tag in tags %}
-                                <option value="{{ tag.id }}">{{ tag.name }}</option>
-                            {% endfor %}
-                        </select>
-                        {% for error in form.tag.errors %}
-                            <span style="color: red;">{{ error }}</span>
-                        {% endfor %}
-                    </div>          
-                    <div class="user-preferences">
-                        <h2>User Preferences</h2>
-                        <ul>
-                            {% for preference in user_preferences %}
-                                <li>{{ preference }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
-                    {{ form.hidden_tag() }}
-                    
-                    <div class="btn-container">
-                        <button type="submit">Update Profile</button>
-                    </div>
-                </form>
+                <div class="progress-container">
+                    <progress class="progress-bar" value="{{ level.progress }}" max="{{ level.points_required }}"></progress>
+                    <span class="progress-text"> <strong>{{ level.points_missing }}</strong> {{ _("points until level ") }}<strong>{{level.current_level + 1}}</strong></span>
+                </div>
             </div>
         </div>
+    </div> 
+
+    <ul class="profile-tabs">
+        <template x-for="tab in tabs" :key="tab">
+            <li :class="activeTab === tab ? 'active' : ''" @click="setActiveTab(tab)" x-text="tab"></li>
+        </template>
+    </ul>
+
+    <div class="content">
+        <template x-if="activeTab === tabs[0]">
+            <div class="content-info">
+                <div class="visited-attractions">
+    
+                    {% if visited_attractions %}
+                    <h2>Visited Attractions</h2>
+                    <div class="card-container">
+                        {% for visited in visited_attractions %}
+                        <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}" class="attraction-card">
+                            <img src="{{ visited.attraction.image }}" alt="Attraction Image">
+                            <div>
+                                <h3>{{ visited.attraction.name }}</h3>
+                                <p>Visited on {{ visited.time_visited }}</p>
+                            <div class="points">
+                                <span>🏆</span> {{ visited.attraction.points }} {{ _("points") }}
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+            
+                    {% else %}
+                    <p class="text-white">You have not visited any attractions</p>
+                    {% endif %}
+                </div>
+            </div>
+        </template>
+
+        <template x-if="activeTab === tabs[1]">
+            <div class="content-info">
+                <div class="form-wrapper">
+                    <form action="{{ url_for('auth.profile') }}" method="post">
+                        <div class="form-control">
+                            {{ preferences_form.email.label }}
+                            {{ preferences_form.email(size=50) }}
+                            {% for error in preferences_form.email.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="form-control">
+                            {{ preferences_form.tag.label }}
+                            <select name="tag" class="form-select" multiple>
+                                {% for tag in tags %}
+                                <option value="{{ tag.id }}">{{ tag.name }}</option>
+                                {% endfor %}
+                            </select>
+                            {% for error in preferences_form.tag.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+        
+                        <div class="btn-container">
+                            <button class="btn btn-primary" type="submit">{{ _("Update
+                                Profile") }}</button>
+                        </div>
+                        {{ preferences_form.hidden_tag() }}
+                    </form>
+                </div>
+                <div class="user-preferences">
+                    <h2>{{ _("Your Preferences") }}</h2>
+                    {%if user_preferences %}
+                    <ul>
+                        {% for preference in user_preferences %}
+                        <li>{{ preference }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>{{ _("You have not set any preferences") }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </template>
+
+        <template x-if="activeTab === tabs[2]">
+            <div class="content-info">
+                <div class="user-wishlist">
+                    <h2>Your Wishlist</h2>
+                    {%if wishlist_attractions %}
+                    <div class="card-container">
+                        {% for item in wishlist_attractions %}
+                        <a href="{{ url_for('attractions.get_attraction', attraction_id=item.attraction.id) }}" class="attraction-card">
+                            <img src="{{ item.attraction.image }}" alt="Attraction Image">
+                            <div>
+                                <h3>{{ item.attraction.name }}</h3>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-white">You have not added any attractions to your wishlist</p>
+                    {% endif %}
+                </div>
+            </div>
+        </template>
+
+        <template x-if="activeTab === tabs[3]">
+            {%include 'friends.html'%}
+        </template>
+
+        <template x-if="activeTab === tabs[4]">
+            <div class="visited-attractions">
+                <h2>Badge Progress</h2>
+                <div class="card-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); grid-gap: 10px;"> 
+                    {% for badge in badge_progress %}
+                        <div class="attraction-card" style="margin-bottom: 20px; display: flex; flex-direction: column; justify-content: space-between; min-height: 100px; box-sizing: border-box; padding: 10px;"> 
+                            <h3>{{ badge.badge_name }}</h3>
+                                <p>{{ badge.description }}</p> 
+                            {% for tag_progress in badge.tags_progress %}
+                                <div>{{ tag_progress.visited_count }}/{{ tag_progress.required_count }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </template>
     </div>
 </section>
+
 {% endblock %}

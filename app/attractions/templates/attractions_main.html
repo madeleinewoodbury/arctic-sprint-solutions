@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 
 {% block styles %}
-<script defer
-src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/attractions.css') }}">
 {% endblock %}
 
@@ -42,7 +39,7 @@ src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
             <div class="filter-wrapper" id="filter-attractions-form" x-show="showFilters">
                 <form class="filter">
                     {{ filter_form.hidden_tag() }}
-                    <p><a href="{{ url_for('attractions.get_attractions') }}">Clear all filters</a></p>
+                    <p><a href="{{ url_for('attractions.get_attractions') }}">{{ _("Clear all filters") }}</a></p>
                     <div class="filters-container">
                         <div class="form-control">
                             {% if filter_form.categories.choices %}
