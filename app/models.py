@@ -68,6 +68,7 @@ class Attraction(db.Model):
     )
     visited_by = db.relationship(
         "VisitedAttraction", back_populates="attraction")
+    groups = db.relationship("AttractionGroup", secondary="groupedAttraction", back_populates="grouped_attractions")
 
     def __repr__(self) -> str:
         return self.name
@@ -117,6 +118,8 @@ class AttractionGroup(db.Model):
     title = db.Column(db.String(50), nullable=False)
     visibility = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    grouped_attractions = db.relationship("Attraction", secondary="groupedAttraction", back_populates="groups")
 
 
 class AttractionTag(db.Model):
