@@ -64,28 +64,26 @@
   color: var(--bg-light);
 }
 
-.profile .top .title .progress-container .progress-bar  {
-  --color: var(--primary);  /* the progress color */
-  --background: white; /* the background color */
-  
+.profile .top .title .progress-container .progress-bar  {  
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   border: none;
-  width: fit-content;
   height: 1.2rem;
   border-radius: 10em;
   margin-top: .10rem;
-  background: var(--background);
+  background: var(--white);
 }
 .progress-bar::-webkit-progress-bar {
-  background: var(--background);
+  background: var(--white);
+  border-radius: 10em;
 }
 .progress-bar::-webkit-progress-value {
-  background: var(--color);
+  background: var(--primary);
+  border-radius: 10em 0 0 10em;
 }
 .progress-bar::-moz-progress-bar {
-  background: var(--color);
+  background: var(--primary);
 }
 
 .profile .content {
