@@ -1,5 +1,9 @@
 <div class="attraction">
-    <a href="{{ url_for('attractions.get_attraction', attraction_id=attraction.id) }}">
+    <a
+        href="{{ url_for('attractions.get_attraction', attraction_id=attraction.id) }}">
+        <div class="points">
+            <span>🏆</span> {{ attraction.points }} {{ _("points") }}
+        </div>
         {% if attraction.image %}
         <div class="image-container">
             <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
@@ -8,13 +12,17 @@
         <div class="text-container">
             <div class="top">
                 <h5>{{ attraction.name }}</h5>
-                <p class="description">{{ attraction.description | truncate(150, true) | translate }} </p>
+                <p class="description">{{ _(attraction.description) | truncate(150,
+                    true) }} </p>
             </div>
-            <div class="info">
-                <p><span>{{ _("Location") }}: </span>{{ attraction.location }}</p>
-                <p><span>{{ _("Points") }}: </span>{{ attraction.points }}</p>
-                <p>{{ _("Click for more info") }}</p>
-            </div>
+            <span class="link-text">{{ _("Explore") }} <svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="lucide lucide-move-right">
+                    <path d="M18 8L22 12L18 16" />
+                    <path d="M2 12H22" />
+                </svg></span>
         </div>
     </a>
 </div>

@@ -31,6 +31,17 @@
             {{ _('Visited') if visited else _('Mark as visited') }}
           </label>
       </div>
+      <div class="form-control wishlist">
+        <input 
+          type="checkbox" 
+          id="wishlistCheckbox" 
+          name="wishlist"
+          onchange="addToWishlist('{{ attraction.id }}')" 
+          {% if wishlist %}checked{%endif %}>
+          <label for="wishlistCheckbox" class="wishlist-text">
+            {{ 'Wishlist' if wishlist else 'Mark as wishlist'}}
+          </label>
+      </div>
   {% endif %}
   </div>
   
@@ -70,10 +81,30 @@
     })
     .then(response => response.json())
     .then(data => {
-      console.log(data);  // Behandle serverresponsen her.
+      console.log(data);  // Handle server response here
     })
     .catch(error => console.error('Error:', error));
   }
-  </script>
-  {% endif %}
-  {% endblock %}
+
+  function addToWishlist(attractionId) {
+    const wishlist = document.getElementById('wishlistCheckbox').checked;
+    const wishlistText = document.querySelector('.wishlist-text');
+    wishlistText.innerHTML = wishlist ? 'Added to Wishlist' : 'Add to Wishlist';
+    console.log(wishlist);
+    // Make a POST request to update the wishlist status on the server
+    fetch(`/attractions/${attractionId}/add_to_wishlist`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ wishlist: wishlist })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);  // Handle server response here
+    })
+    .catch(error => console.error('Error:', error));
+  }
+</script>
+{% endif %}
+{% endblock %}

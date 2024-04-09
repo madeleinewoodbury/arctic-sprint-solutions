@@ -50,6 +50,42 @@
   font-size: 1.2rem;
 }
 
+.profile .top .title .progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  margin-top: .20rem;
+  font-size: 1rem;
+  font-family: var(--secondary-font);
+}
+
+.profile .top .title .progress-container span strong  {
+  font-family: var(--main-font);
+  color: var(--bg-light);
+}
+
+.profile .top .title .progress-container .progress-bar  {  
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  height: 1.2rem;
+  border-radius: 10em;
+  margin-top: .10rem;
+  background: var(--white);
+}
+.progress-bar::-webkit-progress-bar {
+  background: var(--white);
+  border-radius: 10em;
+}
+.progress-bar::-webkit-progress-value {
+  background: var(--primary);
+  border-radius: 10em 0 0 10em;
+}
+.progress-bar::-moz-progress-bar {
+  background: var(--primary);
+}
+
 .profile .content {
   display: flex;
   flex-direction: column;
@@ -161,12 +197,14 @@
   margin-top: 1rem;
 }
 
-/* Visited Attractions */
-.profile .visited-attractions{
+/* Visited Attractions and wishlist*/
+.profile .visited-attractions,
+.profile .user-wishlist{
   width: 100%;
 }
 
-.profile .visited-attractions h2{
+.profile .visited-attractions h2,
+.profile .user-wishlist h2 {
   color: var(--white);
   font-size: 1.75rem;
   font-weight: normal;
@@ -265,6 +303,12 @@
     font-size: 1.1rem;
   }
 
+  .profile .top .title .progress-container {
+    flex-direction: row;
+    gap: 2rem;
+    font-size: 1.1rem;
+  }
+
   .profile .attraction-card .points {
     position: absolute;
     top: .5rem;
@@ -296,7 +340,6 @@
   .profile .top .title p.lead {
     font-size: 1.3rem;
   }
-
 
   .profile .content-info {
     flex-direction: row;
