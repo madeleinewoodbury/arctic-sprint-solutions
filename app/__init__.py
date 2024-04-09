@@ -15,40 +15,13 @@ from flask_admin import Admin
 from flask_babel import Babel
 from flask_caching import Cache
 from googletrans import Translator
-
-
-# Babel stuff
-def get_locale():
-    # Sjekk om språket er lagret i sesjonen
-    if 'language' in session:
-        return session['language']
-    # Dersom ingen language i session returner engelsk språk.
-    return 'en'  
+from .translate import get_locale, translate_filter
 
 
 db = SQLAlchemy()
 admin_manager = Admin()
 translator_manager = Translator()
 cache = Cache()
-
-
-def translate_filter(text):
-    # Forutsetter at translator_manager er riktig importert og definert
-    cached_data = {}
-    if ('language' in session) and (session['language'] != 'en'):
-        cache_key = "{}_{}".format(text, session['language'])
-        cached_data = cache.get(cache_key)
-        if cached_data is not None:
-            return cached_data
-        try:
-            translated_text = translator_manager.translate(text, dest=session['language'], src='en').text
-        except Exception as e:
-            print(e)
-            return text
-        cached_data = translated_text
-        cache.set(cache_key, cached_data, timeout=300)
-        return cached_data
-    return text
 
 
 # Flask-login verdier
