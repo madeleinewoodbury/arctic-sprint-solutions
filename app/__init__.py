@@ -13,6 +13,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_admin import Admin
 from flask_babel import Babel
+from flask_mail import Mail
 
 # Babel stuff
 def get_locale():
@@ -25,6 +26,7 @@ def get_locale():
 
 db = SQLAlchemy()
 admin_manager = Admin()
+mail = Mail()
 
 
 
@@ -43,6 +45,7 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     admin_manager.init_app(app)
+    mail.init_app(app)
     babel = Babel(app, locale_selector=get_locale)
     
 
