@@ -28,9 +28,10 @@ class Config():
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_TRANSLATION_DIRECTORIES = 'translations'
 
-    
+    # Flask-Mail settings
+    # Setter opp en lokalserver som ikke trenger brukernavn/passord
     MAIL_SERVER = 'localhost'
-    MAIL_PORT = 25
+    MAIL_PORT = 1025
     MAIL_USE_TLS = False
     MAIL_USE_SSL = False
     # MAIL_DEBUG = app.debug
@@ -38,8 +39,12 @@ class Config():
     MAIL_PASSWORD = None
     MAIL_DEFAULT_SENDER = None
     MAIL_MAX_EMAILS = None
-    # MAIL_SUPPRESS_SEND = app.testing
+    MAIL_SUPPRESS_SEND = False # default: app.testing
     MAIL_ASCII_ATTACHMENTS = False
+
+    # Mail template settings
+    FLASK_MAIL_SUBJECT_PREFIX = "[Hitchhiker's Guide]"
+    FLASK_MAIL_SENDER = 'hitchhiker@the_end_of_the_universe.rom'
 
 
 

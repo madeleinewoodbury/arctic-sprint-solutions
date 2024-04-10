@@ -1,12 +1,13 @@
 import math
 from . import auth
-from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm
+from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm
 from .. import db
 from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction, GroupedAttraction, AttractionGroup, Badge, BadgeRequirement, UserBadge, AttractionTag
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import _
 from datetime import datetime
+from ..email import send_email
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register() -> 'html':
@@ -45,6 +46,36 @@ def logout():
 	flash(_('You have been logged out.'))
 	return redirect(url_for('main.index'))
 
+
+@auth.route('/reset', methods=['GET', 'POST'])
+def password_reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('attractions.get_attractions'))
+    form = PasswordResetRequestForm()
+    if request.method == 'POST':
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            token = user.generate_reset_token()
+            send_email(user.email, 'Reset your password', 'email/reset_password',
+                        user=user, token=token)
+            flash(_("An email with instructions to reset your password has been sent to you."))
+            return(redirect(url_for('auth.login')))
+    return render_template('reset_password_request.html', form=form)
+
+
+@auth.route('/reset/<token>', methods=['GET', 'POST'])
+def password_reset(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('attractions.get_attractions'))
+    form = PasswordResetForm()
+    if request.method == 'POST':
+        if User.reset_password(token, form.password.data):
+            db.session.commit()
+            flash('Your password has been updated.')
+            return redirect(url_for('auth.login'))
+        else:
+            return(redirect(url_for('auth.login')))  
+    return render_template('reset_password.html', form=form)
 
 def update_user_preferences(preferences_form, activeTab):
     # Get the user based on the provided email
