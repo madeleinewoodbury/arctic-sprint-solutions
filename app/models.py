@@ -151,6 +151,9 @@ class City(db.Model):
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text)
     image = db.Column(db.String(255))
+    country_id = db.Column(db.Integer, db.ForeignKey("country.id"))
+
+    country = db.relationship("Country", backref=db.backref("cities", lazy=True))
 
     @property
     def attractions_count(self):
@@ -211,6 +214,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.Integer, db.ForeignKey("userRole.id"), default=2)
+    country_id = db.Column(db.Integer, db.ForeignKey("country.id"))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     achievements = db.relationship(
         "Achievement", secondary="userAchievement", back_populates="users"
@@ -234,6 +238,8 @@ class User(UserMixin, db.Model):
         foreign_keys="Friendship.user_2",
         backref=db.backref("recipient", lazy=True),
     )
+
+    country = db.relationship("Country", backref=db.backref("users", lazy=True))
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -360,3 +366,13 @@ class UserBadge(db.Model):
 
     def __repr__(self):
         return f'<UserBadge {self.user_id} {self.badge_id}>'
+
+class Country(db.Model):
+    __tablename__ = "country"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(55), nullable=False)
+    code = db.Column(db.String(2))
+    flag = db.Column(db.String(100))
+
+    def __repr__(self):
+        return f'<Country {self.name}>'
