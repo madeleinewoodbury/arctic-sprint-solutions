@@ -40,16 +40,16 @@
                 <div class="visited-attractions">
     
                     {% if visited_attractions %}
-                    <h2>Visited Attractions</h2>
+                    <h2>{{ _("Visited Attractions") }}</h2>
                     <div class="card-container">
                         {% for visited in visited_attractions %}
                         <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}" class="attraction-card">
                             <img src="{{ visited.attraction.image }}" alt="Attraction Image">
                             <div>
                                 <h3>{{ visited.attraction.name }}</h3>
-                                <p>Visited on {{ visited.time_visited }}</p>
-                            <div class="points">
-                                <span>🏆</span> {{ visited.attraction.points }} {{ _("points") }}
+                                <p>{{ _("Visited on") }} {{ visited.time_visited }}</p>
+                                <div class="points">
+                                    <span>🏆</span> {{ visited.attraction.points }} {{ _("points") }}
                                 </div>
                             </div>
                         </a>
@@ -57,7 +57,7 @@
                     </div>
             
                     {% else %}
-                    <p class="text-white">You have not visited any attractions</p>
+                    <p>{{ _("You have not visited any attractions") }}</p>
                     {% endif %}
                 </div>
             </div>
@@ -78,7 +78,7 @@
                             {{ preferences_form.tag.label }}
                             <select name="tag" class="form-select" multiple>
                                 {% for tag in tags %}
-                                <option value="{{ tag.id }}">{{ tag.name }}</option>
+                                <option value="{{ tag.id }}">{{ tag.name | translate }}</option>
                                 {% endfor %}
                             </select>
                             {% for error in preferences_form.tag.errors %}
