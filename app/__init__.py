@@ -13,21 +13,17 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_admin import Admin
 from flask_babel import Babel
-from flask_mail import Mail
-
-# Babel stuff
-def get_locale():
-    # Sjekk om språket er lagret i sesjonen
-    if 'language' in session:
-        return session['language']
-    # Dersom ingen language i session returner engelsk språk.
-    return 'en'  
+from flask_mail import Mail 
+from flask_caching import Cache
+from googletrans import Translator
+from .translate import get_locale, translate_filter
 
 
 db = SQLAlchemy()
 admin_manager = Admin()
 mail = Mail()
-
+translator_manager = Translator()
+cache = Cache()
 
 
 # Flask-login verdier
@@ -46,9 +42,12 @@ def create_app(config_name):
     login_manager.init_app(app)
     admin_manager.init_app(app)
     mail.init_app(app)
+    cache.init_app(app)
     babel = Babel(app, locale_selector=get_locale)
-    
 
+    # Register new filter for jinja
+    app.jinja_env.filters["translate"] = translate_filter
+    
     from .admin import admin_manager as admin_bp
 
     from .auth import auth as auth_bp

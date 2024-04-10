@@ -24,6 +24,19 @@ class Config():
     LANGUAGES = {
         'en': 'English', 
         'no': 'Norwegian'
+        # 'ja': 'Japanese',
+        # 'es': 'Spanish',
+        # 'fr': 'French',
+        # 'nl': 'Dutch',
+        # 'de': 'German',
+        # 'el': 'Greek',
+        # 'ru': 'Russian',
+        # 'sv': 'Swedish',
+        # 'fi': 'Finnish',
+        # 'ko': 'Korean',
+        # 'zh': 'Chinese',
+        # 'da': 'Danish',
+        # 'pt': 'Portuguese'
         }
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_TRANSLATION_DIRECTORIES = 'translations'
@@ -46,6 +59,10 @@ class Config():
     FLASK_MAIL_SUBJECT_PREFIX = "[Hitchhiker's Guide]"
     FLASK_MAIL_SENDER = 'hitchhiker@the_end_of_the_universe.rom'
 
+    # Caching settings
+    CACHE_TYPE = 'SimpleCache'
+    CACHE_DEFAULT_TIMEOUT = 300
+    # TEMPLATES_AUTO_RELOAD = False
 
 
 class TestConfig(Config):

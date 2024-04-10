@@ -20,12 +20,13 @@ src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
             <form method="POST" action="{{ url_for('main.language') }}">
 				<fieldset>
 					<legend>{{ _("Change babelfish settings:") }}</legend>
+					{% set default_language = session.get('language') or 'en' %}
 					{% for lang in config.LANGUAGES %}
-						<input type="radio"value="{{ lang }}" id="{{ lang }}" value="{{ lang }}" name="languages">
+						<input type="radio"value="{{ lang }}" id="{{ lang }}" value="{{ lang }}" name="languages" {% if default_language == lang %} checked {% endif %}>
 						<label for="{{ lang }}"> <img src="{{ url_for('static', filename='img/flag/%s.png' % lang) }}" alt="" style="width: 16px; height: 16px;"> {{ config.LANGUAGES.get(lang) }}</label><br>
 					{% endfor %}
 				  </fieldset>
-				  <input type="submit" value="Submit" name="languages">
+				  <input type="submit" value="{{ _("Change Language") }}" name="languages">
 			</form>
 		</div>
 	</div>

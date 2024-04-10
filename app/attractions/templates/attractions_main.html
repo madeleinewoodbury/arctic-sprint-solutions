@@ -12,7 +12,7 @@
 <div class="wrapper attractions">
     <div class="title-container">
         <div class="title">
-            <h1>Explore Attractions in Tromsø</h1>
+            <h1>{{ _("Explore Attractions in Tromsø") }}</h1>
         </div>
     </div>
     <div class="content">
@@ -43,20 +43,42 @@
                     <div class="filters-container">
                         <div class="form-control">
                             {% if filter_form.categories.choices %}
-                            <b>{{ filter_form.categories.label }}</b>
-                            {{ filter_form.categories(id="category-checkbox") }}
+                                <b>{{ filter_form.categories.label.text }}</b>
+                                <ul id="category-checkbox">
+                                    {% for choice in filter_form.categories %}
+                                        <li>
+                                            <input id="{{ choice.id }}" name="{{ filter_form.categories.name }}" type="checkbox" value="{{ choice.data }}">
+                                            <label for="{{ choice.id }}">{{ choice.label.text|translate }}</label>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
                             {% endif %}
                         </div>
+                        
                         <div class="form-control">
                             {% if filter_form.age_groups.choices %}
                             <b>{{ filter_form.age_groups.label }}</b>
-                            {{ filter_form.age_groups(id="age-group-checkbox") }}
+                            <ul id="age-group-checkbox">
+                                {% for choice in filter_form.age_groups %}
+                                <li>
+                                    <input id="{{ choice.id }}" name="{{ filter_form.age_groups.name }}" type="checkbox" value="{{ choice.data }}">
+                                    <label for="{{ choice.id }}">{{ choice.label.text|translate }}</label>
+                                </li>
+                                {% endfor %}
+                            </ul>
                             {% endif %}
                         </div>
                         <div class="form-control">
                             {% if filter_form.tags.choices %}
                             <b>{{ filter_form.tags.label }}</b>
-                            {{ filter_form.tags(id="tag-checkbox") }}
+                            <ul id="tag-checkbox">
+                                {% for choice in filter_form.tags %}
+                                <li>
+                                    <input id="{{ choice.id }}" name="{{ filter_form.tags.name }}" type="checkbox" value="{{ choice.data }}">
+                                    <label for="{{ choice.id }}">{{ choice.label.text|translate }}</label>
+                                </li>
+                                {% endfor %}
+                            </ul>
                             {% endif %}
                         </div>
                     </div>
