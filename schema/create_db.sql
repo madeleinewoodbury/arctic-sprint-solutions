@@ -21,7 +21,41 @@ SET time_zone = "+00:00";
 -- Database: `arcticSprintSolutionsDB`
 --
 
+CREATE DATABASE IF NOT EXISTS `arcticSprintSolutionsDB` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `arcticSprintSolutionsDB`;
+
 -- --------------------------------------------------------
+
+
+--
+-- DROP TABLES
+--
+
+DROP TABLE IF EXISTS friendship;
+DROP TABLE IF EXISTS userAchievement;
+DROP TABLE IF EXISTS achievement;
+DROP TABLE IF EXISTS visitedAttraction;
+DROP TABLE IF EXISTS groupedAttraction;
+DROP TABLE IF EXISTS attractionTag;
+DROP TABLE IF EXISTS attractionCategory;
+DROP TABLE IF EXISTS attractionAgeGroup;
+DROP TABLE IF EXISTS attractionGroup;
+DROP TABLE IF EXISTS userAgeGroupPreference;
+DROP TABLE IF EXISTS userTagPreference;
+DROP TABLE IF EXISTS userCategoryPreference;
+DROP TABLE IF EXISTS badgeRequirement;
+DROP TABLE IF EXISTS userBadge;
+DROP TABLE IF EXISTS badge;
+DROP TABLE IF EXISTS tag;
+DROP TABLE IF EXISTS category;
+DROP TABLE IF EXISTS ageGroup;
+DROP TABLE IF EXISTS attraction;
+DROP TABLE IF EXISTS userProfile;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS userRole;
+DROP TABLE IF EXISTS city;
+DROP TABLE IF EXISTS country;
+DROP TABLE IF EXISTS language;
 
 --
 -- Table structure for table `achievement`
