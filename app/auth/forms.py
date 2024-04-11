@@ -35,6 +35,19 @@ class RegistrationForm(Form):
 		user = User.query.filter_by(email=email.data).first()
 		if user is not None:
 			raise ValidationError(_('This email is already taken.'))
+		
+class PasswordResetRequestForm(Form):
+	email = StringField(_('Email'), validators=[DataRequired(), Length(1,64), Email()])
+	submit = SubmitField(_('Reset Password'), render_kw={'class': 'btn btn-primary'})
+
+
+class PasswordResetForm(Form):
+	password = PasswordField('Password', validators=[
+    	DataRequired(), Length(min=10, max=40), 
+      	Regexp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,40}$', 
+            message=_('Password must be at least 10 characters long while containing at least one uppercase letter, one lowercase letter, and one number.'))])
+	confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=10, max=40), EqualTo('password')])
+	submit = SubmitField(_('Reset Password'), render_kw={'class': 'btn btn-primary'})
 
 
 class ProfileForm(Form):

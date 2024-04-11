@@ -1,6 +1,5 @@
 import hashlib
-from flask import request
-from flask import request
+from flask import request, current_app
 from datetime import datetime
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import func
@@ -8,6 +7,7 @@ from sqlalchemy.sql import select
 from app import db, login_manager
 from flask_login import UserMixin, AnonymousUserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
+from itsdangerous.url_safe import URLSafeTimedSerializer  as Serializer
 
 
 class Achievement(db.Model):
@@ -260,6 +260,24 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+    
+    def generate_reset_token(self):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'reset': self.id})
+    
+    def reset_password(token, new_password):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token, max_age=300)
+        except:
+            return False
+        user = User.query.filter_by(id=data.get('reset')).first()
+        if user is None:
+            return False
+        user.set_password(new_password)
+        db.session.add(user)
+        return True
+        
 
     def get_id(self):
         return self.id
