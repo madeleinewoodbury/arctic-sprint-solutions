@@ -41,6 +41,24 @@ class Config():
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_TRANSLATION_DIRECTORIES = 'translations'
 
+    # Flask-Mail settings
+    # Setter opp en lokalserver som ikke trenger brukernavn/passord
+    MAIL_SERVER = 'localhost'
+    MAIL_PORT = 1025
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = False
+    # MAIL_DEBUG = app.debug
+    MAIL_USERNAME = None
+    MAIL_PASSWORD = None
+    MAIL_DEFAULT_SENDER = None
+    MAIL_MAX_EMAILS = None
+    MAIL_SUPPRESS_SEND = False # default: app.testing
+    MAIL_ASCII_ATTACHMENTS = False
+
+    # Mail template settings
+    FLASK_MAIL_SUBJECT_PREFIX = "[Hitchhiker's Guide]"
+    FLASK_MAIL_SENDER = 'hitchhiker@the_end_of_the_universe.rom'
+
     # Caching settings
     CACHE_TYPE = 'SimpleCache'
     CACHE_DEFAULT_TIMEOUT = 300
@@ -49,36 +67,12 @@ class Config():
 
 class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI")
-
-
-"""    DEBUG = True
-    MYSQL_HOST = 'localhost:3306'
-    MYSQL_USER = 'user'
-    MYSQL_PASSWORD = 'test'
-    MYSQL_DB = 'arcticSprintSolutionsDB'
-
-    MYSQL_DICT = {
-        'host': MYSQL_HOST,
-        'user': MYSQL_USER,
-        'password': MYSQL_PASSWORD,
-        'database': MYSQL_DB
-    }"""
+    DEBUG = True
+    TESTING = True
 
 
 class LiveConfig(Config):
-    # TODO: Denne må oppdateres dersom vi skal ha en live database-sever.
-    """DEBUG=False
-    MYSQL_HOST = 'kark.uit.no'
-    MYSQL_USER = 'stud_v23_ete026'
-    MYSQL_PASSWORD = ''
-    MYSQL_DB = 'stud_v23_ete026'
-
-MYSQL_DICT = {
-    'host': MYSQL_HOST,
-    'user': MYSQL_USER,
-    'password': MYSQL_PASSWORD,
-    'database': MYSQL_DB
-}"""
+    pass
 
 
 config = {
