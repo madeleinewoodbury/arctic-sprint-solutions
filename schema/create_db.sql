@@ -773,15 +773,14 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`id`, `username`, `first_name`, `last_name`, `email`, `password`, `role`, `created_at`, `country_id`) VALUES
 (1, 'superuser', 'Ford', 'Prefect', 'admin@mail.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 1, '2024-03-05 18:13:57', 235),
 (2, 'marina2000', 'Marina', 'Petrova', 'marina2000@example.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 1, '2024-03-05 18:13:57', 233),
-(3, 'luca85', 'Luca', 'Rossi', 'luca85@mail.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 2, '2024-03-06 20:10:12', 108),
+(3, 'luca85', 'Luca', 'Rossi', 'luca85@mail.com', 'scrypt:32768:8:1$OxyzQQ8AceRk3Y8u$a83d4a612646d53d895fbd45513cf902c279a3908dedab0839e1b4d9ccc5ceac42a16ac8c0b260aeaf6b15959263b3d926ea30df59ab1b1326dffc9500cf6ba6', 2, '2024-03-06 20:10:12', 108),
 (4, 'priya12', 'Priya', 'Patel', 'priya12@mail.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 2, '2024-03-15 15:10:00', 101),
 (5, 'johannes92', 'Johannes', 'Karlsen', 'johannes92@mail.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 2, '2024-03-25 17:20:59', 165),
 (6, 'annam22', 'Anna', 'Martinez', 'annam22@mail.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 2, '2024-04-01 21:24:51', 209),
 (7, 'emre79', 'Emre', 'Yilmaz', 'emre79@mail.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 2, '2024-04-01 19:34:01', 228),
 (8, 'pizzaking', 'Christopher', 'Smith', 'christophesmith@mail.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 2, '2024-04-03 18:13:34', 238),
 (9, 'tomtom', 'Tom', 'Olsen', 'tomtom@mail.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 2, '2024-04-03 13:12:27', 59),
-(10, 'whereismytowel', 'Arthur', 'Dent', 'arthurdent@mail.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 2, '2024-04-04 12:20:50', 235),
-(15, 'maddepadde', 'Madeleine', 'Woodbury', 'randine25@gmail.com', 'scrypt:32768:8:1$oLch0sxvwct57Nlu$60e39ef69642f50458d9db2292aaad025751798af4c91af9d5a8e901fffcf554c57c7a649cd25a515a498b3590176f3b9b35f241ac9682712145ff85219e7b03', 2, '2024-04-06 22:52:23', 165);
+(10, 'whereismytowel', 'Arthur', 'Dent', 'arthurdent@mail.com', 'scrypt:32768:8:1$bfcAMyr9DEPRSxwK$20d93afdb473b205d458a6106d86a935600a61f9685f8912df601f8b66f11fc376a13d860d876ef0c8a92cb15ddd33daf01cc264da390fe93c03b5969464a96a', 2, '2024-04-04 12:20:50', 235);
 
 -- --------------------------------------------------------
 

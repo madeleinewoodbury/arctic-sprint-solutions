@@ -10,6 +10,10 @@
 <section class="profile" x-data="profileTabs({{tabs}}, {{activeTab}})">
     <div class="top">
         <div class="user-info">
+            <div class="flag-container">
+                <img src="{{ current_user.country.flag }}" alt="{{ current_user.country.name }}">
+                <span>{{ current_user.country.name | translate }}</span>
+              </div>
             <img src="{{ current_user.gravatar() }}" alt="Gravatar"
                 class="gravatar-img">
             <div class="title">

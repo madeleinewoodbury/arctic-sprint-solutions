@@ -9,11 +9,27 @@
   padding: 1rem;
 }
 
+.profile .flag-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.profile .flag-container img {
+  width: 50px;
+  height: auto;
+}
+
+.profile .flag-container span {
+  display: none;
+}
+
 .profile .top .user-info {
   display: flex;
   align-items: center;
   gap: 1rem;
   color: var(--white);
+  position: relative;
 }
 
 .profile .top .gravatar-img {
@@ -297,6 +313,26 @@
 
 
 @media (min-width: 768px) {
+  .profile .flag-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap:  .5rem;
+  }
+
+  .profile .flag-container img {
+    width: 75px;
+  }
+
+
+  .profile .flag-container span {
+    display: block;
+    font-size: .9rem;
+    font-family: var(--secondary-font);
+  }
+
   .profile .top .title .stats {
     flex-direction: row;
     gap: 2rem;
@@ -314,6 +350,7 @@
     top: .5rem;
     right: .75rem;
 }
+
   
 }
 
@@ -326,6 +363,10 @@
   
   .profile .top .user-info {
     gap: 1.5rem;
+  }
+
+  .profile .flag-container img {
+    width: 80px;
   }
   
   .profile .top .gravatar-img {

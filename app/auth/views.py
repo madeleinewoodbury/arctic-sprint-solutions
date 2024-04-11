@@ -153,11 +153,13 @@ def get_firends():
     for user in users:
         friend = {
                'user': user,
-               'visited': get_visited_attractions(user.id)
+               'visited': get_visited_attractions(user.id),
+            #    'country': Country.query.get(user.country_id)
          }  
         friend['points'] = sum(item['attraction'].points for item in friend['visited'])
         friend['level'] = get_user_level(friend['points']).get('current_level')
         friends.append(friend)
+
 
     friends = sorted(friends, key=lambda x: x['points'], reverse=True)
     return friends

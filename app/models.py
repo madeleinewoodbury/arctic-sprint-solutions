@@ -239,7 +239,7 @@ class User(UserMixin, db.Model):
         backref=db.backref("recipient", lazy=True),
     )
 
-    # country = db.relationship("Country", backref=db.backref("users", lazy=True))
+    country = db.relationship("Country", backref=db.backref("user", lazy=True))
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
