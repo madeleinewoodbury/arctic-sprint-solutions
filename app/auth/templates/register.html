@@ -23,7 +23,7 @@
                             {{ form.country.label }}
                             <select name="country" class="form-select">
                                 {% for country in form.country.choices %}
-                                <option value="{{ country.id }}">{{ country.name | translate }}</option>
+                                <option value="{{ country[0] }}">{{ country[1] | translate }}</option>
                                 {% endfor %}
                             </select>
                         </div>

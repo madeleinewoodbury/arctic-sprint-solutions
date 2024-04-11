@@ -11,7 +11,7 @@ class LoginForm(Form):
 	submit = SubmitField(_('Login'), render_kw={'class': 'btn btn-primary'})
 
 class RegistrationForm(Form):
-	country= SelectField(_('Country'), choices=[])
+	country= SelectField(_('Country'))
 	first_name = StringField(_('First Name'), validators=[DataRequired(), Length(max=50)])
 	last_name = StringField(_('Last Name'), validators=[DataRequired(), Length(max=50)])
 	username = StringField(_('Username'), validators=[

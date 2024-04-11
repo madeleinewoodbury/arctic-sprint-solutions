@@ -2,7 +2,6 @@ import math
 from . import auth
 from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm
 from .. import db
-#from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction, GroupedAttraction, AttractionGroup, Badge, BadgeRequirement, UserBadge, AttractionTag
 from ..models import *
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
@@ -13,7 +12,7 @@ from ..email import send_email
 @auth.route('/register', methods=['GET', 'POST'])
 def register() -> 'html':
     form = RegistrationForm()
-    form.country.choices = Country.query.all()
+    form.country.choices = [(country.id, country.name) for country in Country.query.all()]
 
     if form.validate_on_submit():
         user = User(
