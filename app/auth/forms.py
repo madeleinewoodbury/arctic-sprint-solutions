@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm as Form
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField, SelectMultipleField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField, SelectMultipleField, SelectField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, Regexp, Email
 from app.models import User
 from flask_babel import lazy_gettext as _
@@ -11,6 +11,7 @@ class LoginForm(Form):
 	submit = SubmitField(_('Login'), render_kw={'class': 'btn btn-primary'})
 
 class RegistrationForm(Form):
+	country= SelectField(_('Country'), choices=[])
 	first_name = StringField(_('First Name'), validators=[DataRequired(), Length(max=50)])
 	last_name = StringField(_('Last Name'), validators=[DataRequired(), Length(max=50)])
 	username = StringField(_('Username'), validators=[
