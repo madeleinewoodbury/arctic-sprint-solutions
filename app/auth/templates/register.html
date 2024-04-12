@@ -19,6 +19,14 @@
                 <form action="" method="post">
                     {{ form.hidden_tag() }}
                     <div class="top">
+                        <div class="form-control">
+                            {{ form.country.label }}
+                            <select name="country" class="form-select">
+                                {% for country in form.country.choices %}
+                                <option value="{{ country[0] }}">{{ country[1] | translate }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         <div class="form-row">
                             <div class="form-control">
                                 {{ form.first_name.label }}

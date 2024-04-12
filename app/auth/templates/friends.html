@@ -107,9 +107,10 @@
             <thead>
                 <tr>
                     <th>{{ _("Username") }}</th>
-                    <th class="hide-sm">{{ _("Visited Attractions") }}</th>
+                    <th class="hide-md">{{ _("Visited Attractions") }}</th>
                     <th>{{ _("Points") }}</th>
                     <th class="hide-sm">{{ _("Level") }}</th>
+                    <th class="hide-sm">Country</th>
                     <th></th>
                 </tr>
             </thead>
@@ -124,9 +125,11 @@
                             <span>{{ friend.user.username }}</span>
                         </a>
                     </td>
-                    <td class="hide-sm">{{ friend.visited|length }}</td>
+                    <td class="hide-md">{{ friend.visited|length }}</td>
                     <td>{{ friend.points }}</td>
                     <td class="hide-sm">{{ friend.level }}</td>
+                    <td class="hide-sm"> <img class="small-flag" src="{{ friend.user.country.flag }}" alt="{{ friend.user.country.name }}">
+                    </td>
                     <td>
                         <form class="remove-friend-form" method="POST"
                             action="{{ url_for('auth.remove_friend', user_id=friend.user.id) }}">

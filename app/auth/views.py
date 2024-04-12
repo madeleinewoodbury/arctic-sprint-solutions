@@ -2,7 +2,7 @@ import math
 from . import auth
 from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm
 from .. import db
-from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction, GroupedAttraction, AttractionGroup, Badge, BadgeRequirement, UserBadge, AttractionTag
+from ..models import *
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import _
@@ -11,20 +11,24 @@ from ..email import send_email
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register() -> 'html':
-	form = RegistrationForm()
-	if form.validate_on_submit():
-		user = User(
-            username = form.username.data,
-            first_name = form.first_name.data,
-            last_name = form.last_name.data,
-            email = form.email.data
-		)
-		user.set_password(form.password.data)
-		db.session.add(user)
-		db.session.commit()
-		flash(_('User has been registrated.'))
-		return redirect(url_for('auth.login'))
-	return render_template('register.html', form=form)
+    form = RegistrationForm()
+    form.country.choices = [(country.id, country.name) for country in Country.query.all()]
+
+    if form.validate_on_submit():
+        user = User(
+            username=form.username.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            email=form.email.data,
+            country_id=form.country.data
+        )
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash(_('User has been registered.'))
+        return redirect(url_for('auth.login'))
+
+    return render_template('register.html', form=form)
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -149,11 +153,13 @@ def get_firends():
     for user in users:
         friend = {
                'user': user,
-               'visited': get_visited_attractions(user.id)
+               'visited': get_visited_attractions(user.id),
+            #    'country': Country.query.get(user.country_id)
          }  
         friend['points'] = sum(item['attraction'].points for item in friend['visited'])
         friend['level'] = get_user_level(friend['points']).get('current_level')
         friends.append(friend)
+
 
     friends = sorted(friends, key=lambda x: x['points'], reverse=True)
     return friends

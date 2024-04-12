@@ -9,6 +9,10 @@
 <section class="profile">
   <div class="top">
     <div class="user-info">
+      <div class="flag-container">
+        <img src="{{ friend.country.flag }}" alt="{{ friend.country.name }}">
+        <span>{{ friend.country.name | translate }}</span>
+      </div>
       <img src="{{ friend.gravatar() }}" alt="Gravatar" class="gravatar-img">
       <div class="title">
         <h2>{{ friend.username }}</h2>
