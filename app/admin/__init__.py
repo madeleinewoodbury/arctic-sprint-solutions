@@ -14,11 +14,14 @@ from app.admin.views import (
     AchievementsView,
     Achievement,
     ReportView,
+    CitiesView,
+    City,
 )
 
 
 def add_admin_views():
     admin_manager.add_view(UserView(User, db.session, category="Edit Database"))
+    admin_manager.add_view(CitiesView(City, db.session, category="Edit Database"))
     admin_manager.add_view(
         CategoryView(Category, db.session, category="Edit Database"),
     )
