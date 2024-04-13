@@ -393,4 +393,4 @@ class Country(db.Model):
     flag = db.Column(db.String(100))
 
     def __repr__(self):
-        return f'<Country {self.name}>'
+        return self.name

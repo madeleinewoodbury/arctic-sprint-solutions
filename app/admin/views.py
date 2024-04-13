@@ -10,6 +10,7 @@ from app.models import (
     Achievement,
     Attraction,
     VisitedAttraction,
+    Country,
     db,
     User,
     Category,
@@ -48,6 +49,7 @@ class UserView(AdminModelView):
         "username",
         "email",
         "role_rel",
+        "country",
     ]
     column_searchable_list = ["username", "email"]
     column_filters = ["created_at", "email"]

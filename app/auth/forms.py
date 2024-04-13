@@ -54,6 +54,7 @@ class ProfileForm(Form):
     email = StringField(_('Email'), validators=[DataRequired(), Email()])
     gravatar_url = HiddenField(_('Gravatar URL'))
     tag = SelectMultipleField(_('Select Tags'), coerce=int)
+    country = SelectField(_('Country'), choices=[])
     submit = SubmitField(_('Update profile'), render_kw={'class': 'btn btn-primary'})
 
 

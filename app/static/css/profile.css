@@ -194,8 +194,18 @@
   gap: 1rem;
 }
 
-
 .profile .form-select {
+  width: 100%;
+  border: 1px solid var(--dark-blue);
+  border-radius: .5rem;
+  padding: 1rem;
+  font-size: 1.1rem;
+  background-color: transparent;
+  color: var(--dark-blue);
+}
+
+
+.profile .form-select-multiple {
   width: 100%;
   border-radius: .5rem;
   padding: 1rem;
@@ -204,7 +214,7 @@
   background-color: transparent;
 }
 
-.profile .form-select option{
+.profile .form-select-multiple option{
   padding: 2px 0;
 }
 
