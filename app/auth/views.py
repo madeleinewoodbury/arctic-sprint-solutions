@@ -81,13 +81,13 @@ def password_reset(token):
             return(redirect(url_for('auth.login')))  
     return render_template('reset_password.html', form=form)
 
-def update_user_preferences(preferences_form, activeTab):
+def update_user_profile(profile_form, activeTab):
     # Get the user based on the provided email
-    user = User.query.filter_by(email=preferences_form.email.data).first()
+    user = User.query.filter_by(email=profile_form.email.data).first()
 
     # Update user preferences if user is found
     if user:
-        selected_tag_ids = preferences_form.tag.data
+        selected_tag_ids = profile_form.tag.data
 
         # Delete existing user preferences
         UserTagPreference.query.filter_by(user_id=user.id).delete()
@@ -96,6 +96,9 @@ def update_user_preferences(preferences_form, activeTab):
         for tag_id in selected_tag_ids:
             user_preference = UserTagPreference(user_id=user.id, tag_id=tag_id)
             db.session.add(user_preference)
+        
+        # Update user profile
+        user.country_id = profile_form.country.data
 
         db.session.commit()
         flash(_('Your preferences have been updated!'), 'success')
@@ -258,13 +261,20 @@ def profile():
     level = get_user_level(points)
 
     # Profile Tab
-    preferences_form = ProfileForm()
+    profile_form = ProfileForm()
     tags = Tag.query.all()
-    preferences_form.tag.choices = [(tag.id, tag.name) for tag in tags]
-    
-    if preferences_form.validate_on_submit():
+    profile_form.tag.choices = [(tag.id, tag.name) for tag in tags]
+    profile_form.country.choices = [(country.id, country.name) for country in Country.query.all()]
+
+    if profile_form.validate_on_submit():
         activeTab = 1
-        update_user_preferences(preferences_form, activeTab)
+        update_user_profile(profile_form, activeTab)
+        profile_form.country.data = current_user.country_id
+    else:
+        # set current user settings
+        profile_form.tag.data = [tag.tag_id for tag in current_user.tag_preferences]    
+        profile_form.country.data = current_user.country_id
+
 
     # Fetch the user preferences from the database
     user_preferences = get_user_preferences()
@@ -303,7 +313,7 @@ def profile():
 
     return render_template(
         'profile.html',
-        preferences_form=preferences_form,
+        profile_form=profile_form,
         tags=tags,
         user_preferences=user_preferences,
         visited_attractions=visited_attractions,
