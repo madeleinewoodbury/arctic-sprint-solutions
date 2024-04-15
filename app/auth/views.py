@@ -1,6 +1,6 @@
 import math
 from . import auth
-from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm
+from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, PreferencesForm
 from .. import db
 from ..models import *
 from flask import render_template, request, redirect, url_for, session, flash, abort
@@ -110,18 +110,40 @@ def update_user_profile_OLD(profile_form, activeTab):
 def update_user_profile(profile_form, activeTab):
     # Update user profile
     user = User.query.filter_by(id=current_user.id).first()
-    print(user.username)
     user.username = profile_form.username.data
     user.first_name = profile_form.first_name.data
     user.last_name = profile_form.last_name.data
     user.email = profile_form.email.data
     user.country_id = profile_form.country.data
-    print(user.username)
     
     db.session.commit()
     flash(_('Your profile has been updated!'), 'success')
     return redirect(url_for('auth.profile', current_tab=activeTab))  # Redirect to avoid form resubmission
 
+
+def update_user_password(password_form, activeTab):
+    user = User.query.filter_by(id=current_user.id).first()
+    user.set_password(password_form.password.data)
+    db.session.commit()
+    flash(_('Your password has been updated!'), 'success')
+    return redirect(url_for('auth.profile', current_tab=activeTab))  # Redirect to avoid form resubmission
+
+
+def update_user_preferences(preferences_form, activeTab):
+    selected_tag_ids = preferences_form.tag.data
+
+    # Delete existing user preferences
+    UserTagPreference.query.filter_by(user_id=current_user.id).delete()
+
+    # Create new user preferences
+    for tag_id in selected_tag_ids:
+        user_preference = UserTagPreference(user_id=current_user.id, tag_id=tag_id)
+        db.session.add(user_preference)
+    
+    db.session.commit()
+    flash(_('Your preferences have been updated!'), 'success')
+    return redirect(url_for('auth.profile', current_tab=activeTab))
+    
 
 def get_user_preferences():
     user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
@@ -278,27 +300,47 @@ def profile():
 
     # Profile Tab
     profile_form = ProfileForm()
-    # Add choices to form fields
-    profile_form.category.choices = [(category.id, category.name) for category in Category.query.all()]
-    profile_form.age_group.choices = [(age_group.id, age_group.name) for age_group in AgeGroup.query.all()]
-    profile_form.tag.choices = [(tag.id, tag.name) for tag in Tag.query.all()]
+    password_form = PasswordResetForm()
+    preferences_form = PreferencesForm()
     profile_form.country.choices = [(country.id, country.name) for country in Country.query.all()]
+    preferences_form.category.choices = [(category.id, category.name) for category in Category.query.all()]
+    preferences_form.age_group.choices = [(age_group.id, age_group.name) for age_group in AgeGroup.query.all()]
+    preferences_form.tag.choices = [(tag.id, tag.name) for tag in Tag.query.all()]
+
     
-    if profile_form.validate_on_submit():
-        print("FORM SUCCESS")
+    if request.method == 'POST':
+        print(request.form)
+        print("posted")
+        activeTab = 1
+        if 'profile_form' in request.form or 'password_form' in request.form:
+            activeTab = 1
+        
+    
+    if password_form.validate_on_submit():
+        print("PASSWORD FORM SUCCESS")
+        activeTab = 1
+        update_user_password(password_form, activeTab)
+        
+
+    elif preferences_form.validate_on_submit():
+        print("PREFERENCES FORM SUCCESS")
+        activeTab = 1
+        update_user_preferences(preferences_form, activeTab)
+    
+    elif profile_form.validate_on_submit():
+        print("PROFILE FORM SUCCESS")
         activeTab = 1
         update_user_profile(profile_form, activeTab)
-    
+            
     else:
-        # set current user settings
-        profile_form.tag.data = [tag.tag_id for tag in current_user.tag_preferences]
-        
-        # Prepopulate profile fields
+        # Prepopulate profile form fields
         profile_form.username.data = current_user.username
         profile_form.first_name.data = current_user.first_name
         profile_form.last_name.data = current_user.last_name
         profile_form.email.data = current_user.email
         profile_form.country.data = current_user.country_id
+        # set current user preferences
+        preferences_form.tag.data = [tag.tag_id for tag in current_user.tag_preferences]
     
 
     # Fetch the user preferences from the database
@@ -309,7 +351,7 @@ def profile():
     search_text = friends_form.search_text.data
     users = None
 
-    if friends_form.validate_on_submit() and search_text:
+    if friends_form.validate_on_submit():
         users = search_users(search_text)
         activeTab = 3
 
@@ -339,7 +381,8 @@ def profile():
     return render_template(
         'profile.html',
         profile_form=profile_form,
-        #tags=tags,
+        password_form=password_form,
+        preferences_form=preferences_form,
         user_preferences=user_preferences,
         visited_attractions=visited_attractions,
         wishlist_attractions=wishlist_attractions,

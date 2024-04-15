@@ -61,16 +61,21 @@ class ProfileForm(Form):
     last_name = StringField(_('Last Name'), validators=[DataRequired(), Length(max=50)])
     email = StringField(_('Email'), validators=[DataRequired(), Email(), Length(max=50)], render_kw={"autocomplete": "username"})
     
-    category = SelectMultipleField(_('Select Categories'), choices=[], coerce=int)
-    age_group = SelectMultipleField(_('Select Age Groups'), choices=[], coerce=int)
-    tag = SelectMultipleField(_('Select Tags'), choices=[], coerce=int)
+    #category = SelectMultipleField(_('Select Categories'), choices=[], coerce=int)
+    #age_group = SelectMultipleField(_('Select Age Groups'), choices=[], coerce=int)
+    #tag = SelectMultipleField(_('Select Tags'), choices=[], coerce=int)
     
     submit = SubmitField(_('Update profile'), render_kw={'class': 'btn btn-primary'})
 
 
+class PreferencesForm(Form):
+    category = SelectMultipleField(_('Select Categories'), choices=[], coerce=int)
+    age_group = SelectMultipleField(_('Select Age Groups'), choices=[], coerce=int)
+    tag = SelectMultipleField(_('Select Tags'), choices=[], coerce=int)
+    submit = SubmitField(_('Update preferences'), render_kw={'class': 'btn btn-primary'})
 
 class SearchUsersForm(Form):
-    search_text = StringField(_('Search users'), render_kw={'placeholder': _('Search users')})
+    search_text = StringField(_('Search users'), validators=[DataRequired()], render_kw={'placeholder': _('Search users')})
     submit = SubmitField(_('Search'), render_kw={'class': 'btn btn-primary search-btn'})
     
     
