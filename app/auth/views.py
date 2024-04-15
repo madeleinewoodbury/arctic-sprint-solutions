@@ -263,6 +263,8 @@ def profile():
     # Profile Tab
     profile_form = ProfileForm()
     tags = Tag.query.all()
+    # fetch categories and age groups
+    # fill .choices in form for category and age group
     profile_form.tag.choices = [(tag.id, tag.name) for tag in tags]
     profile_form.country.choices = [(country.id, country.name) for country in Country.query.all()]
 

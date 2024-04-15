@@ -69,8 +69,20 @@
 
         <template x-if="activeTab === tabs[1]">
             <div class="content-info">
+
+                <div class="profile-info">
+                <h3>Personal information:</h3>
+                <p>Username: {{ current_user.username }}</p>
+                <p>First name: {{ current_user.first_name }}</p>
+                <p>Last name: {{ current_user.last_name }}</p>
+                <p>Email: {{ current_user.email }}</p>
+                </div>
+
+
+
                 <div class="form-wrapper">
                     <form action="{{ url_for('auth.profile') }}" method="post">
+                        {{ profile_form.hidden_tag() }}
                         <div class="form-control">
                             {{ profile_form.email.label }}
                             {{ profile_form.email(size=50) }}
@@ -85,6 +97,16 @@
                                 <option value="{{ country[0] }}" {% if country[0] == profile_form.country.data %} selected {% endif %}>{{ country[1] | translate }}</option>
                                 {% endfor %}
                             </select>
+
+                        <!-- Old method:
+                            {{ profile_form.country.label }}
+                            <select name="country" class="form-select">
+                                {% for country in profile_form.country.choices %}
+                                <option value="{{ country[0] }}" {% if country[0] == profile_form.country.data %} selected {% endif %}>{{ country[1] | translate }}</option>
+                                {% endfor %}
+                            </select>
+                        -->
+
                         </div>
                         <div class="form-control">
                             {{ profile_form.tag.label }}
@@ -99,11 +121,13 @@
                         </div>
         
                         <div class="btn-container">
-                            <button class="btn btn-primary" type="submit">{{ _("Update
-                                Profile") }}</button>
+                            {{ profile_form.cancel }}
+                            {{ profile_form.submit }}
                         </div>
-                        {{ profile_form.hidden_tag() }}
                     </form>
+
+
+
                 </div>
                 <div class="user-preferences">
                     <h2>{{ _("Your Preferences") }}</h2>

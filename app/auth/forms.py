@@ -51,11 +51,23 @@ class PasswordResetForm(Form):
 
 
 class ProfileForm(Form):
-    email = StringField(_('Email'), validators=[DataRequired(), Email()])
     gravatar_url = HiddenField(_('Gravatar URL'))
+    username = StringField(_('Username'), validators=[
+    	DataRequired(), Length(min=6, max=20), 
+     	Regexp('^[a-zA-Z0-9_]+$', 
+            message=_('Username must be at least 10 characters long and only contain letters, numbers, and underscores.'))])
+    country = SelectField(_('Country'), choices=[], coerce=int)
+    first_name = StringField(_('First Name'), validators=[DataRequired(), Length(max=50)])
+    last_name = StringField(_('Last Name'), validators=[DataRequired(), Length(max=50)])
+    email = StringField(_('Email'), validators=[DataRequired(), Email(), Length(max=50)], render_kw={"autocomplete": "username"})
+    
+    #categories
+    #age_groups
     tag = SelectMultipleField(_('Select Tags'), coerce=int)
-    country = SelectField(_('Country'), choices=[])
+    
+    cancel = SubmitField(_('Cancel'), render_kw={'class': 'btn btn-primary'})
     submit = SubmitField(_('Update profile'), render_kw={'class': 'btn btn-primary'})
+
 
 
 class SearchUsersForm(Form):
