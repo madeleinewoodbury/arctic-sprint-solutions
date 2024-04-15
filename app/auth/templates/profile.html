@@ -87,6 +87,14 @@
                             </select>
                         </div>
                         <div class="form-control">
+                            {{ profile_form.category.label }}
+                            <select name="category" class="form-select-multiple" multiple>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" {% if category.id in profile_form.category.data %} selected {% endif %}>{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-control">
                             {{ profile_form.tag.label }}
                             <select name="tag" class="form-select-multiple" multiple>
                                 {% for tag in tags %}
@@ -97,7 +105,14 @@
                             <span style="color: red;">{{ error }}</span>
                             {% endfor %}
                         </div>
-        
+                        <div class="form-control">
+                            {{ profile_form.age_group.label }}
+                            <select name="age_group" class="form-select-multiple" multiple>
+                                {% for age_group in age_groups %}
+                                <option value="{{ age_group.id }}" {% if age_group.id in profile_form.age_group.data %} selected {% endif %}>{{ age_group.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         <div class="btn-container">
                             <button class="btn btn-primary" type="submit">{{ _("Update
                                 Profile") }}</button>
@@ -107,14 +122,33 @@
                 </div>
                 <div class="user-preferences">
                     <h2>{{ _("Your Preferences") }}</h2>
-                    {%if user_preferences %}
-                    <ul>
-                        {% for preference in user_preferences %}
-                        <li>{{ preference }}</li>
-                        {% endfor %}
-                    </ul>
+                    {% if user_preferences.tags or user_preferences.categories or user_preferences.age_groups %}
+                        <div class="preference-card">
+                            <h3 class="preference-title">Tags</h3>
+                            <ul class="preference-list">
+                                {% for tag in user_preferences.tags %}
+                                    <li>{{ tag }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="preference-card">
+                            <h3 class="preference-title">Categories</h3>
+                            <ul class="preference-list">
+                                {% for category in user_preferences.categories %}
+                                    <li>{{ category }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="preference-card">
+                            <h3 class="preference-title">Age Groups</h3>
+                            <ul class="preference-list">
+                                {% for age_group in user_preferences.age_groups %}
+                                    <li>{{ age_group }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     {% else %}
-                    <p>{{ _("You have not set any preferences") }}</p>
+                        <p>{{ _("You have not set any preferences") }}</p>
                     {% endif %}
                 </div>
             </div>

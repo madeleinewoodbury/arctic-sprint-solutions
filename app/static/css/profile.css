@@ -410,6 +410,26 @@
     margin: 0;
   }
 
+  .profile .preference-card {
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .profile .preference-title {
+    margin-bottom: 10px;
+  }
+  .profile .preference-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  .profile .preference-list li {
+    padding: 5px 0;
+  }
+  .profile .preference-list li:last-child {
+    border-bottom: none;
+  }
 }
-
 
