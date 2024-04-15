@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css"
+    href="{{ url_for('static', filename='css/profile.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/friends.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="profile" x-data="profileTabs({{tabs}}, {{activeTab}})">
+    <div class="top">
+        <div class="user-info">
+            <div class="flag-container">
+                <img src="{{ current_user.country.flag }}" alt="{{ current_user.country.name }}">
+                <span>{{ current_user.country.name | translate }}</span>
+              </div>
+            <img src="{{ current_user.gravatar() }}" alt="Gravatar"
+                class="gravatar-img">
+            <div class="title">
+                <h2>{{ _("Hello") }} {{ current_user.username }}</h2>
+                <div class="stats">
+                    <span>{{ _("Visited:") }} <strong>{{number_of_visited_attractions}}</strong></span>
+                    <span>{{ _("Wishlist:") }}<strong>{{number_of_wishlist_attractions}}</strong></span>
+                    <span>{{ _("Points:") }} <strong>{{points}}</span></strong>
+                    <span>{{ _("Level:") }} <strong>{{level.current_level}}</span></strong>
+                </div>
+                <div class="progress-container">
+                    <progress class="progress-bar" value="{{ level.progress }}" max="{{ level.points_required }}"></progress>
+                    <span class="progress-text"> <strong>{{ level.points_missing }}</strong> {{ _("points until level ") }}<strong>{{level.current_level + 1}}</strong></span>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <ul class="profile-tabs">
+        <template x-for="tab in tabs" :key="tab">
+            <li :class="activeTab === tab ? 'active' : ''" @click="setActiveTab(tab)" x-text="tab"></li>
+        </template>
+    </ul>
+
+    <div class="content">
+        <template x-if="activeTab === tabs[0]">
+            <div class="content-info">
+                <div class="visited-attractions">
+    
+                    {% if visited_attractions %}
+                    <h2>{{ _("Visited Attractions") }}</h2>
+                    <div class="card-container">
+                        {% for visited in visited_attractions %}
+                        <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}" class="attraction-card">
+                            <img src="{{ visited.attraction.image }}" alt="Attraction Image">
+                            <div>
+                                <h3>{{ visited.attraction.name }}</h3>
+                                <p>{{ _("Visited on") }} {{ visited.time_visited }}</p>
+                                <div class="points">
+                                    <span>🏆</span> {{ visited.attraction.points }} {{ _("points") }}
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+            
+                    {% else %}
+                    <p>{{ _("You have not visited any attractions") }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </template>
+
+        <template x-if="activeTab === tabs[1]">
+            <div class="content-info">
+                
+                <!--
+                <div class="profile-info" style="display: block" id="profile-info">
+                <h3>Account information:</h3>
+                <p>Username: {{ current_user.username }}</p>
+                <p>First name: {{ current_user.first_name }}</p>
+                <p>Last name: {{ current_user.last_name }}</p>
+                <p>Email: {{ current_user.email }}</p>
+                <button class="btn btn-primary" onclick="toggleForm()">Edit</button> 
+                </div>
+
+
+
+                    <div class="profile-info" style="display: block" id="profile-info">
+                        <p>Username: {{ profile_form.username.data }}</p>
+                        <p>First name: {{ profile_form.first_name.data }}</p>
+                        <p>Last name: {{ profile_form.last_name.data}}</p>
+                        <p>Email: {{ profile_form.email.data }}</p>
+                        <button class="btn btn-primary" onclick="toggleForm()">Edit</button> 
+                    </div>
+
+                -->
+
+                
+    
+                <script>
+                    function notworking () {
+                    let isProfileFormVisible = false
+                    let isPasswordFormVisible = false
+                }
+                    function updateShow() {
+                    var profileDetails = document.getElementById("profile-info")
+                    var profileForm = document.getElementById("profile-form")
+                    var passwordForm = document.getElementById("password-form")
+                    if (isProfileFormVisible) {
+                        profileDetails.style.display = "none"
+                        profileForm.style.display = "block"
+                        passwordForm.style.display = 'none'
+                    } else if (isPasswordFormVisible) {
+                        profileDetails.style.display = "none"
+                        profileForm.style.display = "none"
+                        passwordForm.style.display = 'block'
+                    } else {
+                        profileDetails.style.display = "block"
+                        profileForm.style.display = "none"
+                        passwordForm.style.display = 'none'
+                    }
+                }
+
+
+                    function toggleEditUser5() {
+                        var profileForm = document.getElementById("profile-form")
+                        if (profileForm.style.display === "none") {
+                            isProfileFormVisible = true
+                        } else {
+                            isProfileFormVisible = false
+                        }
+                        console.log(isProfileFormVisible)
+                        updateShow()
+                    }
+
+                    function toggleEditPassword5() {
+                        var profileInfo = document.getElementById("profile-info")
+                        var passwordForm = document.getElementById("password-form")
+                        if (passwordForm.style.display === "none") {
+                            isPasswordFormVisible = true
+                        } else {
+                            isPasswordFormVisible = false
+                        }
+                    }
+                    
+
+                    function toggleEditUser() {
+                        var profileDetails = document.getElementById("profile-info")
+                        var profileForm = document.getElementById("profile-form")
+                        if (profileForm.style.display === "none") {
+                            profileForm.style.display = "block"
+                            profileDetails.style.display = "none"
+                        } else {
+                            profileForm.style.display = "none"
+                            profileDetails.style.display = "block"
+                        }
+                    }
+                    function toggleEditPassword() {
+                        var profileInfo = document.getElementById("profile-info")
+                        var passwordForm = document.getElementById("password-form")
+                        if (passwordForm.style.display === "none") {
+                            passwordForm.style.display = "block"
+                            profileInfo.style.display = "none"
+                        } else {
+                            passwordForm.style.display = "none"
+                            profileInfo.style.display = "block"
+                        }
+                    }
+                    function toggleEditPreferences() {
+                        var preferencesInfo = document.getElementById("preferences-info")
+                        var preferencesForm = document.getElementById("preferences-form")
+                        if (preferencesForm.style.display === "none") {
+                            preferencesForm.style.display = "block"
+                            preferencesInfo.style.display = "none"
+                        } else {
+                            preferencesForm.style.display = "none"
+                            preferencesInfo.style.display = "block"
+                        }
+                    }
+
+
+                    function toggleEditUser2() {
+                        var profileDetails = document.getElementById("profile-info");
+                        var profileForm = document.getElementById("profile-form");
+                
+                        // Toggle visibility state
+                        isProfileFormVisible = !isProfileFormVisible;
+                
+                        // Apply visibility state
+                        profileForm.style.display = isProfileFormVisible ? "block" : "none";
+                        profileDetails.style.display = isProfileFormVisible ? "none" : "block";
+                    }
+                
+                    function toggleEditPassword2() {
+                        var profileInfo = document.getElementById("profile-info");
+                        var passwordForm = document.getElementById("password-form");
+                
+                        // Toggle visibility state
+                        isPasswordFormVisible = !isPasswordFormVisible;
+                
+                        // Apply visibility state
+                        passwordForm.style.display = isPasswordFormVisible ? "block" : "none";
+                        profileInfo.style.display = isPasswordFormVisible ? "none" : "block";
+                    }
+                </script>
+
+           
+
+
+
+                <div class="form-wrapper">
+                    <h3>Account information:</h3>
+                    <div class="profile-info" id="profile-info" style="display: block">
+                        <!--
+                        {{ profile_form.username.label }}
+                        {{ profile_form.username.data }}
+
+                        {{ profile_form.first_name.label }}
+                        {{ profile_form.first_name.data }}
+
+                        {{ profile_form.last_name.label }}
+                        {{ profile_form.last_name.data }}
+
+                        {{ profile_form.email.label }}
+                        {{ profile_form.email.data }} 
+                        -->
+                        <p>Username: {{ profile_form.username.data }}</p>
+                        <p>First name: {{ profile_form.first_name.data }}</p>
+                        <p>Last name: {{ profile_form.last_name.data}}</p>
+                        <p>Email: {{ profile_form.email.data }}</p>
+                        <div class="btn-container">
+                        <button class="btn btn-primary" onclick="toggleEditUser()">{{ _("Edit Profile") }}</button>
+                        <button class="btn btn-primary" onclick="toggleEditPassword()">{{ _("Change Password") }}</button>
+                    </div> 
+                    </div>
+
+                    
+                <form action="{{ url_for('auth.profile') }}" method="post" id="profile-form" style="display: none">
+                    {{ profile_form.hidden_tag() }}
+                    <div class="form-control">
+                        {{ profile_form.username.label }}
+                        {{ profile_form.username }}
+                        {% for error in profile_form.username.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-control"> 
+                        {{ profile_form.country.label }}
+                        {{ profile_form.country(class="form-select") }}
+                        {% for error in profile_form.country.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-control">
+                        {{ profile_form.first_name.label }}
+                        {{ profile_form.first_name }}
+                        {% for error in profile_form.first_name.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-control">
+                        {{ profile_form.last_name.label }}
+                        {{ profile_form.last_name }}
+                        {% for error in profile_form.last_name.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-control">
+                        {{ profile_form.email.label }}
+                        {{ profile_form.email }}
+                        {% for error in profile_form.email.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="btn-container">
+                        <button class="btn btn-primary" type="button" onclick="toggleEditUser()">Cancel</button> 
+                        {{ profile_form.submit }}
+                    </div>
+                </form>
+
+
+                <form action="{{ url_for('auth.profile') }}" method="post" id="password-form" style="display: none">
+                    {{ password_form.hidden_tag() }}
+                    <div class="form-control">
+                        {{ password_form.password.label }}
+                        {{ password_form.password }}
+                        {% for error in password_form.password.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-control"> 
+                        {{ password_form.confirm_password.label }}
+                        {{ password_form.confirm_password }}
+                        {% for error in password_form.confirm_password.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="btn-container">
+                        <button class="btn btn-primary" type="button" onclick="toggleEditPassword()">Cancel</button> 
+                        {{ password_form.submit }}
+                    </div>
+                </form>
+
+
+
+            {#  
+
+                    <!-- OLD FORM:
+                    <form action="{{ url_for('auth.profile') }}" method="post">
+                        {{ profile_form.hidden_tag() }}
+                        <div class="form-control">
+                            {{ profile_form.email.label }}
+                            {{ profile_form.email(size=50) }}
+                            {% for error in profile_form.email.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="form-control">
+                            {{ profile_form.country.label }}
+                            <select name="country" class="form-select">
+                                {% for country in profile_form.country.choices %}
+                                <option value="{{ country[0] }}" {% if country[0] == profile_form.country.data %} selected {% endif %}>{{ country[1] | translate }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            {{ profile_form.tag.label }}
+                            <select name="tag" class="form-select-multiple" multiple>
+                                {% for tag in profile_form.tag.choices %}
+                                <option value="{{ tag[0] }}" {% if tag[0] in profile_form.tag.data %} selected {% endif %}>{{ tag[1] | translate }}</option>
+                                {% endfor %}
+                            </select>
+                            {% for error in profile_form.tag.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+        
+                        <div class="btn-container">
+                            <button class="btn btn-primary" onclick="toggleForm()">Cancel</button> 
+                            {{ profile_form.submit }}
+                        </div>
+                    </form>
+                -->
+
+
+#}
+
+
+                </div>
+                <div class="user-preferences">
+                    <h2>{{ _("Your Preferences") }}</h2>
+                    <div id="preferences-info">
+                    {%if user_preferences %}
+                    <ul>
+                        {% for preference in user_preferences %}
+                        <li>{{ preference }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>{{ _("You have not set any preferences") }}</p>
+                    {% endif %}
+                    <button class="btn btn-primary" type="button" onclick="toggleEditPreferences()">Set Preferences</button> 
+                </div>
+ 
+                
+
+                <form action="{{ url_for('auth.profile') }}" method="post" id="preferences-form" style="display: none">
+                    {{ preferences_form.hidden_tag() }}
+                    <div class="form-control">
+                        {{ preferences_form.tag.label }}
+                        {{ preferences_form.tag(class="form-select-multiple", multiple=True) }}
+                        {% for error in preferences_form.tag.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="btn-container">
+                        <button class="btn btn-primary" type="button" onclick="toggleEditPreferences()">Cancel</button> 
+                        {{ preferences_form.submit }}
+                    </div>
+                </form>
+            </div>
+
+
+
+
+
+
+
+
+
+            </div>
+        </template>
+
+        <template x-if="activeTab === tabs[2]">
+            <div class="content-info">
+                <div class="user-wishlist">
+                    <h2>Your Wishlist</h2>
+                    {%if wishlist_attractions %}
+                    <div class="card-container">
+                        {% for item in wishlist_attractions %}
+                        <a href="{{ url_for('attractions.get_attraction', attraction_id=item.attraction.id) }}" class="attraction-card">
+                            <img src="{{ item.attraction.image }}" alt="Attraction Image">
+                            <div>
+                                <h3>{{ item.attraction.name }}</h3>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-white">You have not added any attractions to your wishlist</p>
+                    {% endif %}
+                </div>
+            </div>
+        </template>
+
+        <template x-if="activeTab === tabs[3]">
+            {%include 'friends.html'%}
+        </template>
+
+        <template x-if="activeTab === tabs[4]">
+            <div class="visited-attractions">
+                <h2>Badge Progress</h2>
+                <div class="card-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); grid-gap: 10px;"> 
+                    {% for badge in badge_progress %}
+                        <div class="attraction-card" style="margin-bottom: 20px; display: flex; flex-direction: column; justify-content: space-between; min-height: 100px; box-sizing: border-box; padding: 10px;"> 
+                            <h3>{{ badge.badge_name }}</h3>
+                                <p>{{ badge.description }}</p> 
+                            {% for tag_progress in badge.tags_progress %}
+                                <div>{{ tag_progress.visited_count }}/{{ tag_progress.required_count }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </template>
+    </div>
+</section>
+
+{% endblock %}
