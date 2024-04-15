@@ -61,11 +61,10 @@ class ProfileForm(Form):
     last_name = StringField(_('Last Name'), validators=[DataRequired(), Length(max=50)])
     email = StringField(_('Email'), validators=[DataRequired(), Email(), Length(max=50)], render_kw={"autocomplete": "username"})
     
-    #categories
-    #age_groups
-    tag = SelectMultipleField(_('Select Tags'), coerce=int)
+    category = SelectMultipleField(_('Select Categories'), choices=[], coerce=int)
+    age_group = SelectMultipleField(_('Select Age Groups'), choices=[], coerce=int)
+    tag = SelectMultipleField(_('Select Tags'), choices=[], coerce=int)
     
-    cancel = SubmitField(_('Cancel'), render_kw={'class': 'btn btn-primary'})
     submit = SubmitField(_('Update profile'), render_kw={'class': 'btn btn-primary'})
 
 
