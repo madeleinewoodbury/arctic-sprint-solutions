@@ -1,15 +1,32 @@
-from flask import render_template, abort, request, jsonify
+from flask import render_template, abort, request, jsonify,session
 from flask_login import login_required, current_user
-from .forms import SearchForm, FilterAttractionsForm
+from .forms import SearchForm, FilterAttractionsForm, SelectCityForm
 from . import attractions
 from app.models import Attraction, AttractionAgeGroup, AttractionCategory, AttractionTag, Category, AgeGroup, Tag, VisitedAttraction, GroupedAttraction, AttractionGroup
 from app import db
 from sqlalchemy import and_
 
+@attractions.route('/select_city', methods=['POST'])
+def select_city():
+    form = SelectCityForm(request.form)
+    if form.validate_on_submit():
+        selected_city = form.city.data
+        session['selected_city'] = selected_city
+        return jsonify({'success': True}), 200
+    else:
+        errors = form.errors
+        return jsonify({'success': False, 'errors': errors}), 400
 
 # Get all attractions.
 @attractions.route('/attractions', methods=['GET', 'POST'])
 def get_attractions():
+    if 'selected_city' in session:
+        selected_city = session['selected_city']
+    else:
+        session['selected_city'] = 1
+        selected_city = session['selected_city']
+
+    print(selected_city)
     search_form = SearchForm()
     filter_form = FilterAttractionsForm()
     

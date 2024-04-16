@@ -172,8 +172,30 @@ function updateCheckboxes(checkboxes, activeIDs) {
     })
 }
 
+const selectCity = () => {
+    const citySelect = document.getElementById('citySelect');
+    if(!citySelect) return
+    citySelect.addEventListener('change', (e) => {
+        const form = document.getElementById('cityForm');
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: form.method,
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.errors) console.log(data.errors);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    })
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     disableCheckboxes()
     filterAttractions()
     truncateAttractionDescription()
+    selectCity()
 })

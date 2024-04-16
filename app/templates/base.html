@@ -46,6 +46,16 @@
             <li>
                 <a href="{{ url_for('main.language') }}">{{ _("Babel Fish") }}</a>
             </li>
+            <li>
+                <form action="{{ url_for('attractions.select_city') }}" method="POST" id="cityForm">
+                    {{ select_city_form.csrf_token }}
+                    <select name="city" id="citySelect">
+                    {% for city in select_city_form.city.choices %}
+                        <option value="{{ city[0] }}">{{ city[1] }}</option>
+                    {% endfor %}
+                    </select>
+                </form>
+            </li>
         </ul>
     </nav>
     {% with messages = get_flashed_messages() %}
@@ -61,6 +71,7 @@
     {% endblock %}
 
     <script src="{{url_for('static', filename='js/app.js')}}"></script>
+    
 </body>
 
 </html>
