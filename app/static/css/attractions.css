@@ -384,3 +384,15 @@
 
 }
 
+.suggested-banner {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #ff9800;
+  color: white;
+  padding: .5rem 1rem;
+  border-radius: .5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
