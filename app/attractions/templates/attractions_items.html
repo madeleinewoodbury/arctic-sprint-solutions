@@ -4,6 +4,10 @@
         <div class="points">
             <span>🏆</span> {{ attraction.points }} {{ _("points") }}
         </div>
+        {% if attraction.id in suggested_ids %}
+        <div class="suggested-banner">
+            <span>🌟</span>For you!</div>
+        {% endif %}
         {% if attraction.image %}
         <div class="image-container">
             <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
