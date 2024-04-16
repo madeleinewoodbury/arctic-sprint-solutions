@@ -454,6 +454,11 @@ def suggest_attractions_for_user(user_id):
         user_id=user_id
     )
 
+    # Query to find visited attraction ids for the user
+    visited_attraction_ids = select(VisitedAttraction.attraction_id).filter_by(
+        user_id=user_id
+    )
+
     attractions_query = (
         db.session.query(
             Attraction.id,
@@ -488,6 +493,9 @@ def suggest_attractions_for_user(user_id):
                 AttractionCategory.category_id.in_(user_category_ids),
             ),
         )
+        .filter(
+            Attraction.id.notin_(visited_attraction_ids)
+        )  # Exclude visited attractions
         .group_by(Attraction.id)
         .having(
             or_(
