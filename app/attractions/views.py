@@ -1,8 +1,8 @@
-from flask import render_template, abort, request, jsonify,session
+from flask import render_template, abort, request, jsonify, session
 from flask_login import login_required, current_user
 from .forms import SearchForm, FilterAttractionsForm, SelectCityForm
 from . import attractions
-from app.models import Attraction, AttractionAgeGroup, AttractionCategory, AttractionTag, Category, AgeGroup, Tag, VisitedAttraction, GroupedAttraction, AttractionGroup
+from app.models import Attraction, AttractionAgeGroup, AttractionCategory, AttractionTag, Category, AgeGroup, Tag, VisitedAttraction, AttractionGroup, City
 from app import db
 from sqlalchemy import and_
 
@@ -26,18 +26,31 @@ def get_attractions():
         session['selected_city'] = 1
         selected_city = session['selected_city']
 
-    print(selected_city)
+    city = City.query.get(selected_city)
+    attractions = city.attractions
     search_form = SearchForm()
     filter_form = FilterAttractionsForm()
-    
-    # Get attractions based on search.
+
     search_text = search_form.data.get('search_text')
     if search_text:
-        attractions = Attraction.query.filter(Attraction.name.contains(search_text)).all()
+        # Filter attractions based on search text
+        attractions = Attraction.query.filter(Attraction.name.contains(search_text)).filter(Attraction.id.in_([attraction.id for attraction in city.attractions])).all()
     else:
-        attractions = Attraction.query.all()
-    
+        # If no search text, display all attractions for the current city
+        attractions = city.attractions
+
     attraction_ids = [attraction.id for attraction in attractions]
+
+    # print(current_city.attractions)
+    
+    # # Get attractions based on search.
+    # search_text = search_form.data.get('search_text')
+    # if search_text:
+    #     attractions = Attraction.query.filter(Attraction.name.contains(search_text)).all()
+    # else:
+    #     attractions = Attraction.query.all()
+    
+    # attraction_ids = [attraction.id for attraction in attractions]
     
     # Get IDs and Names of categories relevant to current attractions.
     categories_choices_query = db.session.query(Category.id, Category.name) \
@@ -65,7 +78,13 @@ def get_attractions():
     filter_form.age_groups.choices = [(age_group.id, age_group.name) for age_group in age_groups_choices_query]
     filter_form.tags.choices = [(tag.id, tag.name) for tag in tags_choices_query]
     
-    return render_template('attractions_main.html', attractions=attractions, search_form=search_form, filter_form=filter_form)
+    return render_template(
+        'attractions_main.html', 
+        attractions=attractions, 
+        search_form=search_form, 
+        filter_form=filter_form,
+        city=city
+    )
 
 
 # Get single attraction.
