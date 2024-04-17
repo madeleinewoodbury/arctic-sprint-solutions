@@ -46,7 +46,7 @@
             <li>
                 <a href="{{ url_for('main.language') }}">{{ _("Babel Fish") }}</a>
             </li>
-            <li>
+            <li class="city-select">
                 <form action="{{ url_for('attractions.select_city') }}" method="POST" id="cityForm">
                     {{ select_city_form.csrf_token }}
                     <select name="city" id="citySelect">

@@ -152,10 +152,12 @@ nav {
   padding: 1rem;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .nav-links {
   display: flex;
+  align-items: center;
   gap: 1rem;
 }
 
@@ -168,6 +170,17 @@ nav {
 .nav-links a:hover {
   color: var(--primary);
 }
+
+.city-select select {
+  background-color: var(--bg-light);
+  font-size: 1rem;
+  padding: 0;
+  color: var(--bg-dark);
+  border: none;
+  border-radius: 5px;
+  padding: 0 5px;
+}
+
 
 .landing {
   padding: 2rem 1rem;
