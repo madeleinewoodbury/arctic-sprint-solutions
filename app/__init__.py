@@ -47,6 +47,15 @@ def create_app(config_name):
 
     # Register new filter for jinja
     app.jinja_env.filters["translate"] = translate_filter
+
+    @app.context_processor
+    def inject_cities():
+        from .attractions.forms import SelectCityForm
+        selected_city = session.get('selected_city')
+        if not selected_city:
+            session['selected_city'] = 1
+        return dict(select_city_form=SelectCityForm())
+    
     
     from .admin import admin_manager as admin_bp
 

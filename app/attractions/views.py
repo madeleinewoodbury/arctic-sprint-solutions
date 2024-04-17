@@ -1,6 +1,6 @@
-from flask import render_template, abort, request, jsonify
+from flask import render_template, abort, request, jsonify, session
 from flask_login import login_required, current_user
-from .forms import SearchForm, FilterAttractionsForm
+from .forms import SearchForm, FilterAttractionsForm, SelectCityForm
 from . import attractions
 from app.models import (
     Attraction,
@@ -15,27 +15,46 @@ from app.models import (
     UserCategoryPreference,
     UserTagPreference,
     VisitedAttraction,
-    GroupedAttraction,
+    City,
     AttractionGroup,
 )
 from app import db
 from sqlalchemy import and_, distinct, func, or_
 
+@attractions.route('/select_city', methods=['POST'])
+def select_city():
+    form = SelectCityForm(request.form)
+    if form.validate_on_submit():
+        selected_city = form.city.data
+        session['selected_city'] = selected_city
+        return jsonify({'success': True}), 200
+    else:
+        errors = form.errors
+        return jsonify({'success': False, 'errors': errors}), 400
 
 # Get all attractions.
 @attractions.route("/attractions", methods=["GET", "POST"])
 def get_attractions():
+    if 'selected_city' in session:
+        selected_city = session['selected_city']
+    else:
+        session['selected_city'] = 1
+        selected_city = session['selected_city']
+
+    city = City.query.get(selected_city)
+    attractions_list = city.attractions
     search_form = SearchForm()
     filter_form = FilterAttractionsForm()
 
-    # Get attractions based on search.
-    search_text = search_form.data.get("search_text")
+    search_text = search_form.data.get('search_text')
     if search_text:
-        attractions_list = Attraction.query.filter(
-            Attraction.name.contains(search_text)
-        ).all()
-    else:
-        attractions_list = Attraction.query.all()
+        # Filter attractions based on search text
+        attractions_list = (
+            Attraction.query
+            .filter(Attraction.name.contains(search_text))
+            .filter(Attraction.id.in_([attraction.id for attraction in city.attractions]))
+            .all()
+        )
 
     attraction_ids = [attraction.id for attraction in attractions_list]
 
@@ -97,6 +116,7 @@ def get_attractions():
         search_form=search_form,
         filter_form=filter_form,
         suggested_ids=list(suggested_ids),
+        city=city
     )
 
 
@@ -118,15 +138,9 @@ def get_attraction(attraction_id):
         ).first()
         visited = visited_record is not None
 
-        # Check for users previous wishlists
-        # wishlist_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
-        # user_groups = AttractionGroup.query.filter_by(owner=current_user.id).all()
-
         for group in attraction.groups:
             if group.owner == current_user.id:
                 wishlist = True
-
-        # wishlist = wishlist_record is not None
 
     return render_template(
         "attraction.html", attraction=attraction, visited=visited, wishlist=wishlist
@@ -215,6 +229,14 @@ def mark_as_wishlist(attraction_id):
 # Filter and refresh attractions content with AJAX.
 @attractions.route("/attractions/filter", methods=["POST"])
 def filter_attractions():
+    if 'selected_city' in session:
+        selected_city = session['selected_city']
+    else:
+        session['selected_city'] = 1
+        selected_city = session['selected_city']
+
+    city = City.query.get(selected_city)
+
     # Get the selected filtering options from the AJAX request.
     selected_categories = request.json.get("selectedCategories", [])
     selected_age_groups = request.json.get("selectedAgeGroups", [])
@@ -223,7 +245,7 @@ def filter_attractions():
     filter_priority = request.json.get("filterPriority", [])
 
     # Construct dynamic filter based on selected options
-    filters = []
+    filters = [Attraction.city == city.id]
     if selected_categories:
         filters.append(
             Attraction.category.any(
