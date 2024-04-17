@@ -153,22 +153,44 @@ def update_user_password(password_form, activeTab):
 
 
 def update_user_preferences(preferences_form, activeTab):
+    selected_category_ids = preferences_form.category.data
+    selected_age_group_ids = preferences_form.age_group.data
     selected_tag_ids = preferences_form.tag.data
-
-    # Delete existing user preferences
-    UserTagPreference.query.filter_by(user_id=current_user.id).delete()
-
-    # Create new user preferences
-    for tag_id in selected_tag_ids:
-        user_preference = UserTagPreference(user_id=current_user.id, tag_id=tag_id)
-        db.session.add(user_preference)
     
-    db.session.commit()
-    preferences_form.is_active.data = 'false'
-    flash(_('Your preferences have been updated!'), 'success')
-    return redirect(url_for('auth.profile', current_tab=activeTab))
-    
+    # Ensure transactional integrity
+    try:
+        UserTagPreference.query.filter_by(user_id=current_user.id).delete()
+        UserCategoryPreference.query.filter_by(user_id=current_user.id).delete()
+        UserAgeGroupPreference.query.filter_by(user_id=current_user.id).delete()
+        db.session.flush()
 
+        for tag_id in selected_tag_ids:
+            user_preference = UserTagPreference(
+                user_id=current_user.id, tag_id=tag_id)
+            db.session.add(user_preference)
+            
+        for category_id in selected_category_ids:
+            user_preference = UserCategoryPreference(
+                user_id=current_user.id, category_id=category_id)
+            db.session.add(user_preference)
+            
+        for age_group_id in selected_age_group_ids:
+            user_preference = UserAgeGroupPreference(
+                user_id=current_user.id, age_group_id=age_group_id)
+            db.session.add(user_preference)
+
+        db.session.commit()
+        flash(_('Your preferences have been updated!'), 'success')
+  
+    except Exception as e:
+        db.session.rollback()
+        flash(_('Error updating user preferences: ') + str(e), 'error')
+    
+    finally:
+        preferences_form.is_active.data = 'false'
+        return redirect(url_for('auth.profile', current_tab=activeTab))
+
+    
 def get_user_preferences():
     # Fetch user's tag preferences
     user_tag_preferences = UserTagPreference.query.filter_by(
@@ -384,10 +406,8 @@ def profile():
     
     else:
         # set current user preferences
-        #preferences_form.category.data = [tag.tag_id for tag in current_user.category_preferences]
-        #preferences_form.age_group.data = [tag.tag_id for tag in current_user.age_group_preferences]
-        preferences_form.category.data = [0]
-        preferences_form.age_group.data = [0]
+        preferences_form.category.data = [category.category_id for category in current_user.category_preferences]
+        preferences_form.age_group.data = [age_group.age_group_id for age_group in current_user.age_group_preferences]
         preferences_form.tag.data = [tag.tag_id for tag in current_user.tag_preferences]   
 
         # Prepopulate profile form fields
