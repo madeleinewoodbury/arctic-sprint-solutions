@@ -42,17 +42,19 @@ def get_attractions():
         selected_city = session['selected_city']
 
     city = City.query.get(selected_city)
-    attractions = city.attractions
+    attractions_list = city.attractions
     search_form = SearchForm()
     filter_form = FilterAttractionsForm()
 
     search_text = search_form.data.get('search_text')
     if search_text:
         # Filter attractions based on search text
-        attractionslist = Attraction.query.filter(Attraction.name.contains(search_text)).filter(Attraction.id.in_([attraction.id for attraction in city.attractions])).all()
-    else:
-        # If no search text, display all attractions for the current city
-        attractions_list = city.attractions
+        attractions_list = (
+            Attraction.query
+            .filter(Attraction.name.contains(search_text))
+            .filter(Attraction.id.in_([attraction.id for attraction in city.attractions]))
+            .all()
+        )
 
     attraction_ids = [attraction.id for attraction in attractions_list]
 
@@ -68,17 +70,6 @@ def get_attractions():
                 suggested_ids.index(x.id) if x.id in suggested_ids else float("inf"),
             ),
         )
-
-    # print(current_city.attractions)
-    
-    # # Get attractions based on search.
-    # search_text = search_form.data.get('search_text')
-    # if search_text:
-    #     attractions = Attraction.query.filter(Attraction.name.contains(search_text)).all()
-    # else:
-    #     attractions = Attraction.query.all()
-    
-    # attraction_ids = [attraction.id for attraction in attractions]
 
     # Get IDs and Names of categories relevant to current attractions.
     categories_choices_query = (
@@ -147,15 +138,9 @@ def get_attraction(attraction_id):
         ).first()
         visited = visited_record is not None
 
-        # Check for users previous wishlists
-        # wishlist_record = AttractionGroup.query.filter_by(owner=current_user.id).first()
-        # user_groups = AttractionGroup.query.filter_by(owner=current_user.id).all()
-
         for group in attraction.groups:
             if group.owner == current_user.id:
                 wishlist = True
-
-        # wishlist = wishlist_record is not None
 
     return render_template(
         "attraction.html", attraction=attraction, visited=visited, wishlist=wishlist
@@ -244,6 +229,14 @@ def mark_as_wishlist(attraction_id):
 # Filter and refresh attractions content with AJAX.
 @attractions.route("/attractions/filter", methods=["POST"])
 def filter_attractions():
+    if 'selected_city' in session:
+        selected_city = session['selected_city']
+    else:
+        session['selected_city'] = 1
+        selected_city = session['selected_city']
+
+    city = City.query.get(selected_city)
+
     # Get the selected filtering options from the AJAX request.
     selected_categories = request.json.get("selectedCategories", [])
     selected_age_groups = request.json.get("selectedAgeGroups", [])
@@ -252,7 +245,7 @@ def filter_attractions():
     filter_priority = request.json.get("filterPriority", [])
 
     # Construct dynamic filter based on selected options
-    filters = []
+    filters = [Attraction.city == city.id]
     if selected_categories:
         filters.append(
             Attraction.category.any(
