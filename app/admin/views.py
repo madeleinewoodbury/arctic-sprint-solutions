@@ -91,6 +91,7 @@ class AttractionView(AdminModelView):
         "location",
         "description",
         "image",
+        "category",
         "tags",
         "points",
         "age_groups",

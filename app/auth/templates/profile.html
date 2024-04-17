@@ -320,15 +320,33 @@
 
             <div class="user-preferences">
                     <h2>{{ _("Your Preferences") }}</h2>
-                    <div id="preferences-info">
-                    {% if user_preferences %}
-                    <ul>
-                        {% for preference in user_preferences %}
-                        <li>{{ preference }}</li>
-                        {% endfor %}
-                    </ul>
+                    {% if user_preferences.tags or user_preferences.categories or user_preferences.age_groups %}
+                        <div class="preference-card">
+                            <h3 class="preference-title">Tags</h3>
+                            <ul class="preference-list">
+                                {% for tag in user_preferences.tags %}
+                                    <li>{{ tag }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="preference-card">
+                            <h3 class="preference-title">Categories</h3>
+                            <ul class="preference-list">
+                                {% for category in user_preferences.categories %}
+                                    <li>{{ category }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="preference-card">
+                            <h3 class="preference-title">Age Groups</h3>
+                            <ul class="preference-list">
+                                {% for age_group in user_preferences.age_groups %}
+                                    <li>{{ age_group }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     {% else %}
-                    <p>{{ _("You have not set any preferences") }}</p>
+                        <p>{{ _("You have not set any preferences") }}</p>
                     {% endif %}
                 </div>
  
