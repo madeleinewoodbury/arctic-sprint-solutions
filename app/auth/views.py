@@ -27,7 +27,7 @@ def register() -> 'html':
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash(_('User has been registered.'))
+        flash(_('User has been registered.'), 'success')
         return redirect(url_for('auth.login'))
 
     return render_template('register.html', form=form)
@@ -41,7 +41,7 @@ def login() -> 'html':
         if user is not None and user.check_password(form.password.data):
             login_user(user, form.remember_me.data)
             return redirect(url_for('attractions.get_attractions'))
-        flash(_('Invalid username or password.'))
+        flash(_('Invalid username or password.'), "error")
     return render_template('login.html', form=form)
 
 
@@ -49,7 +49,7 @@ def login() -> 'html':
 @login_required
 def logout():
     logout_user()
-    flash(_('You have been logged out.'))
+    flash(_('You have been logged out.'), 'success')
     return redirect(url_for('main.index'))
 
 
@@ -78,7 +78,7 @@ def password_reset(token):
     if request.method == 'POST':
         if User.reset_password(token, form.password.data):
             db.session.commit()
-            flash('Your password has been updated.')
+            flash('Your password has been updated.', 'success')
             return redirect(url_for('auth.login'))
         else:
             return (redirect(url_for('auth.login')))
@@ -406,7 +406,7 @@ def send_friend_request(user_id):
 
     db.session.add(friendship)
     db.session.commit()
-    flash(_('The friend request has been sent.'))
+    flash(_('The friend request has been sent.'), 'success')
     return redirect(url_for('auth.profile', current_tab=3))
 
 
@@ -425,7 +425,7 @@ def accept_friend_request(user_id):
 
     friendship.status = 'accepted'
     db.session.commit()
-    flash(_('The friend request has been accepted.'))
+    flash(_('The friend request has been accepted.'), 'success')
     return redirect(url_for('auth.profile', current_tab=3))
 
 
@@ -444,7 +444,7 @@ def remove_friend_request(user_id):
 
     db.session.delete(friendship)
     db.session.commit()
-    flash(_('The friend request has been ended.'))
+    flash(_('The friend request has been ended.'), 'success')
     return redirect(url_for('auth.profile', current_tab=3))
 
 
@@ -463,7 +463,7 @@ def remove_friend(user_id):
 
     db.session.delete(friendship)
     db.session.commit()
-    flash(_('The friend has been removed.'))
+    flash(_('The friend has been removed.'), 'success')
     return redirect(url_for('auth.profile', current_tab=2))
 
 

@@ -8,8 +8,10 @@
   --darken-primary: #44b48b;
   --dark-blue: #273343;
   --medium-grey: #646464;
-  --danger: #e74c3c;
-  --success: #2ecc71;
+  --danger: #F8D7DA;
+  --danger-text: #99575E;
+  --success: #D4EDDA;
+  --success-text: #41753a;
   --black: #000;
   --white: #ffffff;
   --main-font: "Roboto", sans-serif;
@@ -181,6 +183,43 @@ nav {
   padding: 0 5px;
 }
 
+/* Flash messages */
+.flash-messages {
+  position: absolute;
+  bottom: 0;
+  margin: 2rem;
+  z-index: 10;
+}
+
+.flask-flash {
+  padding: 1rem;
+  border-radius: .5rem;
+  background-color: #fff;
+  color: var(--bg-dark);
+}
+
+.flask-flash.error {
+  background-color: var(--danger);
+  color: var(--danger-text);
+}
+
+.flask-flash.success {
+  background-color: var(--success);
+  color: var(--success-text);
+}
+
+@keyframes fadeOut {
+  from {
+      opacity: 1;
+  }
+  to {
+      opacity: 0;
+  }
+}
+
+.fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
 
 .landing {
   padding: 2rem 1rem;

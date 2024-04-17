@@ -203,6 +203,7 @@ const selectCity = () => {
     })
 }
 
+
 document.addEventListener('DOMContentLoaded', () => {
     disableCheckboxes()
     filterAttractions()
