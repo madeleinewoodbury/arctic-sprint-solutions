@@ -1,6 +1,6 @@
 import math
 from . import auth
-from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, PreferencesForm
+from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePasswordForm, UpdatePreferencesForm
 from .. import db
 from ..models import *
 from flask import render_template, request, redirect, url_for, session, flash, abort
@@ -117,6 +117,7 @@ def update_user_profile(profile_form, activeTab):
     user.country_id = profile_form.country.data
     
     db.session.commit()
+    profile_form.is_active.data = 'false'
     flash(_('Your profile has been updated!'), 'success')
     return redirect(url_for('auth.profile', current_tab=activeTab))  # Redirect to avoid form resubmission
 
@@ -125,6 +126,7 @@ def update_user_password(password_form, activeTab):
     user = User.query.filter_by(id=current_user.id).first()
     user.set_password(password_form.password.data)
     db.session.commit()
+    password_form.is_active.data = 'false'
     flash(_('Your password has been updated!'), 'success')
     return redirect(url_for('auth.profile', current_tab=activeTab))  # Redirect to avoid form resubmission
 
@@ -141,6 +143,7 @@ def update_user_preferences(preferences_form, activeTab):
         db.session.add(user_preference)
     
     db.session.commit()
+    preferences_form.is_active.data = 'false'
     flash(_('Your preferences have been updated!'), 'success')
     return redirect(url_for('auth.profile', current_tab=activeTab))
     
@@ -299,50 +302,58 @@ def profile():
     level = get_user_level(points)
 
     # Profile Tab
-    profile_form = ProfileForm()
-    password_form = PasswordResetForm()
-    preferences_form = PreferencesForm()
+    profile_form = UpdateProfileForm()
+    password_form = UpdatePasswordForm()
+    preferences_form = UpdatePreferencesForm()
     profile_form.country.choices = [(country.id, country.name) for country in Country.query.all()]
     preferences_form.category.choices = [(category.id, category.name) for category in Category.query.all()]
     preferences_form.age_group.choices = [(age_group.id, age_group.name) for age_group in AgeGroup.query.all()]
     preferences_form.tag.choices = [(tag.id, tag.name) for tag in Tag.query.all()]
-
     
-    if request.method == 'POST':
-        print(request.form)
-        print("posted")
+    profile_form.is_active.data = 'false'
+    password_form.is_active.data = 'false'
+    preferences_form.is_active.data = 'false'
+    
+    if password_form.update_password.data:
         activeTab = 1
-        if 'profile_form' in request.form or 'password_form' in request.form:
-            activeTab = 1
+        password_form.is_active.data = 'true'
+        if password_form.validate_on_submit():
+            print("PASSWORD FORM SUCCESS")
+            update_user_password(password_form, activeTab)
         
+    if preferences_form.update_preferences.data:
+        activeTab = 1
+        preferences_form.is_active.data = 'true'
+        if preferences_form.validate_on_submit():
+            print("PREFERENCES FORM SUCCESS")
+            update_user_preferences(preferences_form, activeTab)
+ 
+    if profile_form.update_profile.data:
+        activeTab = 1
+        profile_form.is_active.data = 'true'
+        if profile_form.validate_on_submit():
+            print("PROFILE FORM SUCCESS")
+            update_user_profile(profile_form, activeTab)
     
-    if password_form.validate_on_submit():
-        print("PASSWORD FORM SUCCESS")
-        activeTab = 1
-        update_user_password(password_form, activeTab)
-        
-
-    elif preferences_form.validate_on_submit():
-        print("PREFERENCES FORM SUCCESS")
-        activeTab = 1
-        update_user_preferences(preferences_form, activeTab)
-    
-    elif profile_form.validate_on_submit():
-        print("PROFILE FORM SUCCESS")
-        activeTab = 1
-        update_user_profile(profile_form, activeTab)
-            
     else:
+        # set current user preferences
+        #preferences_form.category.data = [tag.tag_id for tag in current_user.category_preferences]
+        #preferences_form.age_group.data = [tag.tag_id for tag in current_user.age_group_preferences]
+        preferences_form.category.data = [0]
+        preferences_form.age_group.data = [0]
+        preferences_form.tag.data = [tag.tag_id for tag in current_user.tag_preferences]   
+
         # Prepopulate profile form fields
         profile_form.username.data = current_user.username
         profile_form.first_name.data = current_user.first_name
         profile_form.last_name.data = current_user.last_name
         profile_form.email.data = current_user.email
         profile_form.country.data = current_user.country_id
-        # set current user preferences
-        preferences_form.tag.data = [tag.tag_id for tag in current_user.tag_preferences]
-    
-
+        
+    print(f'PROFILE: {profile_form.is_active.data}')
+    print(f'PASSWORD: {password_form.is_active.data}')
+    print(f'PREFERENCES: {preferences_form.is_active.data}')
+        
     # Fetch the user preferences from the database
     user_preferences = get_user_preferences()
 
@@ -467,7 +478,7 @@ def remove_friend(user_id):
     db.session.delete(friendship) 
     db.session.commit()
     flash(_('The friend has been removed.'))
-    return redirect(url_for('auth.profile', current_tab=2))
+    return redirect(url_for('auth.profile', current_tab=3))
 
 @auth.route('/friend/profile/<int:user_id>', methods=['GET'])
 @login_required
