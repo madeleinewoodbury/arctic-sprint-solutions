@@ -182,7 +182,9 @@
 
         <template x-if="activeTab === tabs[4]">
             <div class="badge-content-info">
-                <h2>Unlocked Badges</h2>
+                <div class="visited-attractions">
+                    <h2>Unlocked Badges</h2>
+                </div>
                 <div class="badge-card-container">
                     {% if unlocked_progress %}
                         {% for badge in unlocked_progress %}
@@ -192,11 +194,12 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        <p>No badges unlocked yet.</p>
+                    <p class="text-white">No badges unlocked yet.</p>
                     {% endif %}
                 </div>
-        
-                <h2>Badge Progress</h2>
+                <div class="visited-attractions">
+                    <h2>Badge Progress</h2>
+                </div>
                 <div class="badge-card-container">
                     {% if in_progress_badges %}
                         {% for badge in in_progress_badges %}
@@ -209,7 +212,7 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        <p>All badges unlocked or none in progress.</p>
+                        <p class="text-white">All badges unlocked or none in progress.</p>
                     {% endif %}
                 </div>
             </div>

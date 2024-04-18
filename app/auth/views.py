@@ -484,6 +484,7 @@ def friend_profile(user_id):
     visited_attractions = get_visited_attractions(user_id)
     points = sum(item['attraction'].points for item in visited_attractions)
     level = get_user_level(points)
+    unlocked_progression, in_progress_badges = get_user_badge_progress(user_id)
 
     return render_template(
         'friendProfile.html',
@@ -491,5 +492,6 @@ def friend_profile(user_id):
         visited_attractions=visited_attractions,
         number_of_visited_attractions=len(visited_attractions),
         points=points,
-        level=level
+        level=level,
+        unlocked_progress = unlocked_progression
     )
