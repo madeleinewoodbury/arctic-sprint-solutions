@@ -74,17 +74,15 @@
                 <div class="form-wrapper">
 
                     <div class="profile-info" id="profile-info"
-                    {% if profile_form.is_active.data == 'false' 
-                    and password_form.is_active.data == 'false' 
-                    and preferences_form.is_active.data == 'false' %}
-                    style="display: block"{% else %}style="display: none"{% endif %}>
-                        <h2>Profile Details</h2>
-                        <p>Username: {{ profile_form.username.data }}</p>
-                        <p>First name: {{ profile_form.first_name.data }}</p>
-                        <p>Last name: {{ profile_form.last_name.data}}</p>
-                        <p>Email: {{ profile_form.email.data }}</p>
-                        <p>Country: {{ current_user.country }}</p>
-                        <p>Registered since: {{ current_user.created_at }}</p>
+                    {% if profile_form.is_active.data == 'true' and password_form.is_active.data == 'true' 
+                    and preferences_form.is_active.data == 'true' %}style="display: none"{% endif %}>
+                        <h2>{{ _("Profile Details") }}</h2>
+                        <p>{{ _("Username:") }} {{ current_user.username }}</p>
+                        <p>{{ _("First name:") }} {{ current_user.first_name }}</p>
+                        <p>{{ _("Last name:") }} {{ current_user.last_name}}</p>
+                        <p>{{ _("Email:") }} {{ current_user.email }}</p>
+                        <p>{{ _("Country:") }} {{ current_user.country }}</p>
+                        <p>{{ _("Registered since:") }} {{ current_user.created_at }}</p>
                         <div class="btn-container">
                             <button class="btn btn-primary" type="button" onclick="toggleEditUser()">{{ _("Edit Profile") }}</button>
                             <button class="btn btn-primary" type="button" onclick="toggleEditPassword()">{{ _("Change Password") }}</button>
@@ -94,7 +92,7 @@
 
                 <form action="{{ url_for('auth.profile', current_tab=1) }}" method="post" id="profile-form"
                 {% if profile_form.is_active.data == 'false' %}style="display: none"{% endif %}>
-                    <h2>Edit Profile</h2>
+                    <h2>{{ _("Edit Profile") }}</h2>
                     {{ profile_form.hidden_tag() }}
                     <div class="form-control">
                         {{ profile_form.username.label }}
@@ -103,12 +101,13 @@
                         <span style="color: red;">{{ error }}</span>
                         {% endfor %}
                     </div>
-                    <div class="form-control"> 
+                    <div class="form-control">
                         {{ profile_form.country.label }}
-                        {{ profile_form.country(class="form-select") }}
-                        {% for error in profile_form.country.errors %}
-                        <span style="color: red;">{{ error }}</span>
-                        {% endfor %}
+                        <select name="{{ profile_form.country.name }}" class="form-select">
+                            {% for option, label in profile_form.country.choices %}
+                            <option value="{{ option }}" {% if option == profile_form.country.data %} selected {% endif %}>{{ label | translate }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="form-control">
                         {{ profile_form.first_name.label }}
@@ -140,7 +139,7 @@
 
                 <form action="{{ url_for('auth.profile', current_tab=1) }}" method="post" id="password-form"
                 {% if password_form.is_active.data == 'false' %}style="display: none"{% endif %}>
-                    <h2>Change Password</h2>
+                    <h2>{{ _("Change Password") }}</h2>
                     {{ password_form.hidden_tag() }}
                     <div class="form-control">
                         {{ password_form.old_password.label }}
@@ -322,7 +321,7 @@
                     <h2>{{ _("Your Preferences") }}</h2>
                     {% if user_preferences.tags or user_preferences.categories or user_preferences.age_groups %}
                         <div class="preference-card">
-                            <h3 class="preference-title">Tags</h3>
+                            <h3 class="preference-title">{{ _("Tags") }}</h3>
                             <ul class="preference-list">
                                 {% for tag in user_preferences.tags %}
                                     <li>{{ tag }}</li>
@@ -330,7 +329,7 @@
                             </ul>
                         </div>
                         <div class="preference-card">
-                            <h3 class="preference-title">Categories</h3>
+                            <h3 class="preference-title">{{ _("Categories") }}</h3>
                             <ul class="preference-list">
                                 {% for category in user_preferences.categories %}
                                     <li>{{ category }}</li>
@@ -338,7 +337,7 @@
                             </ul>
                         </div>
                         <div class="preference-card">
-                            <h3 class="preference-title">Age Groups</h3>
+                            <h3 class="preference-title">{{ _("Age Groups") }}</h3>
                             <ul class="preference-list">
                                 {% for age_group in user_preferences.age_groups %}
                                     <li>{{ age_group }}</li>
