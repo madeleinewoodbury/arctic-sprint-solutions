@@ -21,38 +21,41 @@ from app.models import (
 from app import db
 from sqlalchemy import and_, distinct, func, or_
 
-@attractions.route('/select_city', methods=['POST'])
+
+@attractions.route("/select_city", methods=["POST"])
 def select_city():
     form = SelectCityForm(request.form)
     if form.validate_on_submit():
         selected_city = form.city.data
-        session['selected_city'] = selected_city
-        return jsonify({'success': True}), 200
+        session["selected_city"] = selected_city
+        return jsonify({"success": True}), 200
     else:
         errors = form.errors
-        return jsonify({'success': False, 'errors': errors}), 400
+        return jsonify({"success": False, "errors": errors}), 400
+
 
 # Get all attractions.
 @attractions.route("/attractions", methods=["GET", "POST"])
 def get_attractions():
-    if 'selected_city' in session:
-        selected_city = session['selected_city']
+    if "selected_city" in session:
+        selected_city = session["selected_city"]
     else:
-        session['selected_city'] = 1
-        selected_city = session['selected_city']
+        session["selected_city"] = 1
+        selected_city = session["selected_city"]
 
     city = City.query.get(selected_city)
     attractions_list = city.attractions
     search_form = SearchForm()
     filter_form = FilterAttractionsForm()
 
-    search_text = search_form.data.get('search_text')
+    search_text = search_form.data.get("search_text")
     if search_text:
         # Filter attractions based on search text
         attractions_list = (
-            Attraction.query
-            .filter(Attraction.name.contains(search_text))
-            .filter(Attraction.id.in_([attraction.id for attraction in city.attractions]))
+            Attraction.query.filter(Attraction.name.contains(search_text))
+            .filter(
+                Attraction.id.in_([attraction.id for attraction in city.attractions])
+            )
             .all()
         )
 
@@ -62,6 +65,18 @@ def get_attractions():
     suggested_ids = set()
     if current_user.is_authenticated:
         suggested_attractions = suggest_attractions_for_user(current_user.id)
+        visited_attractions = {
+            va.attraction_id
+            for va in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
+        }
+        suggested_attractions = [
+            attr
+            for attr in suggested_attractions
+            if attr["attraction_id"] not in visited_attractions
+        ]
+        suggested_attractions = sorted(
+            suggested_attractions, key=lambda x: x["score"], reverse=True
+        )[:10]
         suggested_ids = [attr["attraction_id"] for attr in suggested_attractions]
         attractions_list = sorted(
             attractions_list,
@@ -71,44 +86,7 @@ def get_attractions():
             ),
         )
 
-    # Get IDs and Names of categories relevant to current attractions.
-    categories_choices_query = (
-        db.session.query(Category.id, Category.name)
-        .join(AttractionCategory, AttractionCategory.category_id == Category.id)
-        .filter(AttractionCategory.attraction_id.in_(attraction_ids))
-        .distinct(Category.id)
-        .order_by(Category.name)
-        .all()
-    )
-
-    # Get IDs and Names of age groups relevant to current attractions.
-    age_groups_choices_query = (
-        db.session.query(AgeGroup.id, AgeGroup.name)
-        .join(AttractionAgeGroup, AttractionAgeGroup.age_group_id == AgeGroup.id)
-        .filter(AttractionAgeGroup.attraction_id.in_(attraction_ids))
-        .distinct(AgeGroup.id)
-        .order_by(AgeGroup.id)
-        .all()
-    )
-
-    # Get IDs and Names of tags relevant to current attractions.
-    tags_choices_query = (
-        db.session.query(Tag.id, Tag.name)
-        .join(AttractionTag, AttractionTag.tag_id == Tag.id)
-        .filter(AttractionTag.attraction_id.in_(attraction_ids))
-        .distinct(Tag.id)
-        .order_by(Tag.name)
-        .all()
-    )
-
-    # Populate filter form with queried choices
-    filter_form.categories.choices = [
-        (category.id, category.name) for category in categories_choices_query
-    ]
-    filter_form.age_groups.choices = [
-        (age_group.id, age_group.name) for age_group in age_groups_choices_query
-    ]
-    filter_form.tags.choices = [(tag.id, tag.name) for tag in tags_choices_query]
+    update_filter_form_choices(attraction_ids, filter_form)
 
     return render_template(
         "attractions_main.html",
@@ -116,7 +94,7 @@ def get_attractions():
         search_form=search_form,
         filter_form=filter_form,
         suggested_ids=list(suggested_ids),
-        city=city
+        city=city,
     )
 
 
@@ -229,11 +207,11 @@ def mark_as_wishlist(attraction_id):
 # Filter and refresh attractions content with AJAX.
 @attractions.route("/attractions/filter", methods=["POST"])
 def filter_attractions():
-    if 'selected_city' in session:
-        selected_city = session['selected_city']
+    if "selected_city" in session:
+        selected_city = session["selected_city"]
     else:
-        session['selected_city'] = 1
-        selected_city = session['selected_city']
+        session["selected_city"] = 1
+        selected_city = session["selected_city"]
 
     city = City.query.get(selected_city)
 
@@ -475,10 +453,6 @@ def suggest_attractions_for_user(user_id):
         user_id=user_id
     )
 
-    visited_attraction_ids = select(VisitedAttraction.attraction_id).filter_by(
-        user_id=user_id
-    )
-
     attractions_query = (
         db.session.query(
             Attraction.id,
@@ -513,7 +487,6 @@ def suggest_attractions_for_user(user_id):
                 AttractionCategory.category_id.in_(user_category_ids),
             ),
         )
-        .filter(Attraction.id.notin_(visited_attraction_ids))
         .group_by(Attraction.id)
         .having(
             or_(
@@ -535,7 +508,78 @@ def suggest_attractions_for_user(user_id):
         for attr in attractions_query.all()
     ]
 
-    sorted_attractions = sorted(
-        attractions_with_scores, key=lambda x: x["score"], reverse=True
-    )[:10]
-    return sorted_attractions
+    return attractions_with_scores
+
+
+@attractions.route("/suggested_attractions", methods=["GET"])
+@login_required
+def suggested_attractions():
+    suggested_attractions = suggest_attractions_for_user(current_user.id)
+    visited_attractions = {
+        va.attraction_id
+        for va in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
+    }
+
+    filtered_suggestions = [
+        attr
+        for attr in suggested_attractions
+        # if attr["attraction_id"] not in visited_attractions
+    ]
+    filtered_suggestions = sorted(
+        filtered_suggestions, key=lambda x: x["score"], reverse=True
+    )
+
+    attraction_ids = [attr["attraction_id"] for attr in filtered_suggestions]
+    attractions = Attraction.query.filter(Attraction.id.in_(attraction_ids)).all()
+
+    search_form = SearchForm()
+    filter_form = FilterAttractionsForm()
+
+    update_filter_form_choices(attraction_ids, filter_form)
+
+    city = City.query.first()  # might need changing later
+
+    return render_template(
+        "attractions_main.html",
+        attractions=attractions,
+        search_form=search_form,
+        filter_form=filter_form,
+        city=city,
+        title="Suggested Attractions",
+    )
+
+
+def update_filter_form_choices(attraction_ids, filter_form):
+    if attraction_ids:
+        categories = (
+            db.session.query(Category.id, Category.name)
+            .join(AttractionCategory)
+            .filter(AttractionCategory.attraction_id.in_(attraction_ids))
+            .distinct()
+            .order_by(Category.name)
+            .all()
+        )
+
+        age_groups = (
+            db.session.query(AgeGroup.id, AgeGroup.name)
+            .join(AttractionAgeGroup)
+            .filter(AttractionAgeGroup.attraction_id.in_(attraction_ids))
+            .distinct()
+            .order_by(AgeGroup.name)
+            .all()
+        )
+
+        tags = (
+            db.session.query(Tag.id, Tag.name)
+            .join(AttractionTag)
+            .filter(AttractionTag.attraction_id.in_(attraction_ids))
+            .distinct()
+            .order_by(Tag.name)
+            .all()
+        )
+    else:
+        categories, age_groups, tags = [], [], []
+
+    filter_form.categories.choices = [(c.id, c.name) for c in categories]
+    filter_form.age_groups.choices = [(ag.id, ag.name) for ag in age_groups]
+    filter_form.tags.choices = [(t.id, t.name) for t in tags]
