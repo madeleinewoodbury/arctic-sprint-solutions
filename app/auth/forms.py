@@ -75,6 +75,16 @@ class UpdateProfileForm(Form):
     update_profile = SubmitField(_('Update profile'), render_kw={'class': 'btn btn-primary'})
     cancel = SubmitField(_('Cancel'), render_kw={'class': 'btn btn-primary', 'formnovalidate': 'formnovalidate'})
     
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user is not None and current_user != user:
+            raise ValidationError(_('This username is already taken.'))
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is not None and current_user != user:
+            raise ValidationError(_('This email is already taken.'))
+    
 class UpdatePasswordForm(Form):
     is_active = HiddenField(default='false')
     old_password = PasswordField('Old Password', validators=[DataRequired()])
