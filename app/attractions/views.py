@@ -445,7 +445,6 @@ from sqlalchemy import select
 
 
 def suggest_attractions_for_user(user_id):
-    # Convert subqueries into select() statements for use in IN() clauses
     user_tag_ids = select(UserTagPreference.tag_id).filter_by(user_id=user_id)
     user_age_group_ids = select(UserAgeGroupPreference.age_group_id).filter_by(
         user_id=user_id
@@ -454,7 +453,6 @@ def suggest_attractions_for_user(user_id):
         user_id=user_id
     )
 
-    # Query to find visited attraction ids for the user
     visited_attraction_ids = select(VisitedAttraction.attraction_id).filter_by(
         user_id=user_id
     )
@@ -493,9 +491,7 @@ def suggest_attractions_for_user(user_id):
                 AttractionCategory.category_id.in_(user_category_ids),
             ),
         )
-        .filter(
-            Attraction.id.notin_(visited_attraction_ids)
-        )  # Exclude visited attractions
+        .filter(Attraction.id.notin_(visited_attraction_ids))
         .group_by(Attraction.id)
         .having(
             or_(
