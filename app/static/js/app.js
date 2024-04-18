@@ -34,7 +34,6 @@ const attractionFilters = () => {
 
         updateShowFilters() {
             this.showFilters = window.innerWidth > maxWidth
-            console.log(this.showFilters);
         }
     }
 }
@@ -172,8 +171,42 @@ function updateCheckboxes(checkboxes, activeIDs) {
     })
 }
 
+const selectCity = () => {
+    const citySelect = document.getElementById('citySelect');
+    if(!citySelect) return
+
+    const options = citySelect.querySelectorAll('option');
+    options.forEach(option => {
+        if (option.value === sessionStorage.getItem('selectedCity')) {
+            option.selected = true;
+        }
+    })
+    citySelect.addEventListener('change', (e) => {
+        sessionStorage.setItem('selectedCity', e.target.value);
+        const form = document.getElementById('cityForm');
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: form.method,
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.errors) console.log(data.errors);
+            if(location.pathname === '/attractions') {
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    })
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     disableCheckboxes()
     filterAttractions()
     truncateAttractionDescription()
+    selectCity()
 })

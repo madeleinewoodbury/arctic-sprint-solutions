@@ -91,6 +91,7 @@ class AttractionView(AdminModelView):
         "location",
         "description",
         "image",
+        "category",
         "tags",
         "points",
         "age_groups",
@@ -131,7 +132,7 @@ class ReportView(BaseView):
         return current_user.is_authenticated and current_user.is_admin
 
     def inaccessible_callback(self, name, **kwargs):
-        flash("You must be an admin to access this page.")
+        flash("You must be an admin to access this page.", "error")
         return redirect(url_for("auth.login", next=request.url))
 
     @expose("/", methods=("GET", "POST"))

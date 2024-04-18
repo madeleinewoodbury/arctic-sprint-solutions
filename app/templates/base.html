@@ -46,21 +46,44 @@
             <li>
                 <a href="{{ url_for('main.language') }}">{{ _("Babel Fish") }}</a>
             </li>
+            <li class="city-select">
+                <form action="{{ url_for('attractions.select_city') }}" method="POST" id="cityForm">
+                    {{ select_city_form.csrf_token }}
+                    <select name="city" id="citySelect">
+                    {% for city in select_city_form.city.choices %}
+                        <option value="{{ city[0] }}">{{ city[1] }}</option>
+                    {% endfor %}
+                    </select>
+                </form>
+            </li>
         </ul>
     </nav>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-        {% for message in messages %}
-        <li>{{ message | translate }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+        <ul>
+            {% for category, message in messages %}
+            <li class="flask-flash {{ category }}">
+                <span>{{ message | translate }}</span>
+            </li>
+            {% endfor %}
+            <script>
+                const flashMessages = document.querySelectorAll('.flask-flash');
+                setTimeout(() => {
+                    flashMessages.forEach(flashMessage => {
+                        flashMessage.classList.add('fade-out');
+                    })
+                }, 5000); 
+            </script>
+        </ul>
+        {% endif %}
+        {% endwith %}
+    </div>
     {% block content %}
     {% endblock %}
 
     <script src="{{url_for('static', filename='js/app.js')}}"></script>
+    
 </body>
 
 </html>
