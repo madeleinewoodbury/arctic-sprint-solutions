@@ -74,8 +74,11 @@
                 <div class="form-wrapper">
 
                     <div class="profile-info" id="profile-info"
-                    {% if profile_form.is_active.data == 'true' and password_form.is_active.data == 'true' 
-                    and preferences_form.is_active.data == 'true' %}style="display: none"{% endif %}>
+                    {% if profile_form.is_active.data == 'false' 
+                    and password_form.is_active.data == 'false' 
+                    and preferences_form.is_active.data == 'false' %}
+                    style="display: block"
+                    {% else %}style="display: none"{% endif %}>
                         <h2>{{ _("Profile Details") }}</h2>
                         <p>{{ _("Username:") }} {{ current_user.username }}</p>
                         <p>{{ _("First name:") }} {{ current_user.first_name }}</p>
@@ -175,35 +178,35 @@
             
             <form action="{{ url_for('auth.profile', current_tab=1) }}" method="post" id="preferences-form"
             {% if preferences_form.is_active.data == 'false' %}style="display: none"{% endif %}>
-                <h2>Set Preferences</h2>
+                <h2>{{ _("Set Preferences") }}</h2>
                 {{ preferences_form.hidden_tag() }}
-                <div class="form-control2">
+                <div class="form-control">
                     <label for="checkboxes">{{ preferences_form.category.label.text }}</label>
                     {% for option, label in preferences_form.category.choices %}
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="{{ option }}" name="{{ preferences_form.category.name }}" value="{{ option }}"
+                            <input type="checkbox" id="{{ option }}" name="{{ preferences_form.category.name }}" value="{{ option }}"
                             {% if option in preferences_form.category.data %} checked {% endif %}>
-                            <label class="form-check-label" for="{{ option }}">{{ label | translate }}</label>
+                            <label for="{{ option }}">{{ label | translate }}</label>
                         </div>
                     {% endfor %}
                 </div>
-                <div class="form-control2">
+                <div class="form-control">
                     <label for="checkboxes">{{ preferences_form.age_group.label.text }}</label>
                     {% for option, label in preferences_form.age_group.choices %}
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="{{ option }}" name="{{ preferences_form.age_group.name }}" value="{{ option }}"
+                            <input type="checkbox" id="{{ option }}" name="{{ preferences_form.age_group.name }}" value="{{ option }}"
                             {% if option in preferences_form.age_group.data %} checked {% endif %}>
-                            <label class="form-check-label" for="{{ option }}">{{ label | translate }}</label>
+                            <label for="{{ option }}">{{ label | translate }}</label>
                         </div>
                     {% endfor %}
                 </div>
-                <div class="form-control2">
+                <div class="form-control">
                     <label for="checkboxes">{{ preferences_form.tag.label.text }}</label>
                     {% for option, label in preferences_form.tag.choices %}
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="{{ option }}" name="{{ preferences_form.tag.name }}" value="{{ option }}"
+                            <input type="checkbox" id="{{ option }}" name="{{ preferences_form.tag.name }}" value="{{ option }}"
                             {% if option in preferences_form.tag.data %} checked {% endif %}>
-                            <label class="form-check-label" for="{{ option }}">{{ label | translate }}</label>
+                            <label for="{{ option }}">{{ label | translate }}</label>
                         </div>
                     {% endfor %}
                 </div>
@@ -218,93 +221,65 @@
 
         <style>
 
-            *,
-            *:before,
-            *:after {
-              box-sizing: border-box;
+            #preferences-form .form-control {
+                margin-top: 2rem;
             }
             
-            .awd {
-              display: grid;
-              place-content: center;
-              min-height: 100vh;
-            }
-    
-            .form-control2 {
-                margin-top: 2em;
-            }
-            
-            .form-check {
+            .profile .form-control .form-check {
               font-family: system-ui, sans-serif;
-              font-size: 2rem;
-              font-weight: bold;
+              font-size: 1rem;
               line-height: 1.1;
-              display: grid;
-              grid-template-columns: 1em auto;
-              gap: 0.5em;
+              display: flex;
+              gap: 0.5rem;
+              margin-top: 0.5rem;
             }
             
-            .form-check + .form-check {
-              margin-top: 0.5em;
-            }
-            
-            .form-check--disabled {
-              color: var(--form-control-disabled);
-              cursor: not-allowed;
-            }
-            
-            input[type="checkbox"] {
-              /* Add if not using autoprefixer */
+            .form-check input[type="checkbox"] {
               -webkit-appearance: none;
-              /* Remove most all native input styles */
               appearance: none;
-              /* For iOS < 15 */
               background-color: var(--form-background);
-              /* Not removed via appearance */
               margin: 0;
+              padding: 0 0 0 0;
             
               font: inherit;
-              color: currentColor;
-              width: 1.0em;
-              height: 1.0em;
-              border: 0.10em solid currentColor;
-              border-radius: 0.15em;
-              transform: translateY(-0.075em);
+              color: var(--dark-blue);
+              width: 1.0rem;
+              height: 1.0rem;
+              border: 0.10rem solid var(--dark-blue);
+              border-radius: 0.15rem;
+              transform: translateY(-0.075rem);
             
               display: grid;
               place-content: center;
             }
-            
-            input[type="checkbox"]::before {
+
+            .form-check input[type="checkbox"]::before {
               content: "";
-              width: 0.65em;
-              height: 0.65em;
+              width: 0.65rem;
+              height: 0.65rem;
               clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
               transform: scale(0);
               transform-origin: bottom left;
               transition: 120ms transform ease-in-out;
-              box-shadow: inset 1em 1em var(--form-control-color);
+              box-shadow: inset 1rem 1rem var(--form-control-color);
               /* Windows High Contrast Mode */
               background-color: CanvasText;
             }
             
-            input[type="checkbox"]:checked::before {
+            .form-check input[type="checkbox"]:checked::before {
               transform: scale(1);
             }
             
-            input[type="checkbox"]:focus {
-              outline: max(2px, 0.15em) solid currentColor;
-              outline-offset: max(2px, 0.15em);
+            .form-check input[type="checkbox"]:focus {
+              outline: max(2px, 0.15rem) solid currentColor;
+              outline-offset: max(2px, 0.15rem);
             }
             
-            input[type="checkbox"]:disabled {
-              --form-control-color: var(--form-control-disabled);
-            
-              color: var(--form-control-disabled);
-              cursor: not-allowed;
+            #preferences-form .form-check label {
+                font-size: 0.9rem;
             }
 
-            .profile .form-control2 label {
+            #preferences-form label {
                 position: static;
                 left: 0;
                 top: 0;
