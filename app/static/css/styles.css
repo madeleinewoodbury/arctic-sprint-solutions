@@ -208,6 +208,12 @@ nav {
   transition: all .2s ease-in-out;
 }
 
+.mobile-nav .brand {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+
 .nav-links a:hover,
 .brand a:hover {
   color: var(--primary);
@@ -289,7 +295,7 @@ nav {
 }
 
 .mobile-nav .settings-content ul{
-  padding: 3rem 2rem;
+  padding: 4rem 2rem 3rem 2rem;
 }
 
 .mobile-nav .settings-nav ul li{

@@ -171,9 +171,31 @@ function updateCheckboxes(checkboxes, activeIDs) {
     })
 }
 
-const selectCity = () => {
-    const citySelect = document.getElementById('citySelect');
-    if(!citySelect) return
+const citySelectMobile = () => {
+    const citySelect = document.getElementById('citySelectMobile');
+    const form = document.getElementById('cityFormMobile');
+    if(!citySelect && !form) return
+
+    selectCity(citySelect, form)
+}
+
+const citySelectAnonymous = () => {
+    const citySelect = document.getElementById('citySelectAnonymous');
+    const form = document.getElementById('cityFormAnonymous');
+    if(!citySelect && !form) return
+
+    selectCity(citySelect, form)
+}
+
+const citySelectDesktop = () => {
+    const citySelect = document.getElementById('citySelectDesktop');
+    const form = document.getElementById('cityFormDesktop');
+    if(!citySelect && !form) return
+
+    selectCity(citySelect, form)
+}
+
+const selectCity = (citySelect, form) => {
 
     const options = citySelect.querySelectorAll('option');
     options.forEach(option => {
@@ -183,7 +205,6 @@ const selectCity = () => {
     })
     citySelect.addEventListener('change', (e) => {
         sessionStorage.setItem('selectedCity', e.target.value);
-        const form = document.getElementById('cityForm');
         const formData = new FormData(form);
         
         fetch(form.action, {
@@ -208,5 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     disableCheckboxes()
     filterAttractions()
     truncateAttractionDescription()
-    selectCity()
+    citySelectDesktop()
+    citySelectMobile()
+    citySelectAnonymous()
 })
