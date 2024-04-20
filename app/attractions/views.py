@@ -129,7 +129,7 @@ def get_attraction(attraction_id):
         abort(404)  # Raise a 404 error if not found.
 
     visited = False
-    wishlist = False
+    inWishlist = False
 
     if current_user.is_authenticated:
         # Check for users previous visits
@@ -140,10 +140,10 @@ def get_attraction(attraction_id):
 
         for group in attraction.groups:
             if group.owner == current_user.id:
-                wishlist = True
+                inWishlist = True
 
     return render_template(
-        "attraction.html", attraction=attraction, visited=visited, wishlist=wishlist
+        "attraction.html", attraction=attraction, visited=visited, wishlisted=inWishlist
     )
 
 

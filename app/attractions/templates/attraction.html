@@ -20,28 +20,45 @@
       {% endfor %}
     </ul>
     {% if current_user.is_authenticated %}
-      <div class="form-control visited">
-        <input 
-          type="checkbox" 
-          id="visitedCheckbox" 
-          name="visited"
-          onchange="markAsVisited('{{ attraction.id }}')" 
-          {% if visited %}checked{%endif %}>
-          <label for="visitedCheckbox" class="visited-text">
-            {{ _('Visited') if visited else _('Mark as visited') }}
-          </label>
+    <div class="attraction-actions">
+      <div x-data="visitedAttraction({{ attraction.id}}, {{ visited | lower}})" class="wishlist">
+        <template x-if="!visited">
+          <div class="visited-info">
+            <button @click="addToVisited()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H208V208Z"></path></svg>
+            </button>
+            <span>{{_('Mark as visited')}}</span>
+          </div>
+        </template>
+        <template x-if="visited">
+          <div class="visited-info">
+            <button @click="removeFromVisited()">
+              <svg class="primary-fill" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,48V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM208,208V48H48V208H208Z"></path></svg>
+            </button>
+            <span>{{_('Visited')}}</span>
+          </div>
+        </template>
+    </div>
+
+      <div x-data="wishlist({{ attraction.id}}, {{wishlisted | lower}})" class="wishlist">
+          <template x-if="!inWishlist">
+            <div class="wishlist-info">
+              <button @click="addToWishlist()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72h64a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm80,48H40a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm128-40c0,36.52-50.28,62.08-52.42,63.16a8,8,0,0,1-7.16,0C186.28,206.08,136,180.52,136,144a32,32,0,0,1,56-21.14A32,32,0,0,1,248,144Zm-16,0a16,16,0,0,0-32,0,8,8,0,0,1-16,0,16,16,0,0,0-32,0c0,20.18,26.21,39.14,40,46.93C205.79,183.15,232,164.19,232,144Z"></path></svg>
+              </button>
+              <span>{{_('Add to wishlist')}}</span>
+            </div>
+          </template>
+          <template x-if="inWishlist">
+            <div class="wishlist-info">
+              <button @click="removeFromWishlist()">
+                <svg class="primary-fill" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72h64a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm80,48H40a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm128-40c0,36.52-50.28,62.08-52.42,63.16a8,8,0,0,1-7.16,0C186.28,206.08,136,180.52,136,144a32,32,0,0,1,56-21.14A32,32,0,0,1,248,144Zm-16,0a16,16,0,0,0-32,0,8,8,0,0,1-16,0,16,16,0,0,0-32,0c0,20.18,26.21,39.14,40,46.93C205.79,183.15,232,164.19,232,144Z"></path></svg>
+              </button>
+              <span>{{_('Remove from wishlist')}}</span>
+            </div>
+          </template>
       </div>
-      <div class="form-control wishlist">
-        <input 
-          type="checkbox" 
-          id="wishlistCheckbox" 
-          name="wishlist"
-          onchange="addToWishlist('{{ attraction.id }}')" 
-          {% if wishlist %}checked{%endif %}>
-          <label for="wishlistCheckbox" class="wishlist-text">
-            {{ 'Wishlist' if wishlist else 'Mark as wishlist'}}
-          </label>
-      </div>
+    </div>
   {% endif %}
   </div>
   
@@ -64,47 +81,4 @@
     </div>
   </div>
 </section>
-
-{% if current_user.is_authenticated %}
-<script>
-  function markAsVisited(attractionId) {
-    const visited = document.getElementById('visitedCheckbox').checked;
-    const visitedText = document.querySelector('.visited-text');
-    visitedText.innerHTML = visited ?  'Visited' : 'Mark as visited';
-
-    fetch(`/attractions/${attractionId}/mark_as_visited`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ visited: visited })
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);  // Handle server response here
-    })
-    .catch(error => console.error('Error:', error));
-  }
-
-  function addToWishlist(attractionId) {
-    const wishlist = document.getElementById('wishlistCheckbox').checked;
-    const wishlistText = document.querySelector('.wishlist-text');
-    wishlistText.innerHTML = wishlist ? 'Added to Wishlist' : 'Add to Wishlist';
-    console.log(wishlist);
-    // Make a POST request to update the wishlist status on the server
-    fetch(`/attractions/${attractionId}/add_to_wishlist`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ wishlist: wishlist })
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);  // Handle server response here
-    })
-    .catch(error => console.error('Error:', error));
-  }
-</script>
-{% endif %}
 {% endblock %}

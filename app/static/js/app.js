@@ -224,6 +224,66 @@ const selectCity = (citySelect, form) => {
     })
 }
 
+function markAsVisited(attractionId, checked) {
+  fetch(`/attractions/${attractionId}/mark_as_visited`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ visited: checked }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data); // Handle server response here
+    })
+    .catch((error) => console.error("Error:", error));
+}
+
+const visitedAttraction = (attractionId, visited) => {
+    return {
+        visited: visited,
+        attractionId: attractionId,
+        addToVisited() {
+            this.visited = true
+            markAsVisited(this.attractionId, true)
+        },
+        removeFromVisited() {
+            this.visited = false
+            markAsVisited(this.attractionId, false)
+        }
+    }
+}
+
+function addToWishlist(attractionId, checked) {
+    fetch(`/attractions/${attractionId}/add_to_wishlist`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ wishlist: checked })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);  // Handle server response here
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+const wishlist = (attractionId, inWishlist) => {
+    return {
+        inWishlist: inWishlist,
+        attractionId: attractionId,
+        addToWishlist() {
+            this.inWishlist = true
+            addToWishlist(this.attractionId, true)
+        },
+        removeFromWishlist() {
+            this.inWishlist = false,
+            addToWishlist(this.attractionId, false)
+        }
+    }
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
     disableCheckboxes()
