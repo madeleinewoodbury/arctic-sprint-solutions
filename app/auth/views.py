@@ -75,7 +75,7 @@ def password_reset(token):
     if current_user.is_authenticated:
         return redirect(url_for('attractions.get_attractions'))
     form = PasswordResetForm()
-    if request.method == 'POST':
+    if form.validate_on_submit():
         if User.reset_password(token, form.password.data):
             db.session.commit()
             flash('Your password has been updated.')
