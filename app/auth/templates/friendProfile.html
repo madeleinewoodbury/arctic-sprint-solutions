@@ -61,6 +61,23 @@
         {% endif %}
       </div>
     </div>
+
+  <div class="badge-content-info">
+    <div class="visited-attractions">
+      <h2>Unlocked Badges</h2>
+    </div>
+    <div class="badge-card-container">
+        {% if unlocked_progress %}
+            {% for badge in unlocked_progress %}
+                <div class="badge-card" style="background-color: lightgreen;">
+                    <h3>{{ badge.badge_name }}</h3>
+                    <p>{{ badge.description }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+        <p class="text-white">No badges unlocked yet.</p>
+        {% endif %}
+    </div>
   </div>
 </section>
 
