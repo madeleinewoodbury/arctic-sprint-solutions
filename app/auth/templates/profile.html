@@ -42,9 +42,8 @@
         <template x-if="activeTab === tabs[0]">
             <div class="content-info">
                 <div class="visited-attractions">
-    
-                    {% if visited_attractions %}
                     <h2>{{ _("Visited Attractions") }}</h2>
+                    {% if visited_attractions %}
                     <div class="card-container">
                         {% for visited in visited_attractions %}
                         <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}" class="attraction-card">
@@ -59,9 +58,8 @@
                         </a>
                         {% endfor %}
                     </div>
-            
                     {% else %}
-                    <p>{{ _("You have not visited any attractions") }}</p>
+                    <p class="text-white">{{ _("You have not visited any attractions") }}</p>
                     {% endif %}
                 </div>
             </div>
