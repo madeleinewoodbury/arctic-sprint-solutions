@@ -42,9 +42,8 @@
         <template x-if="activeTab === tabs[0]">
             <div class="content-info">
                 <div class="visited-attractions">
-    
-                    {% if visited_attractions %}
                     <h2>{{ _("Visited Attractions") }}</h2>
+                    {% if visited_attractions %}
                     <div class="card-container">
                         {% for visited in visited_attractions %}
                         <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}" class="attraction-card">
@@ -59,9 +58,8 @@
                         </a>
                         {% endfor %}
                     </div>
-            
                     {% else %}
-                    <p>{{ _("You have not visited any attractions") }}</p>
+                    <p class="text-white">{{ _("You have not visited any attractions") }}</p>
                     {% endif %}
                 </div>
             </div>
@@ -69,70 +67,152 @@
 
         <template x-if="activeTab === tabs[1]">
             <div class="content-info">
+                
                 <div class="form-wrapper">
-                    <form action="{{ url_for('auth.profile') }}" method="post">
-                        <div class="form-control">
-                            {{ profile_form.email.label }}
-                            {{ profile_form.email(size=50) }}
-                            {% for error in profile_form.email.errors %}
-                            <span style="color: red;">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="form-control">
-                            {{ profile_form.country.label }}
-                            <select name="country" class="form-select">
-                                {% for country in profile_form.country.choices %}
-                                <option value="{{ country[0] }}" {% if country[0] == profile_form.country.data %} selected {% endif %}>{{ country[1] | translate }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-control">
-                            {{ profile_form.category.label }}
-                            <select name="category" class="form-select-multiple" multiple>
-                                {% for category in categories %}
-                                <option value="{{ category.id }}" {% if category.id in profile_form.category.data %} selected {% endif %}>{{ category.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-control">
-                            {{ profile_form.tag.label }}
-                            <select name="tag" class="form-select-multiple" multiple>
-                                {% for tag in tags %}
-                                <option value="{{ tag.id }}" {% if tag.id in profile_form.tag.data %} selected {% endif %}>{{ tag.name | translate }}</option>
-                                {% endfor %}
-                            </select>
-                            {% for error in profile_form.tag.errors %}
-                            <span style="color: red;">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="form-control">
-                            {{ profile_form.age_group.label }}
-                            <select name="age_group" class="form-select-multiple" multiple>
-                                {% for age_group in age_groups %}
-                                <option value="{{ age_group.id }}" {% if age_group.id in profile_form.age_group.data %} selected {% endif %}>{{ age_group.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                    <div class="user-details" id="user-details"
+                    {% if profile_form.is_active.data == 'false' and preferences_form.is_active.data == 'false' %}
+                    style="display: block"
+                    {% else %}style="display: none"{% endif %}>
+                        <h2>{{ current_user.first_name }} {{ current_user.last_name }}</h2>
+                            <span>{{ _("Country:") }}</span><p>{{ current_user.country }}</p>
+                            <span>{{ _("Username:") }}</span>
+                            <p>{{ current_user.username }}</p>
+                            <span>{{ _("Email:") }}</span>
+                            <p>{{ current_user.email }}</p>
+                            <span>{{ _("Member since:") }}</span>
+                            <p>{{ current_user.created_at.strftime("%Y-%m-%d") }}</p>
+                            <span>{{ _("Account Type:") }}</span>
+                            <p>{{ current_user.role_rel | translate }}</p>
                         <div class="btn-container">
-                            <button class="btn btn-primary" type="submit">{{ _("Update
-                                Profile") }}</button>
-                        </div>
-                        {{ profile_form.hidden_tag() }}
-                    </form>
+                            <button class="btn btn-primary" type="button" onclick="toggleEditUser()">{{ _("Edit Profile") }}</button>
+                            <button class="btn btn-primary" type="button" onclick="toggleEditPreferences()">{{ _("Set Preferences") }}</button> 
+                        </div> 
+                    </div>
+
+                <form action="{{ url_for('auth.profile', current_tab=1) }}" novalidate method="post" id="profile-form"
+                {% if profile_form.is_active.data == 'false' %}style="display: none"{% endif %}>
+                    <h2>{{ _("Edit Profile") }}</h2>
+                    {{ profile_form.hidden_tag() }}
+                    <div class="form-control">
+                        {{ profile_form.country.label }}
+                        <select name="{{ profile_form.country.name }}" class="form-select">
+                            {% for option, label in profile_form.country.choices %}
+                            <option value="{{ option }}" {% if option == profile_form.country.data %} selected {% endif %}>{{ label | translate }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        {{ profile_form.first_name.label }}
+                        {{ profile_form.first_name }}
+                        {% for error in profile_form.first_name.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-control">
+                        {{ profile_form.last_name.label }}
+                        {{ profile_form.last_name }}
+                        {% for error in profile_form.last_name.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-control">
+                        {{ profile_form.username.label }}
+                        {{ profile_form.username }}
+                        {% for error in profile_form.username.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-control">
+                        {{ profile_form.email.label }}
+                        {{ profile_form.email }}
+                        {% for error in profile_form.email.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-control">
+                        {{ profile_form.current_password.label }}
+                        {{ profile_form.current_password }}
+                        {% for error in profile_form.current_password.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <br>
+                    <br>
+                    <h2>{{ _("Change Password (Optional)") }}</h2>
+                    <div class="form-control">
+                        {{ profile_form.password.label }}
+                        {{ profile_form.password }}
+                        {% for error in profile_form.password.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-control"> 
+                        {{ profile_form.confirm_password.label }}
+                        {{ profile_form.confirm_password }}
+                        {% for error in profile_form.confirm_password.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="btn-container">
+                        {{ profile_form.cancel }}
+                        {{ profile_form.update_profile }}
+                    </div>
+                </form>
+
+                <form action="{{ url_for('auth.profile', current_tab=1) }}" method="post" id="preferences-form"
+                {% if preferences_form.is_active.data == 'false' %}style="display: none"{% endif %}>
+                    <h2>{{ _("Set Preferences") }}</h2>
+                    {{ preferences_form.hidden_tag() }}
+                    <div class="form-control">
+                        <b>{{ preferences_form.category.label.text }}</b>
+                        <ul id="category-checkbox">
+                            {% for choice in preferences_form.category %}
+                            <li>
+                                <input id="{{ choice.id }}" name="{{ preferences_form.category.name }}" type="checkbox" value="{{ choice.data }}"
+                                {% if choice.data in preferences_form.category.data %} checked {% endif %}>
+                                <label for="{{ choice.id }}">{{ choice.label.text | translate }}</label>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <br>
+                    <div class="form-control">
+                        <b>{{ preferences_form.age_group.label.text }}</b>
+                        <ul id="age-group-checkbox">
+                            {% for choice in preferences_form.age_group %}
+                            <li>
+                                <input id="{{ choice.id }}" name="{{ preferences_form.age_group.name }}" type="checkbox" value="{{ choice.data }}"
+                                {% if choice.data in preferences_form.age_group.data %} checked {% endif %}>
+                                <label for="{{ choice.id }}">{{ choice.label.text | translate }}</label>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <br>
+                    <div class="form-control">
+                        <b>{{ preferences_form.tag.label.text }}</b>
+                        <ul id="tag-checkbox">
+                            {% for choice in preferences_form.tag %}
+                            <li>
+                                <input id="{{ choice.id }}" name="{{ preferences_form.tag.name }}" type="checkbox" value="{{ choice.data }}"
+                                {% if choice.data in preferences_form.tag.data %} checked {% endif %}>
+                                <label for="{{ choice.id }}">{{ choice.label.text | translate }}</label>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="btn-container">
+                    {{ preferences_form.cancel }}
+                        {{ preferences_form.update_preferences }}
+                    </div>
+                </form>
                 </div>
+
                 <div class="user-preferences">
                     <h2>{{ _("Your Preferences") }}</h2>
-                    {% if user_preferences.tags or user_preferences.categories or user_preferences.age_groups %}
+                        {% if user_preferences.tags or user_preferences.categories or user_preferences.age_groups %}
                         <div class="preference-card">
-                            <h3 class="preference-title">Tags</h3>
-                            <ul class="preference-list">
-                                {% for tag in user_preferences.tags %}
-                                    <li>{{ tag }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <div class="preference-card">
-                            <h3 class="preference-title">Categories</h3>
+                            <h3 class="preference-title">{{ _("Categories") }}</h3>
                             <ul class="preference-list">
                                 {% for category in user_preferences.categories %}
                                     <li>{{ category }}</li>
@@ -140,10 +220,18 @@
                             </ul>
                         </div>
                         <div class="preference-card">
-                            <h3 class="preference-title">Age Groups</h3>
+                            <h3 class="preference-title">{{ _("Age Groups") }}</h3>
                             <ul class="preference-list">
                                 {% for age_group in user_preferences.age_groups %}
                                     <li>{{ age_group }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="preference-card">
+                            <h3 class="preference-title">{{ _("Tags") }}</h3>
+                            <ul class="preference-list">
+                                {% for tag in user_preferences.tags %}
+                                    <li>{{ tag }}</li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -220,5 +308,30 @@
         
     </div>
 </section>
+
+<script>
+    function toggleEditUser() {
+        var userDetails = document.getElementById("user-details")
+        var profileForm = document.getElementById("profile-form")
+        if (profileForm.style.display === "none") {
+            profileForm.style.display = "block"
+            userDetails.style.display = "none"
+        } else {
+            profileForm.style.display = "none"
+            userDetails.style.display = "block"
+        }
+    }
+    function toggleEditPreferences() {
+        var userDetails = document.getElementById("user-details")
+        var preferencesForm = document.getElementById("preferences-form")
+        if (preferencesForm.style.display === "none") {
+            preferencesForm.style.display = "block"
+            userDetails.style.display = "none"
+        } else {
+            preferencesForm.style.display = "none"
+            userDetails.style.display = "block"
+        }
+    }
+</script>
 
 {% endblock %}

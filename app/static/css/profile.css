@@ -160,7 +160,6 @@
   flex-direction: column;
   width: 100%;
   padding: 1rem;
-
 }
 
 .profile .form-control {
@@ -225,13 +224,71 @@
   background-color: transparent;
 }
 
-.profile .form-select-multiple option{
+.profile .form-select-multiple option {
   padding: 2px 0;
 }
 
+.profile .form-control li {
+  font-size: 1rem;
+  line-height: 1.1;
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  }
+  
+  .profile .form-control input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  margin: 0;
+  padding: 0 0 0 0;
+  font: inherit;
+  color: var(--black);
+  width: 1.0rem;
+  height: 1.0rem;
+  border: 0.10rem solid var(--black);
+  border-radius: 0.15rem;
+  transform: translateY(-0.075rem);
+  display: grid;
+  place-content: center;
+  }
+  
+  .profile .form-control input[type="checkbox"]::before {
+  content: "";
+  width: 0.65rem;
+  height: 0.65rem;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  transform: scale(0);
+  transform-origin: bottom left;
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1rem 1rem var(--black);
+  background-color: var(--black);
+  }
+  
+  .profile .form-control input[type="checkbox"]:checked::before {
+  transform: scale(1);
+  }
+  
+  .profile .form-control input[type="checkbox"]:focus {
+  outline: max(2px, 0.15rem) solid currentColor;
+  outline-offset: max(2px, 0.15rem);
+  }
+  
+  .profile #preferences-form .form-control label {
+    position: static;
+    left: 0;
+    top: 0;
+    transform: translateY(-0.1rem);
+    background-color: transparent;
+    padding: 0;
+    font-size: 1.0rem;
+  }
+
 .profile .form-wrapper .btn-container {
-  justify-content: start;
-  margin-top: 1rem;
+  justify-content: center;
+  display: flex;
+  justify-content: space-evenly;
+  padding-top: 2.5rem;
 }
 
 /* Visited Attractions and wishlist*/
@@ -329,6 +386,27 @@
     z-index: 10;
 }
 
+/* User Details */
+.profile .user-details {
+  padding: 1rem;
+}
+
+.profile .user-details h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.profile .user-details span {
+  color: var(--black);
+  font-size: 1rem;
+  font-family: var(--secondary-font);
+}
+
+.profile .user-details p {
+  margin: 0.1rem 0 1rem 0;
+  font-size: 1.1rem;
+}
+
 
 /* User Preferences */
 .profile .user-preferences {
@@ -339,12 +417,12 @@
   width: 100%;
 }
 
-.profile .user-preferences h2{
+.profile .user-preferences h2 {
   font-size: 1.5rem;
   color: var(--primary);
 }
 
-.profile .user-preferences ul{
+.profile .user-preferences ul {
   font-size: 1rem;
   display: flex;
   flex-direction: column;
@@ -358,7 +436,6 @@
   font-size: 1rem;
   font-style: italic;
 }
-
 
 @media (min-width: 768px) {
   .profile .flag-container {
@@ -432,6 +509,7 @@
 
   .profile .content-info {
     flex-direction: row;
+    align-items: flex-start;
   }
 
   .profile .card-container {
@@ -470,4 +548,3 @@
     border-bottom: none;
   }
 }
-

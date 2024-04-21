@@ -265,9 +265,9 @@ def filter_attractions():
 
     # Apply filters or get all attractions if no filters are selected
     if filters:
-        attractions = Attraction.query.filter(and_(*filters)).all()
+        attractions_list = Attraction.query.filter(and_(*filters)).all()
     else:
-        attractions = Attraction.query.all()
+        attractions_list = Attraction.query.all()
 
     # Get IDs of categories, age groups and tags that are still relevant to the current attractions.
     if filter_priority and filter_priority[0] == "categories":
@@ -342,11 +342,24 @@ def filter_attractions():
         tag_ids = (
             db.session.query(AttractionTag.tag_id).distinct(AttractionTag.tag_id).all()
         )
-
+        
+    suggested_attractions = []
+    suggested_ids = set()
+    if current_user.is_authenticated:
+        suggested_attractions = suggest_attractions_for_user(current_user.id)
+        suggested_ids = [attr["attraction_id"] for attr in suggested_attractions]
+        attractions_list = sorted(
+            attractions_list,
+            key=lambda x: (
+                x.id not in suggested_ids,
+                suggested_ids.index(x.id) if x.id in suggested_ids else float("inf"),
+            ),
+        )
+    
     # Prepare AJAX response data.
     attractions_html = [
-        render_template("attractions_items.html", attraction=attraction.to_dict())
-        for attraction in attractions
+        render_template("attractions_items.html", attraction=attraction.to_dict(), suggested_ids=suggested_ids)
+        for attraction in attractions_list
     ]
     category_json = [str(category_id) for (category_id,) in category_ids]
     age_group_json = [str(age_group_id) for (age_group_id,) in age_group_ids]
