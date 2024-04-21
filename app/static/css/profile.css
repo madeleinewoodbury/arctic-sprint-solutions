@@ -142,6 +142,17 @@
   gap: 1rem;
 }
 
+.profile .badge-content-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.profile .badge-content-info h2 {
+  color: white;
+}
 
 /* Form */
 .profile form {
@@ -245,6 +256,33 @@
   grid-template-columns: repeat(1, 1fr);
   gap: 1rem;
   width: 100%;
+}
+
+.profile .badge-card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+  width: 100%;
+}
+
+.profile .badge-card {
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15); 
+  padding: 40px; 
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: space-between;
+  transition: transform 0.3s ease; 
+}
+
+.profile .badge-card:hover {
+  transform: translateY(-5px);
+}
+
+.profile .unlocked-badge-card {
+  background-color: lightgreen;
 }
 
 .profile .attraction-card {

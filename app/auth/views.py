@@ -8,7 +8,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import _
 from datetime import datetime
 from ..email import send_email
-
+from sqlalchemy import func
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register() -> 'html':
@@ -27,7 +27,7 @@ def register() -> 'html':
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash(_('User has been registered.'))
+        flash(_('User has been registered.'), 'success')
         return redirect(url_for('auth.login'))
 
     return render_template('register.html', form=form)
@@ -41,7 +41,7 @@ def login() -> 'html':
         if user is not None and user.check_password(form.password.data):
             login_user(user, form.remember_me.data)
             return redirect(url_for('attractions.get_attractions'))
-        flash(_('Invalid username or password.'))
+        flash(_('Invalid username or password.'), "error")
     return render_template('login.html', form=form)
 
 
@@ -49,7 +49,7 @@ def login() -> 'html':
 @login_required
 def logout():
     logout_user()
-    flash(_('You have been logged out.'))
+    flash(_('You have been logged out.'), 'success')
     return redirect(url_for('main.index'))
 
 
@@ -78,7 +78,7 @@ def password_reset(token):
     if form.validate_on_submit():
         if User.reset_password(token, form.password.data):
             db.session.commit()
-            flash('Your password has been updated.')
+            flash('Your password has been updated.', 'success')
             return redirect(url_for('auth.login'))
         else:
             return (redirect(url_for('auth.login')))
@@ -241,48 +241,53 @@ def get_visited_attractions(user_id):
 
 def get_user_badge_progress(user_id):
     badges = Badge.query.all()
-    user_progression = []
+    unlocked_progression = []
+    in_progress_badges = []
+
+    user_achieved_badges = {ub.badge_id for ub in UserBadge.query.filter_by(user_id=user_id)}
 
     for badge in badges:
-        # Hent nødvendige tags for denne badgen
-        total_visited_count = 0
-        requirements = BadgeRequirement.query.filter_by(
-            badge_id=badge.id).all()
+        requirements = BadgeRequirement.query.filter_by(badge_id=badge.id).all()
         badge_progress = {
             'badge_name': badge.name,
-            'tags_progress': [],
             'description': badge.description,
-            'total_visited_count': 0
+            'tags_progress': [],
+            'unlocked': badge.id in user_achieved_badges
         }
 
+        total_required = sum(req.quantity_required for req in requirements)
+        total_visited = 0
+
         for req in requirements:
-            # Finn navnet på taggen
             tag = Tag.query.get(req.tag_id)
-            tag_name = tag.name if tag else 'Unknown Tag'
+            visited_count = db.session.query(db.func.count(VisitedAttraction.attraction_id)).join(
+                AttractionTag, VisitedAttraction.attraction_id == AttractionTag.attraction_id
+            ).filter(
+                VisitedAttraction.user_id == user_id, AttractionTag.tag_id == req.tag_id
+            ).scalar() or 0
 
-            # Telle antall besøkte attraksjoner som matcher denne taggen
-            visited_count = db.session.query(db.func.count(VisitedAttraction.attraction_id)
-                                             ).join(AttractionTag, VisitedAttraction.attraction_id == AttractionTag.attraction_id
-                                                    ).filter(VisitedAttraction.user_id == user_id, AttractionTag.tag_id == req.tag_id
-                                                             ).scalar() or 0
-
-            # Oppdaterer total_visited_count
-            total_visited_count += visited_count
+            total_visited += visited_count
 
             badge_progress['tags_progress'].append({
-                'tag_name': tag_name,
+                'tag_name': tag.name,
                 'visited_count': visited_count,
                 'required_count': req.quantity_required
             })
 
-        badge_progress['total_visited_count'] = total_visited_count
-        user_progression.append(badge_progress)
+        if total_visited >= total_required:
+            if badge.id not in user_achieved_badges:
+                new_user_badge = UserBadge(user_id=user_id, badge_id=badge.id, date_earned=datetime.now())
+                db.session.add(new_user_badge)
+                db.session.commit()
+            badge_progress['unlocked'] = True
+            unlocked_progression.append(badge_progress)
+        else:
+            in_progress_badges.append(badge_progress)
 
-    # Sorterer basert på total_visited_count, fra høyeste til laveste slik at badgen man har høyest progresjon på vises først
-    user_progress = sorted(
-        user_progression, key=lambda x: x['total_visited_count'], reverse=True)
+    # Sort badges by progress
+    in_progress_badges.sort(key=lambda x: sum(item['visited_count'] for item in x['tags_progress']), reverse=True)
 
-    return user_progress
+    return unlocked_progression, in_progress_badges
 
 
 def get_user_level(points):
@@ -377,7 +382,7 @@ def profile():
 
     # Badges tab
     # Calculating badge progress for all badges.
-    badge_progress = get_user_badge_progress(current_user.id)
+    unlocked_progression, in_progress_badges = get_user_badge_progress(current_user.id)
 
     # Wishlist Tab
     user_wishlist = AttractionGroup.query.filter_by(
@@ -411,7 +416,8 @@ def profile():
         users_requesting=users_requesting,
         users_awaiting=users_awaiting,
         friends=friends,
-        badge_progress=badge_progress,
+        unlocked_progress = unlocked_progression, 
+        in_progress_badges = in_progress_badges,
         activeTab=activeTab,
         level=level
     )
@@ -429,7 +435,7 @@ def send_friend_request(user_id):
 
     db.session.add(friendship)
     db.session.commit()
-    flash(_('The friend request has been sent.'))
+    flash(_('The friend request has been sent.'), 'success')
     return redirect(url_for('auth.profile', current_tab=3))
 
 
@@ -448,7 +454,7 @@ def accept_friend_request(user_id):
 
     friendship.status = 'accepted'
     db.session.commit()
-    flash(_('The friend request has been accepted.'))
+    flash(_('The friend request has been accepted.'), 'success')
     return redirect(url_for('auth.profile', current_tab=3))
 
 
@@ -467,7 +473,7 @@ def remove_friend_request(user_id):
 
     db.session.delete(friendship)
     db.session.commit()
-    flash(_('The friend request has been ended.'))
+    flash(_('The friend request has been ended.'), 'success')
     return redirect(url_for('auth.profile', current_tab=3))
 
 
@@ -486,7 +492,7 @@ def remove_friend(user_id):
 
     db.session.delete(friendship)
     db.session.commit()
-    flash(_('The friend has been removed.'))
+    flash(_('The friend has been removed.'), 'success')
     return redirect(url_for('auth.profile', current_tab=3))
 
 
@@ -501,6 +507,7 @@ def friend_profile(user_id):
     visited_attractions = get_visited_attractions(user_id)
     points = sum(item['attraction'].points for item in visited_attractions)
     level = get_user_level(points)
+    unlocked_progression, in_progress_badges = get_user_badge_progress(user_id)
 
     return render_template(
         'friendProfile.html',
@@ -508,5 +515,6 @@ def friend_profile(user_id):
         visited_attractions=visited_attractions,
         number_of_visited_attractions=len(visited_attractions),
         points=points,
-        level=level
+        level=level,
+        unlocked_progress = unlocked_progression
     )
