@@ -196,7 +196,7 @@ def get_users_awaiting():
     return users_awaiting
 
 
-def get_firends():
+def get_friends():
     users = User.query.join(User.initiated_friendships) \
         .filter(
         (Friendship.user_1 == current_user.id) | (
@@ -378,7 +378,7 @@ def profile():
 
     users_requesting = get_users_requesting()
     users_awaiting = get_users_awaiting()
-    friends = get_firends()
+    friends = get_friends()
 
     # Badges tab
     # Calculating badge progress for all badges.
