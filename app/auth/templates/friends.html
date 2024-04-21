@@ -14,14 +14,23 @@
         {% if users %}
         {% for user in users %}
         <div class="user-container">
-            <h3>{{ user.username }}</h3>
             {% if user.id in friendships['friends_id'] %}
-            <p>{{ _("You are already friends.") }}</p>
+            <div>
+                <h3>{{ user.username }}</h3>
+                <p>{{ _("You are already friends.") }}</p>
+            </div>
             {% elif user in friendships['initiated'] %}
-            <p>{{ _("Friend request already sent.") }}</p>
+            <div>
+                <h3>{{ user.username }}</h3>
+                <p>{{ _("Friend request already sent.") }}</p>
+            </div>
             {% elif user in friendships['received'] %}
-            <p>{{ _("Pending friend request already received.") }}</p>
+            <div>
+                <h3>{{ user.username }}</h3>
+                <p>{{ _("Pending friend request already received.") }}</p>
+            </div>
             {% else %}
+            <h3>{{ user.username }}</h3>
             <form class="request-form" method="POST"
                 action="{{ url_for('auth.send_friend_request', user_id=user.id) }}">
                 <button class="send-request-btn btn" type="submit">{{ _("Send friend request") }}</button>
