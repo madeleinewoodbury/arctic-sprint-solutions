@@ -68,10 +68,8 @@ def password_reset_request():
             token = user.generate_reset_token()
             send_email(user.email, 'Reset your password', 'email/reset_password',
                        user=user, token=token)
-            flash(
-                _("An email with instructions to reset your password has been sent to you."))
-            return (redirect(url_for('auth.login')))
-        flash(_('The provided email is not associated with any registered users.'), "error")
+        flash(_("An email with instructions to reset your password has been sent to you."), 'success')
+        return (redirect(url_for('auth.login')))
     return render_template('reset_password_request.html', form=form)
 
 
