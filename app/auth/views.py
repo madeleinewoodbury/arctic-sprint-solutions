@@ -62,7 +62,7 @@ def password_reset_request():
     if current_user.is_authenticated:
         return redirect(url_for('attractions.get_attractions'))
     form = PasswordResetRequestForm()
-    if request.method == 'POST':
+    if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             token = user.generate_reset_token()
@@ -71,6 +71,7 @@ def password_reset_request():
             flash(
                 _("An email with instructions to reset your password has been sent to you."))
             return (redirect(url_for('auth.login')))
+        flash(_('The provided email is not associated with any registered users.'), "error")
     return render_template('reset_password_request.html', form=form)
 
 
