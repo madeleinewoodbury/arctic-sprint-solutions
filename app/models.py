@@ -247,7 +247,7 @@ class User(UserMixin, db.Model):
     received_friendships = db.relationship(
         "Friendship",
         foreign_keys="Friendship.user_2",
-        backref=db.backref("recipient", lazy=True),
+        backref=db.backref("receiver", lazy=True),
     )
     country = db.relationship("Country", backref=db.backref("user", lazy=True))
     category_preferences = db.relationship(

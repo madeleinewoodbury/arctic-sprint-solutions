@@ -181,53 +181,42 @@ def search_users(search_text):
     return users
 
 
-def get_users_requesting():
-    users_requesting = User.query.join(User.initiated_friendships) \
-        .filter(Friendship.user_2 == current_user.id,
-                Friendship.status == 'pending') \
-        .all()
-
-    return users_requesting
-
-
-def get_users_awaiting():
-    users_awaiting = User.query.join(User.received_friendships) \
-        .filter(Friendship.user_1 == current_user.id,
-                Friendship.status == 'pending') \
-        .all()
-
-    return users_awaiting
-
-
-def get_friends():
-    users = User.query.join(User.initiated_friendships) \
-        .filter(
-        (Friendship.user_1 == current_user.id) | (
-            Friendship.user_2 == current_user.id),
-        Friendship.status == 'accepted') \
-        .union(
-        User.query.join(User.received_friendships)
-        .filter(
-            (Friendship.user_1 == current_user.id) | (
-                Friendship.user_2 == current_user.id),
-            Friendship.status == 'accepted')
-    ).filter(User.id != current_user.id).all()
-
-    friends = []
-    # Get attraction info from friend
-    for user in users:
+def get_friendships(user):
+    friendships = {
+        'friends': [],
+        'friends_id': [],
+        'initiated': [],
+        'received': []
+    }
+    for friendship in user.initiated_friendships:
+        if friendship.status == "accepted":
+            friendships['friends'].append(friendship.receiver)
+            friendships['friends_id'].append(friendship.receiver.id)
+        elif friendship.status == "pending":
+            friendships['initiated'].append(friendship.receiver)
+    for friendship in user.received_friendships:
+        if friendship.status == "accepted":
+            friendships['friends'].append(friendship.initiator)
+            friendships['friends_id'].append(friendship.initiator.id)
+        elif friendship.status == "pending":
+            friendships['received'].append(friendship.initiator)
+    
+    friends_data = []
+    # Get attraction info from every friend
+    for user in friendships['friends']:
         friend = {
             'user': user,
-            'visited': get_visited_attractions(user.id),
-            #    'country': Country.query.get(user.country_id)
-        }
+            'visited': get_visited_attractions(user.id)
+            }
         friend['points'] = sum(
             item['attraction'].points for item in friend['visited'])
         friend['level'] = get_user_level(friend['points']).get('current_level')
-        friends.append(friend)
-
-    friends = sorted(friends, key=lambda x: x['points'], reverse=True)
-    return friends
+        friends_data.append(friend)
+        
+    friends_data = sorted(friends_data, key=lambda x: x['points'], reverse=True)
+    friendships['friends'] = sorted(friends_data, key=lambda x: x['points'], reverse=True)
+    
+    return friendships
 
 
 def get_visited_attractions(user_id):
@@ -371,6 +360,7 @@ def profile():
     user_preferences = get_user_preferences()
     
     # Friends Tab
+    friendships = get_friendships(current_user)
     friends_form = SearchUsersForm()
     search_text = friends_form.search_text.data
     users = None
@@ -378,11 +368,7 @@ def profile():
     if friends_form.validate_on_submit():
         users = search_users(search_text)
         activeTab = 3
-
-    users_requesting = get_users_requesting()
-    users_awaiting = get_users_awaiting()
-    friends = get_friends()
-
+    
     # Badges tab
     # Calculating badge progress for all badges.
     unlocked_progression, in_progress_badges = get_user_badge_progress(current_user.id)
@@ -416,9 +402,7 @@ def profile():
         tabs=tabs,
         friends_form=friends_form,
         users=users,
-        users_requesting=users_requesting,
-        users_awaiting=users_awaiting,
-        friends=friends,
+        friendships=friendships,
         unlocked_progress = unlocked_progression, 
         in_progress_badges = in_progress_badges,
         activeTab=activeTab,
