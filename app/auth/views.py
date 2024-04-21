@@ -12,6 +12,8 @@ from sqlalchemy import func
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register() -> 'html':
+    if current_user.is_authenticated:
+        return redirect(url_for('attractions.get_attractions'))
     form = RegistrationForm()
     form.country.choices = [(country.id, country.name)
                             for country in Country.query.all()]
@@ -35,6 +37,8 @@ def register() -> 'html':
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login() -> 'html':
+    if current_user.is_authenticated:
+        return redirect(url_for('attractions.get_attractions'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
