@@ -53,7 +53,7 @@ class PasswordResetForm(NewPasswordFields):
 class UpdateProfileForm(RegistrationForm):
     is_active = HiddenField(default='false')
     gravatar_url = HiddenField(_('Gravatar URL'))
-    current_password = PasswordField('Current Password', validators=[DataRequired()], render_kw={'autocomplete': 'off'})
+    current_password = PasswordField('Confirm Current Password', validators=[DataRequired()], render_kw={'autocomplete': 'off'})
     update_profile = SubmitField(_('Update profile'), render_kw={'class': 'btn btn-primary'})
     cancel = SubmitField(_('Cancel'), render_kw={'class': 'btn btn-primary', 'formnovalidate': 'formnovalidate'})
     
