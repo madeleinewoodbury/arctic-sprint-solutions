@@ -16,7 +16,7 @@
         <div class="text-container">
             <div class="top">
                 <h5>{{ attraction.name }}</h5>
-                <p class="description">{{ _(attraction.description) | truncate(150,
+                <p class="description">{{ _(attraction.description) | translate | truncate(150,
                     true) }} </p>
             </div>
             <span class="link-text">{{ _("Explore") }} <svg
