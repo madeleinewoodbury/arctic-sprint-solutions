@@ -527,22 +527,36 @@ def suggest_attractions_for_user(user_id):
 @attractions.route("/suggested_attractions", methods=["GET"])
 @login_required
 def suggested_attractions():
-    suggested_attractions = suggest_attractions_for_user(current_user.id)
-    visited_attractions = {
-        va.attraction_id
-        for va in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
-    }
+    if "selected_city" in session:
+        selected_city = session["selected_city"]
+    else:
+        session["selected_city"] = 1
+        selected_city = session["selected_city"]
 
-    filtered_suggestions = [
-        attr
-        for attr in suggested_attractions
-        # if attr["attraction_id"] not in visited_attractions
-    ]
-    filtered_suggestions = sorted(
-        filtered_suggestions, key=lambda x: x["score"], reverse=True
-    )
+    city = City.query.get(selected_city)
+    attractions_list = city.attractions
 
-    attraction_ids = [attr["attraction_id"] for attr in filtered_suggestions]
+    suggested_attractions = []
+    if current_user.is_authenticated:
+        suggested_attractions = suggest_attractions_for_user(current_user.id)
+        visited_attractions = {
+            va.attraction_id
+            for va in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
+        }
+
+        suggested_attractions = [
+            attr
+            for attr in suggested_attractions
+            if attr["attraction_id"] not in visited_attractions
+        ]
+
+        suggested_attractions = sorted(
+            suggested_attractions, key=lambda x: x["score"], reverse=True
+        )[:10]
+
+    suggested_ids = [attr["attraction_id"] for attr in suggested_attractions]
+    attraction_ids = [attraction.id for attraction in attractions_list if attraction.id in suggested_ids]
+
     attractions = Attraction.query.filter(Attraction.id.in_(attraction_ids)).all()
 
     search_form = SearchForm()
@@ -550,15 +564,12 @@ def suggested_attractions():
 
     update_filter_form_choices(attraction_ids, filter_form)
 
-    city = City.query.first()  # might need changing later
-
     return render_template(
         "attractions_main.html",
         attractions=attractions,
         search_form=search_form,
         filter_form=filter_form,
         city=city,
-        title="Suggested Attractions",
     )
 
 
