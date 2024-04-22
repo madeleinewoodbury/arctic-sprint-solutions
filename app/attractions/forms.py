@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm as Form
 from wtforms import StringField, SelectField, SubmitField, SelectMultipleField, SubmitField, widgets
+from app.models import City
 from flask_babel import lazy_gettext as _
 
 class SearchForm(Form):
@@ -14,4 +15,10 @@ class FilterAttractionsForm(Form):
     categories = MultiCheckboxField(_('Category'), coerce=int)
     age_groups = MultiCheckboxField(_('Age group'), coerce=int)
     tags = MultiCheckboxField(_('Tag'), coerce=int)
-    
+
+class SelectCityForm(Form):
+    city = SelectField(_('City'), coerce=int)
+
+    def __init__(self, *args, **kwargs):
+        super(SelectCityForm, self).__init__(*args, **kwargs)
+        self.city.choices = [(city.id, city.name) for city in City.query.all()]

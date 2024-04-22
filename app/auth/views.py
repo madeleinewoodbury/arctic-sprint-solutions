@@ -1,131 +1,222 @@
 import math
 from . import auth
-from .forms import LoginForm, RegistrationForm, ProfileForm, SearchUsersForm
+from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePreferencesForm
 from .. import db
-from ..models import User, Tag, UserTagPreference, Friendship, VisitedAttraction, Attraction, GroupedAttraction, AttractionGroup, Badge, BadgeRequirement, UserBadge, AttractionTag
+from ..models import *
 from flask import render_template, request, redirect, url_for, session, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import _
 from datetime import datetime
+from ..email import send_email
+from sqlalchemy import func
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register() -> 'html':
-	form = RegistrationForm()
-	if form.validate_on_submit():
-		user = User(
-            username = form.username.data,
-            first_name = form.first_name.data,
-            last_name = form.last_name.data,
-            email = form.email.data
-		)
-		user.set_password(form.password.data)
-		db.session.add(user)
-		db.session.commit()
-		flash(_('User has been registrated.'))
-		return redirect(url_for('auth.login'))
-	return render_template('register.html', form=form)
+    if current_user.is_authenticated:
+        return redirect(url_for('attractions.get_attractions'))
+    form = RegistrationForm()
+    form.country.choices = [(country.id, country.name)
+                            for country in Country.query.all()]
+
+    if form.validate_on_submit():
+        user = User(
+            username=form.username.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            email=form.email.data,
+            country_id=form.country.data
+        )
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash(_('User has been registered.'), 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template('register.html', form=form)
 
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login() -> 'html':
-	form = LoginForm()
-	if form.validate_on_submit():
-		user = User.query.filter_by(email=form.email.data).first()
-		if user is not None and user.check_password(form.password.data):
-			login_user(user, form.remember_me.data)
-			return redirect(url_for('attractions.get_attractions'))
-		flash(_('Invalid username or password.'))
-	return render_template('login.html', form=form)
+    if current_user.is_authenticated:
+        return redirect(url_for('attractions.get_attractions'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is not None and user.check_password(form.password.data):
+            login_user(user, form.remember_me.data)
+            return redirect(url_for('attractions.get_attractions'))
+        flash(_('Invalid username or password.'), "error")
+    return render_template('login.html', form=form)
 
 
 @auth.route('/logout')
 @login_required
 def logout():
-	logout_user()
-	flash(_('You have been logged out.'))
-	return redirect(url_for('main.index'))
+    logout_user()
+    flash(_('You have been logged out.'), 'success')
+    return redirect(url_for('main.index'))
+
+
+@auth.route('/reset', methods=['GET', 'POST'])
+def password_reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('attractions.get_attractions'))
+    form = PasswordResetRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            token = user.generate_reset_token()
+            send_email(user.email, 'Reset your password', 'email/reset_password',
+                       user=user, token=token)
+        flash(_("An email with instructions to reset your password has been sent to you."), 'success')
+        return (redirect(url_for('auth.login')))
+    return render_template('reset_password_request.html', form=form)
+
+
+@auth.route('/reset/<token>', methods=['GET', 'POST'])
+def password_reset(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('attractions.get_attractions'))
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        if User.reset_password(token, form.password.data):
+            db.session.commit()
+            flash('Your password has been updated.', 'success')
+            return redirect(url_for('auth.login'))
+        else:
+            return (redirect(url_for('auth.login')))
+    return render_template('reset_password.html', form=form)
+
+    
+def update_user_profile(profile_form, activeTab):
+    # Update user profile
+    user = User.query.filter_by(id=current_user.id).first()
+    user.username = profile_form.username.data
+    user.first_name = profile_form.first_name.data
+    user.last_name = profile_form.last_name.data
+    user.email = profile_form.email.data
+    user.country_id = profile_form.country.data
+    
+    # Also update password if filled
+    if profile_form.password.data:
+        user.set_password(profile_form.password.data)
+    
+    db.session.commit()
+    profile_form.is_active.data = 'false'
+    flash(_('Your profile has been updated!'), 'success')
+    return redirect(url_for('auth.profile', current_tab=activeTab))  # Redirect to avoid form resubmission
 
 
 def update_user_preferences(preferences_form, activeTab):
-    # Get the user based on the provided email
-    user = User.query.filter_by(email=preferences_form.email.data).first()
+    selected_category_ids = preferences_form.category.data
+    selected_age_group_ids = preferences_form.age_group.data
+    selected_tag_ids = preferences_form.tag.data
+    
+    # Ensure transactional integrity
+    try:
+        UserTagPreference.query.filter_by(user_id=current_user.id).delete()
+        UserCategoryPreference.query.filter_by(user_id=current_user.id).delete()
+        UserAgeGroupPreference.query.filter_by(user_id=current_user.id).delete()
+        db.session.flush()
 
-    # Update user preferences if user is found
-    if user:
-        selected_tag_ids = preferences_form.tag.data
-
-        # Delete existing user preferences
-        UserTagPreference.query.filter_by(user_id=user.id).delete()
-
-        # Create new user preferences
         for tag_id in selected_tag_ids:
-            user_preference = UserTagPreference(user_id=user.id, tag_id=tag_id)
+            user_preference = UserTagPreference(
+                user_id=current_user.id, tag_id=tag_id)
+            db.session.add(user_preference)
+            
+        for category_id in selected_category_ids:
+            user_preference = UserCategoryPreference(
+                user_id=current_user.id, category_id=category_id)
+            db.session.add(user_preference)
+            
+        for age_group_id in selected_age_group_ids:
+            user_preference = UserAgeGroupPreference(
+                user_id=current_user.id, age_group_id=age_group_id)
             db.session.add(user_preference)
 
         db.session.commit()
         flash(_('Your preferences have been updated!'), 'success')
-        return redirect(url_for('auth.profile', current_tab=activeTab))  # Redirect to avoid form resubmission
-    else:
-        flash(_('User with provided email does not exist'), 'error')
-
-
-def get_user_preferences():
-    user_tag_preferences = UserTagPreference.query.filter_by(user_id=current_user.id).all()
-    user_preferences = [Tag.query.get(preference.tag_id).name for preference in user_tag_preferences]
+  
+    except Exception as e:
+        db.session.rollback()
+        flash(_('Error updating user preferences: ') + str(e), 'error')
     
+    finally:
+        preferences_form.is_active.data = 'false'
+        return redirect(url_for('auth.profile', current_tab=activeTab))
+
+    
+def get_user_preferences():
+    # Fetch user's tag preferences
+    user_tag_preferences = UserTagPreference.query.filter_by(
+        user_id=current_user.id).all()
+    tag_preferences = [Tag.query.get(
+        preference.tag_id).name for preference in user_tag_preferences]
+
+    # Fetch user's category preferences
+    user_category_preferences = UserCategoryPreference.query.filter_by(
+        user_id=current_user.id).all()
+    category_preferences = [Category.query.get(
+        preference.category_id).name for preference in user_category_preferences]
+
+    # Fetch user's age group preferences
+    user_age_group_preferences = UserAgeGroupPreference.query.filter_by(
+        user_id=current_user.id).all()
+    age_group_preferences = [AgeGroup.query.get(
+        preference.age_group_id).name for preference in user_age_group_preferences]
+
+    user_preferences = {
+        'tags': tag_preferences,
+        'categories': category_preferences,
+        'age_groups': age_group_preferences
+    }
+
     return user_preferences
 
 
 def search_users(search_text):
-     users = User.query.filter(User.username.contains(search_text)) \
-            .filter(User.id != current_user.id).all()
+    users = User.query.filter(User.username.contains(search_text)) \
+        .filter(User.id != current_user.id).all()
 
-     return users
-
-
-def get_users_requesting():
-    users_requesting = User.query.join(User.initiated_friendships) \
-                             .filter(Friendship.user_2 == current_user.id,
-                                     Friendship.status == 'pending') \
-                             .all()
-
-    return users_requesting
+    return users
 
 
-def get_users_awaiting():
-    users_awaiting = User.query.join(User.received_friendships) \
-                             .filter(Friendship.user_1 == current_user.id,
-                                     Friendship.status == 'pending') \
-                             .all()
-
-    return users_awaiting
-
-
-def get_firends():    
-    users = User.query.join(User.initiated_friendships) \
-                   .filter(
-                       (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
-                       Friendship.status == 'accepted') \
-                   .union(
-                       User.query.join(User.received_friendships) \
-                           .filter(
-                               (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
-                               Friendship.status == 'accepted') \
-                           ).filter(User.id != current_user.id).all()
+def get_friendships(user):
+    friendships = {
+        'friends': [],
+        'friends_id': [],
+        'initiated': [],
+        'received': []
+    }
+    for friendship in user.initiated_friendships:
+        if friendship.status == "accepted":
+            friendships['friends'].append(friendship.receiver)
+            friendships['friends_id'].append(friendship.receiver.id)
+        elif friendship.status == "pending":
+            friendships['initiated'].append(friendship.receiver)
+    for friendship in user.received_friendships:
+        if friendship.status == "accepted":
+            friendships['friends'].append(friendship.initiator)
+            friendships['friends_id'].append(friendship.initiator.id)
+        elif friendship.status == "pending":
+            friendships['received'].append(friendship.initiator)
     
-    friends = []
-    # Get attraction info from friend
-    for user in users:
+    friends_data = []
+    # Get attraction info from every friend
+    for user in friendships['friends']:
         friend = {
-               'user': user,
-               'visited': get_visited_attractions(user.id)
-         }  
-        friend['points'] = sum(item['attraction'].points for item in friend['visited'])
+            'user': user,
+            'visited': get_visited_attractions(user.id)
+            }
+        friend['points'] = sum(
+            item['attraction'].points for item in friend['visited'])
         friend['level'] = get_user_level(friend['points']).get('current_level')
-        friends.append(friend)
-
-    friends = sorted(friends, key=lambda x: x['points'], reverse=True)
-    return friends
+        friends_data.append(friend)
+        
+    friends_data = sorted(friends_data, key=lambda x: x['points'], reverse=True)
+    friendships['friends'] = sorted(friends_data, key=lambda x: x['points'], reverse=True)
+    
+    return friendships
 
 
 def get_visited_attractions(user_id):
@@ -139,74 +230,82 @@ def get_visited_attractions(user_id):
 
     return visited_attractions
 
+
 def get_user_badge_progress(user_id):
     badges = Badge.query.all()
-    user_progression = []
+    unlocked_progression = []
+    in_progress_badges = []
+
+    user_achieved_badges = {ub.badge_id for ub in UserBadge.query.filter_by(user_id=user_id)}
 
     for badge in badges:
-        # Hent nødvendige tags for denne badgen
-        total_visited_count = 0
         requirements = BadgeRequirement.query.filter_by(badge_id=badge.id).all()
         badge_progress = {
-                'badge_name': badge.name, 
-                'tags_progress': [],
-                'description': badge.description,
-                'total_visited_count': 0
-                }
+            'badge_name': badge.name,
+            'description': badge.description,
+            'tags_progress': [],
+            'unlocked': badge.id in user_achieved_badges
+        }
+
+        total_required = sum(req.quantity_required for req in requirements)
+        total_visited = 0
 
         for req in requirements:
-            # Finn navnet på taggen
             tag = Tag.query.get(req.tag_id)
-            tag_name = tag.name if tag else 'Unknown Tag'
-            
-            # Telle antall besøkte attraksjoner som matcher denne taggen
-            visited_count = db.session.query(db.func.count(VisitedAttraction.attraction_id)
-            ).join(AttractionTag, VisitedAttraction.attraction_id == AttractionTag.attraction_id
-            ).filter(VisitedAttraction.user_id == user_id, AttractionTag.tag_id == req.tag_id
+            visited_count = db.session.query(db.func.count(VisitedAttraction.attraction_id)).join(
+                AttractionTag, VisitedAttraction.attraction_id == AttractionTag.attraction_id
+            ).filter(
+                VisitedAttraction.user_id == user_id, AttractionTag.tag_id == req.tag_id
             ).scalar() or 0
-            
-            # Oppdaterer total_visited_count
-            total_visited_count += visited_count
-            
+
+            total_visited += visited_count
+
             badge_progress['tags_progress'].append({
-                'tag_name': tag_name,
+                'tag_name': tag.name,
                 'visited_count': visited_count,
                 'required_count': req.quantity_required
             })
 
-        badge_progress['total_visited_count'] = total_visited_count
-        user_progression.append(badge_progress)
+        if total_visited >= total_required:
+            if badge.id not in user_achieved_badges:
+                new_user_badge = UserBadge(user_id=user_id, badge_id=badge.id, date_earned=datetime.now())
+                db.session.add(new_user_badge)
+                db.session.commit()
+            badge_progress['unlocked'] = True
+            unlocked_progression.append(badge_progress)
+        else:
+            in_progress_badges.append(badge_progress)
 
-    # Sorterer basert på total_visited_count, fra høyeste til laveste slik at badgen man har høyest progresjon på vises først
-    user_progress = sorted(user_progression, key=lambda x: x['total_visited_count'], reverse=True)
+    # Sort badges by progress
+    in_progress_badges.sort(key=lambda x: sum(item['visited_count'] for item in x['tags_progress']), reverse=True)
 
-    return user_progress
+    return unlocked_progression, in_progress_badges
 
 
 def get_user_level(points):
     BASE_POINTS = 42
     GROWTH_RATE = 1.05
-    
+
     current_level = 1
     points_required = BASE_POINTS
     points_remaining = points
-    
+
     while points_remaining >= points_required:
         points_remaining -= points_required
         current_level += 1
-        points_required = int((points_required + BASE_POINTS) * GROWTH_RATE - points_required)
-        
+        points_required = int((points_required + BASE_POINTS)
+                              * GROWTH_RATE - points_required)
+
     points_missing = points_required - points_remaining
-    
+
     level = {
         "current_level": current_level,
         "points_required": points_required,
         "points_missing": points_missing,
         "progress": points_remaining
     }
-    
+
     return level
-    
 
 
 @auth.route('/profile', methods=['GET', 'POST'])
@@ -214,43 +313,69 @@ def get_user_level(points):
 def profile():
     current_tab = request.args.get('current_tab')
     activeTab = current_tab if current_tab else 0
-    
+
     # Visited Attractions Tab
     visited_attractions = get_visited_attractions(current_user.id)
     points = sum(item['attraction'].points for item in visited_attractions)
     level = get_user_level(points)
 
     # Profile Tab
-    preferences_form = ProfileForm()
-    tags = Tag.query.all()
-    preferences_form.tag.choices = [(tag.id, tag.name) for tag in tags]
+    profile_form = UpdateProfileForm()
+    preferences_form = UpdatePreferencesForm()
+    profile_form.country.choices = [(country.id, country.name) for country in Country.query.all()]
+    preferences_form.category.choices = [(category.id, category.name) for category in Category.query.all()]
+    preferences_form.age_group.choices = [(age_group.id, age_group.name) for age_group in AgeGroup.query.all()]
+    preferences_form.tag.choices = [(tag.id, tag.name) for tag in Tag.query.all()]
     
-    if preferences_form.validate_on_submit():
+    profile_form.is_active.data = 'false'
+    preferences_form.is_active.data = 'false'
+    
+    if preferences_form.update_preferences.data:
         activeTab = 1
-        update_user_preferences(preferences_form, activeTab)
-
+        preferences_form.is_active.data = 'true'
+        if preferences_form.validate_on_submit():
+            update_user_preferences(preferences_form, activeTab)
+    
+    else:
+        # Prepopulate preferences form fields
+        preferences_form.category.data = [category.category_id for category in current_user.category_preferences]
+        preferences_form.age_group.data = [age_group.age_group_id for age_group in current_user.age_group_preferences]
+        preferences_form.tag.data = [tag.tag_id for tag in current_user.tag_preferences]
+ 
+    if profile_form.update_profile.data:
+        activeTab = 1
+        profile_form.is_active.data = 'true'
+        if profile_form.validate_on_submit():
+            update_user_profile(profile_form, activeTab)
+    
+    else:
+        # Prepopulate profile form fields
+        profile_form.username.data = current_user.username
+        profile_form.first_name.data = current_user.first_name
+        profile_form.last_name.data = current_user.last_name
+        profile_form.email.data = current_user.email
+        profile_form.country.data = current_user.country_id
+    
     # Fetch the user preferences from the database
     user_preferences = get_user_preferences()
-
+    
     # Friends Tab
+    friendships = get_friendships(current_user)
     friends_form = SearchUsersForm()
     search_text = friends_form.search_text.data
     users = None
 
-    if friends_form.validate_on_submit() and search_text:
+    if friends_form.validate_on_submit():
         users = search_users(search_text)
         activeTab = 3
-
-    users_requesting = get_users_requesting()
-    users_awaiting = get_users_awaiting()
-    friends = get_firends()
-
+    
     # Badges tab
     # Calculating badge progress for all badges.
-    badge_progress = get_user_badge_progress(current_user.id)
+    unlocked_progression, in_progress_badges = get_user_badge_progress(current_user.id)
 
     # Wishlist Tab
-    user_wishlist = AttractionGroup.query.filter_by(owner=current_user.id).first()
+    user_wishlist = AttractionGroup.query.filter_by(
+        owner=current_user.id).first()
     wishlist_attractions = []
 
     if user_wishlist:
@@ -266,8 +391,8 @@ def profile():
 
     return render_template(
         'profile.html',
+        profile_form=profile_form,
         preferences_form=preferences_form,
-        tags=tags,
         user_preferences=user_preferences,
         visited_attractions=visited_attractions,
         wishlist_attractions=wishlist_attractions,
@@ -277,27 +402,27 @@ def profile():
         tabs=tabs,
         friends_form=friends_form,
         users=users,
-        users_requesting=users_requesting, 
-        users_awaiting=users_awaiting,
-        friends=friends,
-        badge_progress=badge_progress,
+        friendships=friendships,
+        unlocked_progress = unlocked_progression, 
+        in_progress_badges = in_progress_badges,
         activeTab=activeTab,
         level=level
     )
 
+
 @auth.route('/friends/send-request/<int:user_id>', methods=['POST'])
 @login_required
 def send_friend_request(user_id):
-    
+
     friendship = Friendship(
-        user_1 = current_user.id,
-        user_2 = user_id,
-        status = 'pending'
-        )
-    
+        user_1=current_user.id,
+        user_2=user_id,
+        status='pending'
+    )
+
     db.session.add(friendship)
     db.session.commit()
-    flash(_('The friend request has been sent.'))
+    flash(_('The friend request has been sent.'), 'success')
     return redirect(url_for('auth.profile', current_tab=3))
 
 
@@ -306,7 +431,8 @@ def send_friend_request(user_id):
 def accept_friend_request(user_id):
     friendship = Friendship.query.filter(
         (Friendship.user_1 == user_id) | (Friendship.user_2 == user_id),
-        (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
+        (Friendship.user_1 == current_user.id) | (
+            Friendship.user_2 == current_user.id),
         Friendship.status == 'pending'
     ).first()
 
@@ -315,7 +441,7 @@ def accept_friend_request(user_id):
 
     friendship.status = 'accepted'
     db.session.commit()
-    flash(_('The friend request has been accepted.'))
+    flash(_('The friend request has been accepted.'), 'success')
     return redirect(url_for('auth.profile', current_tab=3))
 
 
@@ -324,16 +450,17 @@ def accept_friend_request(user_id):
 def remove_friend_request(user_id):
     friendship = Friendship.query.filter(
         (Friendship.user_1 == user_id) | (Friendship.user_2 == user_id),
-        (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
+        (Friendship.user_1 == current_user.id) | (
+            Friendship.user_2 == current_user.id),
         Friendship.status == 'pending'
     ).first()
 
     if friendship is None:
         abort(404)  # Friendship request not found or already accepted
-    
-    db.session.delete(friendship) 
+
+    db.session.delete(friendship)
     db.session.commit()
-    flash(_('The friend request has been ended.'))
+    flash(_('The friend request has been ended.'), 'success')
     return redirect(url_for('auth.profile', current_tab=3))
 
 
@@ -342,17 +469,19 @@ def remove_friend_request(user_id):
 def remove_friend(user_id):
     friendship = Friendship.query.filter(
         (Friendship.user_1 == user_id) | (Friendship.user_2 == user_id),
-        (Friendship.user_1 == current_user.id) | (Friendship.user_2 == current_user.id),
+        (Friendship.user_1 == current_user.id) | (
+            Friendship.user_2 == current_user.id),
         Friendship.status == 'accepted'
     ).first()
 
     if friendship is None:
         abort(404)  # Friendship request not found or already accepted
-    
-    db.session.delete(friendship) 
+
+    db.session.delete(friendship)
     db.session.commit()
-    flash(_('The friend has been removed.'))
-    return redirect(url_for('auth.profile', current_tab=2))
+    flash(_('The friend has been removed.'), 'success')
+    return redirect(url_for('auth.profile', current_tab=3))
+
 
 @auth.route('/friend/profile/<int:user_id>', methods=['GET'])
 @login_required
@@ -365,12 +494,14 @@ def friend_profile(user_id):
     visited_attractions = get_visited_attractions(user_id)
     points = sum(item['attraction'].points for item in visited_attractions)
     level = get_user_level(points)
+    unlocked_progression, in_progress_badges = get_user_badge_progress(user_id)
 
     return render_template(
-         'friendProfile.html', 
-         friend=friend, 
-         visited_attractions=visited_attractions, 
-         number_of_visited_attractions=len(visited_attractions),
-         points=points,
-         level=level
-         )
+        'friendProfile.html',
+        friend=friend,
+        visited_attractions=visited_attractions,
+        number_of_visited_attractions=len(visited_attractions),
+        points=points,
+        level=level,
+        unlocked_progress = unlocked_progression
+    )

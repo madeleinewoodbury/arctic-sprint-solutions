@@ -1,6 +1,5 @@
 import hashlib
-from flask import request
-from flask import request
+from flask import request, current_app
 from datetime import datetime
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import func
@@ -8,6 +7,7 @@ from sqlalchemy.sql import select
 from app import db, login_manager
 from flask_login import UserMixin, AnonymousUserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
+from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 
 
 class Achievement(db.Model):
@@ -31,6 +31,8 @@ class AgeGroup(db.Model):
     __tablename__ = "ageGroup"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    user_preferences = db.relationship(
+        "UserAgeGroupPreference", back_populates="age_group")
 
     @property
     def attraction_count(self):
@@ -68,7 +70,11 @@ class Attraction(db.Model):
     )
     visited_by = db.relationship(
         "VisitedAttraction", back_populates="attraction")
-    groups = db.relationship("AttractionGroup", secondary="groupedAttraction", back_populates="grouped_attractions")
+    groups = db.relationship(
+        "AttractionGroup",
+        secondary="groupedAttraction",
+        back_populates="grouped_attractions",
+    )
 
     def __repr__(self) -> str:
         return self.name
@@ -79,9 +85,11 @@ class Attraction(db.Model):
 
     @visit_count.expression
     def visit_count(cls):
-        return (select(func.count(VisitedAttraction.attraction_id))
-                .where(VisitedAttraction.attraction_id == cls.id)
-                .label("visit_count"))
+        return (
+            select(func.count(VisitedAttraction.attraction_id))
+            .where(VisitedAttraction.attraction_id == cls.id)
+            .label("visit_count")
+        )
 
     def to_dict(self):
         data = {
@@ -119,7 +127,9 @@ class AttractionGroup(db.Model):
     visibility = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    grouped_attractions = db.relationship("Attraction", secondary="groupedAttraction", back_populates="groups")
+    grouped_attractions = db.relationship(
+        "Attraction", secondary="groupedAttraction", back_populates="groups"
+    )
 
 
 class AttractionTag(db.Model):
@@ -134,6 +144,8 @@ class Category(db.Model):
     __tablename__ = "category"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    user_preferences = db.relationship(
+        "UserCategoryPreference", back_populates="category")
 
     @property
     def attraction_count(self):
@@ -151,10 +163,14 @@ class City(db.Model):
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text)
     image = db.Column(db.String(255))
+    country_id = db.Column(db.Integer, db.ForeignKey("country.id"))
+
+    country = db.relationship(
+        "Country", backref=db.backref("cities", lazy=True))
 
     @property
     def attractions_count(self):
-        return Attraction.query.filter_by(city=self.id).all()
+        return Attraction.query.filter_by(city=self.id).count()
 
     def __repr__(self) -> str:
         return self.name
@@ -211,6 +227,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.Integer, db.ForeignKey("userRole.id"), default=2)
+    country_id = db.Column(db.Integer, db.ForeignKey("country.id"))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     achievements = db.relationship(
         "Achievement", secondary="userAchievement", back_populates="users"
@@ -222,18 +239,21 @@ class User(UserMixin, db.Model):
         "UserTagPreference", back_populates="user")
     visited_attractions = db.relationship(
         "VisitedAttraction", back_populates="user")
-
     initiated_friendships = db.relationship(
         "Friendship",
         foreign_keys="Friendship.user_1",
         backref=db.backref("initiator", lazy=True),
     )
-
     received_friendships = db.relationship(
         "Friendship",
         foreign_keys="Friendship.user_2",
-        backref=db.backref("recipient", lazy=True),
+        backref=db.backref("receiver", lazy=True),
     )
+    country = db.relationship("Country", backref=db.backref("user", lazy=True))
+    category_preferences = db.relationship(
+        "UserCategoryPreference", back_populates="user")
+    age_group_preferences = db.relationship(
+        "UserAgeGroupPreference", back_populates="user")
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -254,6 +274,23 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+    def generate_reset_token(self):
+        s = Serializer(current_app.config["SECRET_KEY"])
+        return s.dumps({"reset": self.id})
+
+    def reset_password(token, new_password):
+        s = Serializer(current_app.config["SECRET_KEY"])
+        try:
+            data = s.loads(token, max_age=300)
+        except:
+            return False
+        user = User.query.filter_by(id=data.get("reset")).first()
+        if user is None:
+            return False
+        user.set_password(new_password)
+        db.session.add(user)
+        return True
 
     def get_id(self):
         return self.id
@@ -337,14 +374,14 @@ class Badge(db.Model):
     description = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
-        return f'<Badge {self.name}>'
+        return f"<Badge {self.name}>"
 
 
 class BadgeRequirement(db.Model):
-    __tablename__ = 'badgeRequirement'
+    __tablename__ = "badgeRequirement"
     id = db.Column(db.Integer, primary_key=True)
-    badge_id = db.Column(db.Integer, db.ForeignKey('badge.id'), nullable=False)
-    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), nullable=False)
+    badge_id = db.Column(db.Integer, db.ForeignKey("badge.id"), nullable=False)
+    tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"), nullable=False)
     quantity_required = db.Column(db.Integer, nullable=False)
 
 
@@ -359,4 +396,33 @@ class UserBadge(db.Model):
     badge = db.relationship("Badge", backref=db.backref("badge_users"))
 
     def __repr__(self):
-        return f'<UserBadge {self.user_id} {self.badge_id}>'
+        return f"<UserBadge {self.user_id} {self.badge_id}>"
+
+
+class Country(db.Model):
+    __tablename__ = "country"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(55), nullable=False)
+    code = db.Column(db.String(2))
+    flag = db.Column(db.String(100))
+
+    def __repr__(self):
+        return self.name
+
+
+class UserCategoryPreference(db.Model):
+    __tablename__ = "userCategoryPreference"
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey(
+        "category.id"), primary_key=True)
+    user = db.relationship("User", back_populates="category_preferences")
+    category = db.relationship("Category", back_populates="user_preferences")
+
+
+class UserAgeGroupPreference(db.Model):
+    __tablename__ = "userAgeGroupPreference"
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    age_group_id = db.Column(db.Integer, db.ForeignKey(
+        "ageGroup.id"), primary_key=True)
+    user = db.relationship("User", back_populates="age_group_preferences")
+    age_group = db.relationship("AgeGroup", back_populates="user_preferences")

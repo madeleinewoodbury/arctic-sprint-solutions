@@ -13,6 +13,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_admin import Admin
 from flask_babel import Babel
+from flask_mail import Mail 
 from flask_caching import Cache
 from googletrans import Translator
 from .translate import get_locale, translate_filter
@@ -20,6 +21,7 @@ from .translate import get_locale, translate_filter
 
 db = SQLAlchemy()
 admin_manager = Admin()
+mail = Mail()
 translator_manager = Translator()
 cache = Cache()
 
@@ -39,11 +41,21 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     admin_manager.init_app(app)
+    mail.init_app(app)
     cache.init_app(app)
     babel = Babel(app, locale_selector=get_locale)
 
     # Register new filter for jinja
     app.jinja_env.filters["translate"] = translate_filter
+
+    @app.context_processor
+    def inject_cities():
+        from .attractions.forms import SelectCityForm
+        selected_city = session.get('selected_city')
+        if not selected_city:
+            session['selected_city'] = 1
+        return dict(select_city_form=SelectCityForm())
+    
     
     from .admin import admin_manager as admin_bp
 

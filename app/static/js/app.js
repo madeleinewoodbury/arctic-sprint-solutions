@@ -34,7 +34,6 @@ const attractionFilters = () => {
 
         updateShowFilters() {
             this.showFilters = window.innerWidth > maxWidth
-            console.log(this.showFilters);
         }
     }
 }
@@ -172,8 +171,125 @@ function updateCheckboxes(checkboxes, activeIDs) {
     })
 }
 
+const citySelectMobile = () => {
+    const citySelect = document.getElementById('citySelectMobile');
+    const form = document.getElementById('cityFormMobile');
+    if(!citySelect && !form) return
+
+    selectCity(citySelect, form)
+}
+
+const citySelectAnonymous = () => {
+    const citySelect = document.getElementById('citySelectAnonymous');
+    const form = document.getElementById('cityFormAnonymous');
+    if(!citySelect && !form) return
+
+    selectCity(citySelect, form)
+}
+
+const citySelectDesktop = () => {
+    const citySelect = document.getElementById('citySelectDesktop');
+    const form = document.getElementById('cityFormDesktop');
+    if(!citySelect && !form) return
+
+    selectCity(citySelect, form)
+}
+
+const selectCity = (citySelect, form) => {
+
+    const options = citySelect.querySelectorAll('option');
+    options.forEach(option => {
+        if (option.value === sessionStorage.getItem('selectedCity')) {
+            option.selected = true;
+        }
+    })
+    citySelect.addEventListener('change', (e) => {
+        sessionStorage.setItem('selectedCity', e.target.value);
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: form.method,
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.errors) console.log(data.errors);
+            if(location.pathname === '/attractions') {
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    })
+}
+
+function markAsVisited(attractionId, checked) {
+  fetch(`/attractions/${attractionId}/mark_as_visited`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ visited: checked }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data); // Handle server response here
+    })
+    .catch((error) => console.error("Error:", error));
+}
+
+const visitedAttraction = (attractionId, visited) => {
+    return {
+        visited: visited,
+        attractionId: attractionId,
+        addToVisited() {
+            this.visited = true
+            markAsVisited(this.attractionId, true)
+        },
+        removeFromVisited() {
+            this.visited = false
+            markAsVisited(this.attractionId, false)
+        }
+    }
+}
+
+function addToWishlist(attractionId, checked) {
+    fetch(`/attractions/${attractionId}/add_to_wishlist`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ wishlist: checked })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);  // Handle server response here
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+const wishlist = (attractionId, inWishlist) => {
+    return {
+        inWishlist: inWishlist,
+        attractionId: attractionId,
+        addToWishlist() {
+            this.inWishlist = true
+            addToWishlist(this.attractionId, true)
+        },
+        removeFromWishlist() {
+            this.inWishlist = false,
+            addToWishlist(this.attractionId, false)
+        }
+    }
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     disableCheckboxes()
     filterAttractions()
     truncateAttractionDescription()
+    citySelectDesktop()
+    citySelectMobile()
+    citySelectAnonymous()
 })

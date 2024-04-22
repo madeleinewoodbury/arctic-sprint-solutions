@@ -384,3 +384,42 @@
 
 }
 
+.suggested-banner {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: #ff9800;
+  color: white;
+  padding: .5rem 1rem;
+  border-radius: .5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.attractions .form-wrapper .explore-nearby-form {
+  margin-bottom: 1rem; /* Match gap between forms */
+}
+
+.attractions .form-wrapper .full-width-btn {
+  background-color: var(--primary);
+  color: var(--white);
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem; /* Fully rounded corners */
+  width: 100%; /* Full width */
+  border: none;
+  cursor: pointer;
+  display: block; /* Ensure it fills the form */
+  text-align: center;
+}
+
+/* Ensure the search button takes the full right portion */
+.attractions .form-wrapper .search-text input[type="text"] {
+  width: calc(100% - 25%); /* Adjust width to make room for button */
+}
+.attractions .form-wrapper .search-btn {
+  width: 25%;
+  border-radius: 0 0.5rem 0.5rem 0; /* Right corners rounded */
+}

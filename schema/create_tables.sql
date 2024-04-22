@@ -61,6 +61,17 @@ DROP TABLE IF EXISTS language;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `country`
+--
+
+CREATE TABLE `country` (
+  `id` int(11) NOT NULL,
+  `name` varchar(55) DEFAULT NULL,
+  `code` char(2) DEFAULT NULL,
+  `flag` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
 -- Table structure for table `achievement`
 --
 
@@ -181,7 +192,8 @@ CREATE TABLE `city` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `description` text DEFAULT NULL,
-  `image` varchar(255) DEFAULT NULL
+  `image` varchar(255) DEFAULT NULL,
+  `country_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 
@@ -238,7 +250,8 @@ CREATE TABLE `user` (
   `email` varchar(50) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `role` int(11) DEFAULT 2,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `country_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -378,6 +391,12 @@ ALTER TABLE `badgeRequirement`
   ADD KEY `badgeRequirement_ibfk_2` (`tag_id`);
 
 --
+-- Indexes for table `country`
+--
+ALTER TABLE `country`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `category`
 --
 ALTER TABLE `category`
@@ -387,7 +406,8 @@ ALTER TABLE `category`
 -- Indexes for table `city`
 --
 ALTER TABLE `city`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_city_country` (`country_id`);
 
 --
 -- Indexes for table `friendship`
@@ -421,7 +441,8 @@ ALTER TABLE `tag`
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `fk_role` (`role`);
+  ADD KEY `fk_role` (`role`),
+  ADD KEY `fk_user_country` (`country_id`);
 
 --
 -- Indexes for table `userAchievement`
@@ -474,6 +495,12 @@ ALTER TABLE `visitedAttraction`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `country`
+--
+ALTER TABLE `country`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=251;
 
 --
 -- AUTO_INCREMENT for table `achievement`
@@ -546,6 +573,12 @@ ALTER TABLE `userRole`
 --
 
 --
+-- Constraints for table `city`
+--
+ALTER TABLE `city`
+  ADD CONSTRAINT `fk_city_country` FOREIGN KEY (`country_id`) REFERENCES `country` (`id`);
+
+--
 -- Constraints for table `attraction`
 --
 ALTER TABLE `attraction`
@@ -603,7 +636,8 @@ ALTER TABLE `groupedAttraction`
 -- Constraints for table `user`
 --
 ALTER TABLE `user`
-  ADD CONSTRAINT `fk_role` FOREIGN KEY (`role`) REFERENCES `userRole` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_role` FOREIGN KEY (`role`) REFERENCES `userRole` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_user_country` FOREIGN KEY (`country_id`) REFERENCES `country` (`id`);
 
 --
 -- Constraints for table `userAchievement`

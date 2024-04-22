@@ -10,11 +10,13 @@ from app.models import (
     Achievement,
     Attraction,
     VisitedAttraction,
+    Country,
     db,
     User,
     Category,
     Tag,
     AgeGroup,
+    City,
 )
 from flask_admin.contrib.sqla import ModelView
 from app.admin import db
@@ -48,6 +50,7 @@ class UserView(AdminModelView):
         "username",
         "email",
         "role_rel",
+        "country",
     ]
     column_searchable_list = ["username", "email"]
     column_filters = ["created_at", "email"]
@@ -88,6 +91,7 @@ class AttractionView(AdminModelView):
         "location",
         "description",
         "image",
+        "category",
         "tags",
         "points",
         "age_groups",
@@ -101,10 +105,26 @@ class AttractionView(AdminModelView):
         "tags",
         "points",
         "age_groups",
-        "visit_count"
+        "visit_count",
     ]
 
     column_filters = ["tags", "age_groups", "visit_count"]
+
+
+class CitiesView(AdminModelView):
+    form_columns = [
+        "name",
+        "country",
+        "image",
+        "description",
+    ]
+    column_list = [
+        "name",
+        "country",
+        "image",
+        "description",
+        "attractions_count",
+    ]
 
 
 class ReportView(BaseView):
@@ -112,7 +132,7 @@ class ReportView(BaseView):
         return current_user.is_authenticated and current_user.is_admin
 
     def inaccessible_callback(self, name, **kwargs):
-        flash("You must be an admin to access this page.")
+        flash("You must be an admin to access this page.", "error")
         return redirect(url_for("auth.login", next=request.url))
 
     @expose("/", methods=("GET", "POST"))
@@ -140,11 +160,9 @@ class ReportView(BaseView):
                     db.case(
                         (
                             db.and_(
-                                db.extract(
-                                    "year", UserAchievement.time_achieved)
+                                db.extract("year", UserAchievement.time_achieved)
                                 == selected_year,
-                                db.extract(
-                                    "month", UserAchievement.time_achieved)
+                                db.extract("month", UserAchievement.time_achieved)
                                 == selected_month,
                             ),
                             1,
@@ -161,8 +179,7 @@ class ReportView(BaseView):
                         else_=0,
                     )
                 ).label("yearly_acquired"),
-                db.func.count(UserAchievement.achievement_id).label(
-                    "total_acquired"),
+                db.func.count(UserAchievement.achievement_id).label("total_acquired"),
             )
             .join(UserAchievement)
             .group_by(Achievement.title)
@@ -177,11 +194,9 @@ class ReportView(BaseView):
                     db.case(
                         (
                             db.and_(
-                                db.extract(
-                                    "year", VisitedAttraction.time_visited)
+                                db.extract("year", VisitedAttraction.time_visited)
                                 == selected_year,
-                                db.extract(
-                                    "month", VisitedAttraction.time_visited)
+                                db.extract("month", VisitedAttraction.time_visited)
                                 == selected_month,
                             ),
                             1,
@@ -198,8 +213,7 @@ class ReportView(BaseView):
                         else_=0,
                     )
                 ).label("yearly_visits"),
-                db.func.count(VisitedAttraction.attraction_id)
-                .label("total_visits"),
+                db.func.count(VisitedAttraction.attraction_id).label("total_visits"),
             )
             .join(VisitedAttraction)
             .group_by(Attraction.name)

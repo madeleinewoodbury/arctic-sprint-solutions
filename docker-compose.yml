@@ -14,20 +14,6 @@ services:
       - persistent:/var/lib/mysql
     networks:
       - default
-  db_test:
-    image: mariadb
-    ports:
-      - 3310:3306
-    environment:
-      MYSQL_DATABASE: arcticSprintSolutionsDB
-      MYSQL_USER: user
-      MYSQL_PASSWORD: test
-      MYSQL_ROOT_PASSWORD: test
-    volumes:
-      - ./dbInit:/docker-entrypoint-initdb_test.d
-      - persistent:/var/lib/mysql_test
-    networks:
-      - default
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
@@ -38,6 +24,11 @@ services:
       MYSQL_ROOT_PASSWORD: test
     networks:
       - default
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 volumes:
   persistent:
 

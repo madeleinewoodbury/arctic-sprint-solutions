@@ -198,7 +198,8 @@ form.request-form {
   text-align: center;
 }
 
-.scoreboard td.hide-sm {
+.scoreboard td.hide-sm,
+.scoreboard td.hide-md {
   display: none;
 }
 
@@ -219,6 +220,11 @@ form.request-form {
 
 .scoreboard .friend-info a:hover {
   color: var(--primary);
+}
+
+.scoreboard .small-flag {
+  width: 30px;
+  height: auto;
 }
 
 .scoreboard .gravatar-img {
@@ -272,8 +278,13 @@ form.request-form {
 
 @media (min-width: 768px) {
   .scoreboard tr {
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
   }
+
+  .scoreboard td.hide-md {
+    display: flex;
+  }
+
 }
 
 @media(min-width: 992px) {
