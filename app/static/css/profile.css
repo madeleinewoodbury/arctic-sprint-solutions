@@ -292,6 +292,27 @@
 }
 
 /* Visited Attractions and wishlist*/
+.profile .list-form {
+  background-color: var(--bg-light);
+  border-radius: .5rem;
+  padding: 1rem 2rem;
+}
+
+.profile .list-form .form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.profile .list-form .form-row .form-control:first-of-type{
+  width: 70%;
+}
+
+.profile .list-form .form-row .form-control:last-of-type{
+  width: 30%;
+}
+
+
+
 .profile .visited-attractions,
 .profile .user-wishlist{
   width: 100%;

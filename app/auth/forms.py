@@ -95,4 +95,7 @@ class SearchUsersForm(Form):
     search_text = StringField(_('Search users'), validators=[DataRequired()], render_kw={'placeholder': _('Search users')})
     search = SubmitField(_('Search'), render_kw={'class': 'btn btn-primary search-btn'})
     
-    
+class AddListForm(Form):
+    name = StringField(_('List Name'), validators=[DataRequired(), Length(max=50)])
+    visibility = SelectField(_('Visibility'), choices=[('public', _('Public')), ('private', _('Private'))], default='private')
+    add_list = SubmitField(_('Save'), render_kw={'class': 'btn btn-primary'})

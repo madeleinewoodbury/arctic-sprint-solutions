@@ -1,6 +1,6 @@
 import math
 from . import auth
-from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePreferencesForm
+from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePreferencesForm, AddListForm
 from .. import db
 from ..models import *
 from flask import render_template, request, redirect, url_for, session, flash, abort
@@ -373,7 +373,8 @@ def profile():
     # Calculating badge progress for all badges.
     unlocked_progression, in_progress_badges = get_user_badge_progress(current_user.id)
 
-    # Wishlist Tab
+    # List Tab
+    list_form = AddListForm()
     user_wishlist = AttractionGroup.query.filter_by(
         owner=current_user.id).first()
     wishlist_attractions = []
@@ -401,6 +402,7 @@ def profile():
         points=points,
         tabs=tabs,
         friends_form=friends_form,
+        list_form=list_form,
         users=users,
         friendships=friendships,
         unlocked_progress = unlocked_progression, 
@@ -505,3 +507,19 @@ def friend_profile(user_id):
         level=level,
         unlocked_progress = unlocked_progression
     )
+
+@auth.route('/add-list', methods=['POST'])
+@login_required
+def add_list():
+    form = AddListForm()
+
+    if form.validate_on_submit():
+        new_list = AttractionGroup(
+            owner=current_user.id,
+            title=form.name.data,
+            visibility=form.visibility.data
+        )
+        db.session.add(new_list)
+        db.session.commit()
+        flash(_('The list has been created.'), 'success')
+    return redirect(url_for('auth.profile', current_tab=2))
