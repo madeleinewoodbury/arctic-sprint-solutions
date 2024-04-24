@@ -375,17 +375,7 @@ def profile():
 
     # List Tab
     list_form = AddListForm()
-    user_wishlist = AttractionGroup.query.filter_by(
-        owner=current_user.id).first()
-    wishlist_attractions = []
-
-    if user_wishlist:
-        wishlist_attractions = [
-            {
-                'attraction': Attraction.query.get(attraction.id)
-            }
-            for attraction in user_wishlist.grouped_attractions
-        ]
+    user_lists = AttractionGroup.query.filter_by(owner=current_user.id).all()
 
     # Tabs for profile page sections, only one section should be active
     tabs = ['Visited Attractions', 'Profile', 'Wishlist', 'Friends', 'Badges']
@@ -396,9 +386,8 @@ def profile():
         preferences_form=preferences_form,
         user_preferences=user_preferences,
         visited_attractions=visited_attractions,
-        wishlist_attractions=wishlist_attractions,
         number_of_visited_attractions=len(visited_attractions),
-        number_of_wishlist_attractions=len(wishlist_attractions),
+        user_lists=user_lists,
         points=points,
         tabs=tabs,
         friends_form=friends_form,
@@ -522,4 +511,20 @@ def add_list():
         db.session.add(new_list)
         db.session.commit()
         flash(_('The list has been created.'), 'success')
+    return redirect(url_for('auth.profile', current_tab=2))
+
+@auth.route('/delete-list', methods=['POST'])
+@login_required
+def delete_list():
+    data = request.get_json()
+    list_id = data['listId']
+    print(list_id)
+
+    list = AttractionGroup.query.get(list_id)
+    if list.owner != current_user.id:
+        abort(403)
+
+    db.session.delete(list)
+    db.session.commit()
+    flash(_('The list has been deleted.'), 'success')
     return redirect(url_for('auth.profile', current_tab=2))

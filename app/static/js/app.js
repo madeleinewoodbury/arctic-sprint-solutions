@@ -284,6 +284,23 @@ const wishlist = (attractionId, inWishlist) => {
     }
 }
 
+const removeList = (listId) => {
+    fetch(`/auth/delete-list`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            // TODO: Add CSRF token
+        },
+        body: JSON.stringify({ listId: listId })
+    }).then(res => {
+        if (res.ok) {
+            // TODO: Remove the list from the DOM instead of reloading the page
+            location.reload()
+        }
+    }).catch(err => {
+        console.error(err)
+    })
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     disableCheckboxes()

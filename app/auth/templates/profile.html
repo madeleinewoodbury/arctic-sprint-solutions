@@ -243,48 +243,7 @@
         </template>
 
         <template x-if="activeTab === tabs[2]">
-            <div class="content-info">
-                <form action="{{ url_for('auth.add_list') }}" method="post" class="list-form">
-                    {{ list_form.hidden_tag() }}
-                    <div class="form-row">
-                        <div class="form-control">
-                            {{ list_form.name.label }}
-                            {{ list_form.name }}
-                            {% for error in profile_form.last_name.errors %}
-                            <span style="color: red;">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="form-control">
-                            {{ list_form.visibility.label }}
-                            <select name="{{ list_form.visibility.name }}" class="form-select">
-                                {% for option, label in list_form.visibility.choices %}
-                                <option value="{{ option }}" {% if option == list_form.visibility.data %} selected {% endif %}>{{ label | translate }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="btn-container">
-                        {{ list_form.add_list }}
-                    </div>
-                </form>
-                <div class="user-wishlist">
-                    <h2>Your lists</h2>
-                    {%if wishlist_attractions %}
-                    <div class="card-container">
-                        {% for item in wishlist_attractions %}
-                        <a href="{{ url_for('attractions.get_attraction', attraction_id=item.attraction.id) }}" class="attraction-card">
-                            <img src="{{ item.attraction.image }}" alt="Attraction Image">
-                            <div>
-                                <h3>{{ item.attraction.name }}</h3>
-                            </div>
-                        </a>
-                        {% endfor %}
-                    </div>
-                    {% else %}
-                    <p class="text-white">You have not added any attractions to your wishlist</p>
-                    {% endif %}
-                </div>
-            </div>
+            {% include 'list.html' %}
         </template>
 
         <template x-if="activeTab === tabs[3]">
