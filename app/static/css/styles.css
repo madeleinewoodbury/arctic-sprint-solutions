@@ -9,6 +9,7 @@
   --dark-blue: #273343;
   --medium-grey: #646464;
   --danger: #F8D7DA;
+  --danger-hover: #f7929b;
   --danger-text: #99575E;
   --success: #D4EDDA;
   --success-text: #41753a;
@@ -16,6 +17,7 @@
   --white: #ffffff;
   --main-font: "Roboto", sans-serif;
   --secondary-font: "Montserrat", sans-serif;
+  --warning: #ff9800;
 }
 
 html {
@@ -95,8 +97,22 @@ img {
 
 .btn-danger {
   background-color: var(--danger);
+  color: var(--danger-text);
+}
+
+.btn-danger:hover {
+  background-color: var(--danger-hover);
+}
+
+.btn-warning {
+  background-color: var(--warning);
   color: var(--white);
 }
+
+.btn-warning:hover {
+  background-color: #e68a00;
+}
+
 .btn-success {
   background-color: var(--success);
   color: var(--white);
