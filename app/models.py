@@ -291,6 +291,22 @@ class User(UserMixin, db.Model):
         user.set_password(new_password)
         db.session.add(user)
         return True
+    
+    def generate_delete_token(self):
+        s = Serializer(current_app.config["SECRET_KEY"])
+        return s.dumps({"delete_user": self.id})
+
+    def delete_user(token):
+        s = Serializer(current_app.config["SECRET_KEY"])
+        try:
+            data = s.loads(token, max_age=300)
+        except:
+            return False
+        user = User.query.filter_by(id=data.get("delete_user")).first()
+        if user is None:
+            return False
+        db.session.delete(user)
+        return True
 
     def get_id(self):
         return self.id

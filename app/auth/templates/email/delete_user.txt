@@ -1,0 +1,7 @@
+Hello {{ user.username }}!
+
+You have requested to delete your user. 
+To confirm the deletion of your user please 
+{{ url_for('auth.delete_user', token=token, _external=True) }}
+
+The Hitchhiker's Guide to Earth.

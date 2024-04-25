@@ -1,0 +1,6 @@
+<p>Hello {{ user.username }}!</p>
+<p>You have requested to delete your user. </p>
+<p>To confirm the deletion of your user please </p>
+<p><a href="{{ url_for('auth.delete_user', token=token, _external=True) }}">click here.</a></p>
+<br>
+<p>The Hitchhiker's Guide to Earth.</p>

@@ -3,7 +3,7 @@ from . import auth
 from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePreferencesForm
 from .. import db
 from ..models import *
-from flask import render_template, request, redirect, url_for, session, flash, abort
+from flask import render_template, request, redirect, url_for, session, flash, abort, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import _
 from datetime import datetime
@@ -505,3 +505,37 @@ def friend_profile(user_id):
         level=level,
         unlocked_progress = unlocked_progression
     )
+
+
+# Function to check if password is correct from javascript
+@auth.route('/delete-user-request', methods=['POST'])
+def delete_user_request():
+    data = request.get_json()
+    password = data.get('delete_password')
+
+    if current_user.check_password(password):
+        user = User.query.filter_by(email=current_user.email).first()
+        if user:
+            if user.is_admin:
+                return jsonify({'success': False, 'admin': True})
+            token = user.generate_delete_token()
+            send_email(user.email, 'Delete your user', 'email/delete_user',
+                       user=user, token=token)
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False})
+    else:
+        return jsonify({'success': False})
+    
+
+# Confirm delete_user
+@auth.route('/delete_user/<token>', methods=['GET', 'POST'])
+def delete_user(token):
+    if User.delete_user(token):
+        logout_user()
+        db.session.commit()
+        flash('Your user has been deleted.', 'success')
+        return redirect(url_for('auth.login'))
+    else:
+        flash('Your user has NOT been deleted.', 'error')
+        return (redirect(url_for('auth.login')))
