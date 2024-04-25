@@ -1,0 +1,7 @@
+Hello {{ user.username }}!
+
+There has been changes to your account:
+{% if username_change %}Your username has been changed from {{ user.username }} to {{ new_username }} {% endif %}</p>
+{% if email_change %}Your email has been changed from {{ user.email }} to {{ new_email }}{% endif %}
+
+The Hitchhiker's Guide to Earth.

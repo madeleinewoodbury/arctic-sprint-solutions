@@ -1,0 +1,7 @@
+<p>Hello {{ user.username }}!</p>
+<br>
+<p>There has been changes to your account:</p>
+{% if username_change %}<p>Your username has been changed from {{ user.username }} to {{ new_username }} </p>{% endif %}</p>
+{% if email_change %}<p>Your email has been changed from {{ user.email }} to {{ new_email }}</p>{% endif %}
+<br>
+<p>The Hitchhiker's Guide to Earth.</p>
