@@ -87,10 +87,11 @@
                                 <button class="btn btn-primary" type="button" onclick="toggleEditUser()">{{ _("Edit Profile") }}</button>
                                 <button class="btn btn-primary" type="button" onclick="toggleEditPreferences()">{{ _("Set Preferences") }}</button> 
                             </div>
-                            <div class="btn-container">
-                                <button id="delete-user-button" class="btn btn-danger" type="button" onclick="toggleDeleteUser()">{{ _("Delete User") }}</button>
-                            </div>
-
+                            {% if not current_user.is_admin %}
+                                <div class="btn-container">
+                                    <button id="delete-user-button" class="btn btn-danger" type="button" onclick="toggleDeleteUser()">{{ _("Delete User") }}</button>
+                                </div>
+                            {% endif %}
                             <!-- Denne vises når man trykker på "Delete User" -->
                             <div id="delete-user-confirmation" style="display: none;">
                                 <p>{{ _("Are you sure you want to delete your account?") }}</p>
