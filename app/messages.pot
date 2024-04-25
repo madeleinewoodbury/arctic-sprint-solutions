@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-04-06 13:52+0200\n"
+"POT-Creation-Date: 2024-04-22 19:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,235 +17,307 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
 
-#: attractions/forms.py:6
+#: attractions/forms.py:7
 msgid "Search Attractions"
 msgstr ""
 
-#: attractions/forms.py:7 auth/forms.py:48 auth/forms.py:53
+#: attractions/forms.py:8 auth/forms.py:96
 msgid "Search"
 msgstr ""
 
-#: attractions/forms.py:14
+#: attractions/forms.py:15
 msgid "Category"
 msgstr ""
 
-#: attractions/forms.py:15
+#: attractions/forms.py:16
 msgid "Age group"
 msgstr ""
 
-#: attractions/forms.py:16
+#: attractions/forms.py:17
 msgid "Tag"
 msgstr ""
 
-#: attractions/templates/attraction.html:31
-msgid "Visited"
+#: attractions/forms.py:20
+msgid "City"
 msgstr ""
 
-#: attractions/templates/attraction.html:31
+#: attractions/templates/attraction.html:30
 msgid "Mark as visited"
 msgstr ""
 
-#: attractions/templates/attraction.html:40 auth/templates/profile.html:46
+#: attractions/templates/attraction.html:38
+msgid "Visited"
+msgstr ""
+
+#: attractions/templates/attraction.html:49
+msgid "Add to wishlist"
+msgstr ""
+
+#: attractions/templates/attraction.html:57
+msgid "Remove from wishlist"
+msgstr ""
+
+#: attractions/templates/attraction.html:68
+#: attractions/templates/attractions_items.html:5
+#: auth/templates/friendProfile.html:51 auth/templates/profile.html:55
 msgid "points"
 msgstr ""
 
-#: attractions/templates/attraction.html:44
+#: attractions/templates/attraction.html:72
 msgid "About"
 msgstr ""
 
-#: attractions/templates/attraction.html:46
-#: attractions/templates/attractions_items.html:14
+#: attractions/templates/attraction.html:74
 msgid "Location"
 msgstr ""
 
-#: attractions/templates/attraction.html:48
+#: attractions/templates/attraction.html:76
 msgid "Suitable for"
 msgstr ""
 
-#: attractions/templates/attractions_items.html:15
-msgid "Points"
+#: attractions/templates/attractions_items.html:9
+msgid "For you!"
 msgstr ""
 
-#: attractions/templates/attractions_items.html:16
-msgid "Click for more info"
+#: attractions/templates/attractions_items.html:22
+msgid "Explore"
 msgstr ""
 
 #: attractions/templates/attractions_main.html:15
-msgid "Explore Attractions in Tromsø"
+msgid "Explore Attractions in "
 msgstr ""
 
-#: attractions/templates/attractions_main.html:42
+#: attractions/templates/attractions_main.html:47
 msgid "Clear all filters"
 msgstr ""
 
-#: auth/forms.py:8 auth/forms.py:20 auth/forms.py:40
-msgid "Email"
-msgstr ""
-
-#: auth/forms.py:9
-msgid "Password"
-msgstr ""
-
-#: auth/forms.py:10
-msgid "Remember me"
-msgstr ""
-
-#: auth/forms.py:11 templates/base.html:32
-msgid "Login"
-msgstr ""
-
-#: auth/forms.py:14
-msgid "First Name"
-msgstr ""
-
-#: auth/forms.py:15
-msgid "Last Name"
-msgstr ""
-
-#: auth/forms.py:16
-msgid "Username"
-msgstr ""
-
-#: auth/forms.py:19
-msgid ""
-"Username must be at least 10 characters long and only contain letters, "
-"numbers, and underscores."
-msgstr ""
-
-#: auth/forms.py:24
+#: auth/forms.py:12
 msgid ""
 "Password must be at least 10 characters long while containing at least "
 "one uppercase letter, one lowercase letter, and one number."
 msgstr ""
 
-#: auth/forms.py:26
+#: auth/forms.py:19 auth/forms.py:31 auth/forms.py:45
+msgid "Email"
+msgstr ""
+
+#: auth/forms.py:21
+msgid "Password"
+msgstr ""
+
+#: auth/forms.py:22
+msgid "Remember me"
+msgstr ""
+
+#: auth/forms.py:23
+msgid "Login"
+msgstr ""
+
+#: auth/forms.py:26 auth/templates/friends.html:90
+msgid "Country"
+msgstr ""
+
+#: auth/forms.py:27
+msgid "First Name"
+msgstr ""
+
+#: auth/forms.py:28
+msgid "Last Name"
+msgstr ""
+
+#: auth/forms.py:29 auth/templates/friends.html:86
+msgid "Username"
+msgstr ""
+
+#: auth/forms.py:30
+msgid ""
+"Username must be at least 10 characters long and only contain letters, "
+"numbers, and underscores."
+msgstr ""
+
+#: auth/forms.py:32
 msgid "Register"
 msgstr ""
 
-#: auth/forms.py:31
+#: auth/forms.py:37
 msgid "This username is already taken."
 msgstr ""
 
-#: auth/forms.py:36
+#: auth/forms.py:42
 msgid "This email is already taken."
 msgstr ""
 
-#: auth/forms.py:41
+#: auth/forms.py:46
+msgid "Reset Password"
+msgstr ""
+
+#: auth/forms.py:49
+msgid "Update Password"
+msgstr ""
+
+#: auth/forms.py:55
 msgid "Gravatar URL"
 msgstr ""
 
-#: auth/forms.py:42
-msgid "Select Tags"
-msgstr ""
-
-#: auth/forms.py:43
+#: auth/forms.py:57
 msgid "Update profile"
 msgstr ""
 
-#: auth/forms.py:47 auth/forms.py:52
+#: auth/forms.py:58 auth/forms.py:90 auth/templates/friends.html:69
+msgid "Cancel"
+msgstr ""
+
+#: auth/forms.py:78
+msgid ""
+"Incorrect current password. Please enter your current password to confirm"
+" your identity."
+msgstr ""
+
+#: auth/forms.py:86
+msgid "Select Categories"
+msgstr ""
+
+#: auth/forms.py:87
+msgid "Select Age Groups"
+msgstr ""
+
+#: auth/forms.py:88
+msgid "Select Tags"
+msgstr ""
+
+#: auth/forms.py:89
+msgid "Update preferences"
+msgstr ""
+
+#: auth/forms.py:95
 msgid "Search users"
 msgstr ""
 
-#: auth/views.py:24
-msgid "User has been registrated."
+#: auth/views.py:32
+msgid "User has been registered."
 msgstr ""
 
-#: auth/views.py:37
+#: auth/views.py:48
 msgid "Invalid username or password."
 msgstr ""
 
-#: auth/views.py:45
+#: auth/views.py:56
 msgid "You have been logged out."
 msgstr ""
 
-#: auth/views.py:76
+#: auth/views.py:71
+msgid "An email with instructions to reset your password has been sent to you."
+msgstr ""
+
+#: auth/views.py:106
+msgid "Your profile has been updated!"
+msgstr ""
+
+#: auth/views.py:138
 msgid "Your preferences have been updated!"
 msgstr ""
 
-#: auth/views.py:79
-msgid "User with provided email does not exist"
+#: auth/views.py:142
+msgid "Error updating user preferences: "
 msgstr ""
 
-#: auth/views.py:173
+#: auth/views.py:425
 msgid "The friend request has been sent."
 msgstr ""
 
-#: auth/views.py:191
+#: auth/views.py:444
 msgid "The friend request has been accepted."
 msgstr ""
 
-#: auth/views.py:209
+#: auth/views.py:463
 msgid "The friend request has been ended."
 msgstr ""
 
-#: auth/views.py:227
+#: auth/views.py:482
 msgid "The friend has been removed."
 msgstr ""
 
-#: auth/templates/friends.html:12
-msgid "Friends information"
+#: auth/templates/friendProfile.html:20
+msgid "Attractions Visited:"
 msgstr ""
 
-#: auth/templates/friends.html:13
-msgid "The page for all friend related information:"
+#: auth/templates/friendProfile.html:22 auth/templates/profile.html:24
+msgid "Points:"
 msgstr ""
 
-#: auth/templates/friends.html:14
+#: auth/templates/friendProfile.html:24 auth/templates/profile.html:25
+msgid "Level:"
+msgstr ""
+
+#: auth/templates/friendProfile.html:30 auth/templates/profile.html:29
+msgid "points until level "
+msgstr ""
+
+#: auth/templates/friends.html:3
+msgid "Search friends"
+msgstr ""
+
+#: auth/templates/friends.html:4
 msgid "Add friends and compare your exploration achievements!"
 msgstr ""
 
-#: auth/templates/friends.html:22
-msgid "Pending friend requests"
-msgstr ""
-
-#: auth/templates/friends.html:25
-msgid "Incoming friend request from"
-msgstr ""
-
-#: auth/templates/friends.html:38
-msgid "Pending friend request approval from"
-msgstr ""
-
-#: auth/templates/friends.html:49
-msgid "Friends list"
-msgstr ""
-
-#: auth/templates/friends.html:51
-msgid ""
-"Seems like you haven't added any friends yet. Start adding friends to "
-"compare your exploration progression and achievements!"
-msgstr ""
-
-#: auth/templates/friends.html:61
-msgid "Achievement points"
-msgstr ""
-
-#: auth/templates/friends.html:61
-msgid "WorkInProgress"
-msgstr ""
-
-#: auth/templates/friends.html:64
-msgid "Remove friend"
-msgstr ""
-
-#: auth/templates/friends.html:74
-msgid "Add friends"
-msgstr ""
-
-#: auth/templates/friends.html:93 auth/templates/friends.html:105
+#: auth/templates/friends.html:20
 msgid "You are already friends."
 msgstr ""
 
-#: auth/templates/friends.html:96
+#: auth/templates/friends.html:25
 msgid "Friend request already sent."
 msgstr ""
 
-#: auth/templates/friends.html:108
+#: auth/templates/friends.html:30
 msgid "Pending friend request already received."
 msgstr ""
 
-#: auth/templates/friends.html:116
+#: auth/templates/friends.html:36
 msgid "Send friend request"
+msgstr ""
+
+#: auth/templates/friends.html:46
+msgid "Pending friend requests"
+msgstr ""
+
+#: auth/templates/friends.html:49
+msgid "Incoming friend request from"
+msgstr ""
+
+#: auth/templates/friends.html:53
+msgid "Accept"
+msgstr ""
+
+#: auth/templates/friends.html:57
+msgid "Decline"
+msgstr ""
+
+#: auth/templates/friends.html:65
+msgid "Sent friend request to"
+msgstr ""
+
+#: auth/templates/friends.html:78
+msgid "Your friends"
+msgstr ""
+
+#: auth/templates/friends.html:80
+msgid ""
+"Seems like you haven't added any friends yet. Start adding friends to "
+"compare your exploration\n"
+"            progression and achievements!"
+msgstr ""
+
+#: auth/templates/friends.html:87 auth/templates/profile.html:45
+msgid "Visited Attractions"
+msgstr ""
+
+#: auth/templates/friends.html:88
+msgid "Points"
+msgstr ""
+
+#: auth/templates/friends.html:89
+msgid "Level"
 msgstr ""
 
 #: auth/templates/login.html:17
@@ -264,37 +336,75 @@ msgstr ""
 msgid "Register now"
 msgstr ""
 
-#: auth/templates/profile.html:15
+#: auth/templates/profile.html:20
 msgid "Hello"
 msgstr ""
 
-#: auth/templates/profile.html:17
-msgid "Attractions Visited:"
+#: auth/templates/profile.html:22
+msgid "Visited:"
 msgstr ""
 
-#: auth/templates/profile.html:18
-msgid "Points:"
+#: auth/templates/profile.html:23
+msgid "Wishlist:"
 msgstr ""
 
-#: auth/templates/profile.html:37
-msgid "Visited Attractions"
-msgstr ""
-
-#: auth/templates/profile.html:44
+#: auth/templates/profile.html:53
 msgid "Visited on"
 msgstr ""
 
-#: auth/templates/profile.html:85
-msgid ""
-"Update\n"
-"                                Profile"
+#: auth/templates/profile.html:62
+msgid "You have not visited any attractions"
 msgstr ""
 
-#: auth/templates/profile.html:92
+#: auth/templates/profile.html:77
+msgid "Country:"
+msgstr ""
+
+#: auth/templates/profile.html:78
+msgid "Username:"
+msgstr ""
+
+#: auth/templates/profile.html:80
+msgid "Email:"
+msgstr ""
+
+#: auth/templates/profile.html:82
+msgid "Member since:"
+msgstr ""
+
+#: auth/templates/profile.html:84
+msgid "Account Type:"
+msgstr ""
+
+#: auth/templates/profile.html:87 auth/templates/profile.html:94
+msgid "Edit Profile"
+msgstr ""
+
+#: auth/templates/profile.html:88 auth/templates/profile.html:164
+msgid "Set Preferences"
+msgstr ""
+
+#: auth/templates/profile.html:141
+msgid "Change Password (Optional)"
+msgstr ""
+
+#: auth/templates/profile.html:212
 msgid "Your Preferences"
 msgstr ""
 
-#: auth/templates/profile.html:100
+#: auth/templates/profile.html:215
+msgid "Categories"
+msgstr ""
+
+#: auth/templates/profile.html:223
+msgid "Age Groups"
+msgstr ""
+
+#: auth/templates/profile.html:231
+msgid "Tags"
+msgstr ""
+
+#: auth/templates/profile.html:239
 msgid "You have not set any preferences"
 msgstr ""
 
@@ -302,8 +412,16 @@ msgstr ""
 msgid "Register your account"
 msgstr ""
 
-#: auth/templates/register.html:72
+#: auth/templates/register.html:81
 msgid "Already have an account?"
+msgstr ""
+
+#: auth/templates/reset_password.html:17
+msgid "Create New Password"
+msgstr ""
+
+#: auth/templates/reset_password_request.html:17
+msgid "Type in the email for the lost account"
 msgstr ""
 
 #: main/views.py:22
@@ -318,7 +436,7 @@ msgstr ""
 msgid "Change babelfish settings:"
 msgstr ""
 
-#: main/templates/change_language.html:28
+#: main/templates/change_language.html:29
 msgid "Change Language"
 msgstr ""
 
@@ -336,28 +454,34 @@ msgstr ""
 msgid "Welcome to WorkingTitle"
 msgstr ""
 
-#: templates/base.html:25
-msgid "Home"
-msgstr ""
-
-#: templates/base.html:28
+#: templates/base.html:58 templates/base.html:116
 msgid "Attractions"
 msgstr ""
 
-#: templates/base.html:39
-msgid "Friends"
+#: templates/base.html:62
+msgid ""
+"Sign\n"
+"                            In"
 msgstr ""
 
-#: templates/base.html:43
+#: templates/base.html:66 templates/base.html:75 templates/base.html:176
+msgid "Babel Fish"
+msgstr ""
+
+#: templates/base.html:71 templates/base.html:167
+msgid "View Profile"
+msgstr ""
+
+#: templates/base.html:80 templates/base.html:172
 msgid "Admin"
 msgstr ""
 
-#: templates/base.html:46
+#: templates/base.html:84 templates/base.html:181
 msgid "Logout"
 msgstr ""
 
-#: templates/base.html:50
-msgid "Babel Fish"
+#: templates/base.html:136
+msgid "Sign In"
 msgstr ""
 
 #: templates/admin/index.html:6

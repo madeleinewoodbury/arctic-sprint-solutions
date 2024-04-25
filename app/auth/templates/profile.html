@@ -83,10 +83,26 @@
                             <p>{{ current_user.created_at.strftime("%Y-%m-%d") }}</p>
                             <span>{{ _("Account Type:") }}</span>
                             <p>{{ current_user.role_rel | translate }}</p>
-                        <div class="btn-container">
-                            <button class="btn btn-primary" type="button" onclick="toggleEditUser()">{{ _("Edit Profile") }}</button>
-                            <button class="btn btn-primary" type="button" onclick="toggleEditPreferences()">{{ _("Set Preferences") }}</button> 
-                        </div> 
+                            <div class="btn-container">
+                                <button class="btn btn-primary" type="button" onclick="toggleEditUser()">{{ _("Edit Profile") }}</button>
+                                <button class="btn btn-primary" type="button" onclick="toggleEditPreferences()">{{ _("Set Preferences") }}</button> 
+                            </div>
+                            {% if not current_user.is_admin %}
+                                <div class="btn-container">
+                                    <button id="delete-user-button" class="btn btn-danger" type="button" onclick="toggleDeleteUser()">{{ _("Delete User") }}</button>
+                                </div>
+                            {% endif %}
+                            <!-- Denne vises når man trykker på "Delete User" -->
+                            <div id="delete-user-confirmation" style="display: none;">
+                                <p>{{ _("Are you sure you want to delete your account?") }}</p>
+                                <label class="custom-label" for="delete_user_password" >{{ _("Password") }}:</label>
+                                <input type="password" id="delete_user_password" placeholder="Enter your password">
+                                <div class="btn-container">
+                                    <button type="button" class="btn btn-danger" onclick="confirm_delete()">{{ _("Confirm") }}</button>
+                                    <button type="button" class="btn btn-warning" onclick="cancel_delete()">{{ _("Cancel") }}</button>
+                                </div>
+                            </div>
+                            
                     </div>
 
                 <form action="{{ url_for('auth.profile', current_tab=1) }}" novalidate method="post" id="profile-form"
@@ -313,6 +329,51 @@
             preferencesForm.style.display = "none"
             userDetails.style.display = "block"
         }
+    }
+
+    // Making the delete-user-confirmation block visable
+    function toggleDeleteUser() {
+        document.getElementById('delete-user-confirmation').style.display = 'block';
+        document.getElementById('delete-user-button').style.display = 'none'
+    }
+
+    async function confirm_delete() {
+        // Getting the delete_user_password input
+        // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+        var delete_password = document.getElementById('delete_user_password').value;
+
+        try {
+            json_response = await fetch('/auth/delete-user-request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({delete_password: delete_password})
+            });
+            response = await json_response.json();
+
+            if (response.admin) {
+                alert('Admin account.');
+            }
+            else {
+                if (response.success) {
+                    alert('An email with instructions has been sent.');
+                }
+                else {
+                    alert('Password incorrect');
+                }
+            }
+        }
+
+        catch (error) {
+            alert('Error')
+        }
+    }
+
+    // Hiding the delete-user-confirmation block
+    function cancel_delete() {
+        document.getElementById('delete-user-confirmation').style.display = 'none';
+        document.getElementById('delete-user-button').style.display = 'block'
     }
 </script>
 

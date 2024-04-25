@@ -183,6 +183,16 @@
   font-size: .8rem;
 }
 
+.profile .custom-label {
+  /* Legg til dine spesifikke stiler her */
+  position: static;
+  transform: translateY(-50%);
+  background-color: var(--bg-light);
+  /* padding: 0 3px; */
+  font-size: .8rem;
+}
+
+
 .profile .form-control input {
   width: 100%;
   border: 1px solid var(--dark-blue);

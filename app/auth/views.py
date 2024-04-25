@@ -498,6 +498,41 @@ def friend_profile(user_id):
         unlocked_progress = unlocked_progression
     )
 
+
+# Function to check if password is correct from javascript
+@auth.route('/delete-user-request', methods=['POST'])
+def delete_user_request():
+    data = request.get_json()
+    password = data.get('delete_password')
+
+    if current_user.check_password(password):
+        user = User.query.filter_by(email=current_user.email).first()
+        if user:
+            if user.is_admin:
+                return jsonify({'success': False, 'admin': True})
+            token = user.generate_delete_token()
+            send_email(user.email, 'Delete your user', 'email/delete_user',
+                       user=user, token=token)
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False})
+    else:
+        return jsonify({'success': False})
+    
+
+# Confirm delete_user
+@auth.route('/delete_user/<token>', methods=['GET', 'POST'])
+def delete_user(token):
+    if User.delete_user(token):
+        logout_user()
+        db.session.commit()
+        flash('Your user has been deleted.', 'success')
+        return redirect(url_for('auth.login'))
+    else:
+        flash('Your user has NOT been deleted.', 'error')
+        return (redirect(url_for('auth.login')))
+
+
 @auth.route('/add-list', methods=['POST'])
 @login_required
 def add_list():
