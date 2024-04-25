@@ -136,7 +136,13 @@ class AttractionGroup(db.Model):
             column.name: getattr(self, column.name) for column in self.__table__.columns
         }
         data["created_at"] = self.created_at.isoformat() if self.created_at else None
-        data["grouped_attractions"] = [attraction.name for attraction in self.grouped_attractions]
+        data["grouped_attractions"] = [
+            {
+                'name': attraction.name,
+                'image': attraction.image
+            } 
+            for attraction in self.grouped_attractions
+        ]
         return data
 
 

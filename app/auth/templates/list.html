@@ -31,6 +31,9 @@
             </div>
             <template x-for="(group, index) in groups" :key="index">
                 <div class="list-card">
+                    <div class="image-container">
+                        <img :src="group.image ? group.image : '../../static/img/aurora-bg.png'" alt="group.title">
+                    </div>
                     <h3 x-text="group.title"></h3>
                     <p x-text="group.visibility"></p>
                     <div class="btn-container">
@@ -45,3 +48,4 @@
     </div>
 
 </div>
+

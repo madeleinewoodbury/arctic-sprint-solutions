@@ -318,16 +318,22 @@ const wishlist = (attractionId, groups) => {
 
 const userGroups = (groups) => {
     const btn = document.querySelector('.add-group-btn')
-
+    
     return {
-        groups,
+        groups: groups.map(group => {
+            return {
+                id: group.id,
+                title: group.name,
+                attractions: group.grouped_attractions,
+                image: group.grouped_attractions.length > 0 ? group.grouped_attractions[0].image : null
+            }
+        }),
         showGroupForm: false,
         deleteGroup(groupId) {
             fetch(`/auth/delete-group`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // TODO: Add CSRF token
                 },
                 body: JSON.stringify({ groupId: groupId })
             }).then(res => {
