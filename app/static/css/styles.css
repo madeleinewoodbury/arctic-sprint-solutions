@@ -98,7 +98,8 @@ img {
 
 .btn-danger {
   background-color: var(--error);
-  color: var(--danger-text);
+  color: #fff;
+  /* color: var(--danger-text); */
 }
 
 .btn-danger:hover {
