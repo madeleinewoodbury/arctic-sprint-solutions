@@ -254,21 +254,6 @@ const visitedAttraction = (attractionId, visited) => {
     }
 }
 
-function addToWishlist(attractionId, checked) {
-    fetch(`/attractions/${attractionId}/add_to_wishlist`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ wishlist: checked })
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);  // Handle server response here
-    })
-    .catch(error => console.error('Error:', error));
-  }
-
 const wishlist = (attractionId, groups) => {
     return {
         groups: groups,
@@ -281,14 +266,51 @@ const wishlist = (attractionId, groups) => {
         },
 
         addToGroup(groupId) {
-            // TODO: Backend logic to add attraction to group
-            console.log('add to group', groupId);
+            fetch(`/attractions/add_to_group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ groupId: groupId , attractionId: attractionId})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                this.groups = this.groups.map(group => {
+                    if (group.id === groupId) {
+                        group.visited = true
+                    }
+                    return group
+                })
+                this.inAllGroups = this.groups.every(group => group.visited)
+                return response.json();
+            })
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
         },
-
-        removeFromGroup(groupId) {
-            // TODO: Backend logic to remove attraction from group
-            console.log('remove from group', groupId);
         
+        removeFromGroup(groupId) {
+            fetch(`/attractions/remove_from_group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ groupId: groupId , attractionId: attractionId})
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                this.groups = this.groups.map(group => {
+                    if (group.id === groupId) {
+                        group.visited = false
+                    }
+                    return group
+                })
+                this.inAllGroups = this.groups.every(group => group.visited)
+                return response.json();
+            }).then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
         }
     }
 }

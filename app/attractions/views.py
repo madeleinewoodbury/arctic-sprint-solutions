@@ -1,4 +1,4 @@
-from flask import render_template, abort, request, jsonify, session
+from flask import render_template, abort, request, jsonify, session, redirect, url_for
 from flask_login import login_required, current_user
 from .forms import SearchForm, FilterAttractionsForm, SelectCityForm
 from . import attractions
@@ -108,7 +108,6 @@ def get_attraction(attraction_id):
         abort(404)  # Raise a 404 error if not found.
 
     visited = False
-    inWishlist = False
     groups = []
 
     if current_user.is_authenticated:
@@ -166,6 +165,48 @@ def mark_as_visited(attraction_id):
             db.session.delete(existing_record)
             db.session.commit()
             return jsonify({"status": "success", "message": "Attraction mark removed."})
+
+    return jsonify({"status": "error", "message": "An error occurred."})
+
+
+@attractions.route("/attractions/add_to_group", methods=["POST"])
+@login_required
+def add_to_group():
+    data = request.get_json()
+    attraction_id = data['attractionId']
+    group_id = data['groupId']
+
+    if attraction_id and group_id:
+        group = AttractionGroup.query.get(group_id)
+        attraction = Attraction.query.get(attraction_id)
+
+        if group and attraction:
+            group.grouped_attractions.append(attraction)
+            db.session.commit()
+            return jsonify(
+                {"status": "success", "message": "Attraction added to group."}
+            )
+
+    return jsonify({"status": "error", "message": "An error occurred."})
+
+
+@attractions.route("/attractions/remove_from_group", methods=["POST"])
+@login_required
+def remove_from_group():
+    data = request.get_json()
+    attraction_id = data['attractionId']
+    group_id = data['groupId']
+
+    if attraction_id and group_id:
+        group = AttractionGroup.query.get(group_id)
+        attraction = Attraction.query.get(attraction_id)
+
+        if group and attraction:
+            group.grouped_attractions.remove(attraction)
+            db.session.commit()
+            return jsonify(
+                {"status": "success", "message": "Attraction removed from group."}
+            )
 
     return jsonify({"status": "error", "message": "An error occurred."})
 
