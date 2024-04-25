@@ -63,8 +63,10 @@
               <template x-for="group in groups" :key="group.id">
                 <li>
                   <span x-text="group.title"></span>
-                  <span x-show="group.visited">In group</span>
-                  <span x-show="!group.visited">NOT in group</span>
+                  <button x-show="group.visited" class="remove-from-group" @click="removeFromGroup(group.id)">
+                  Remove
+                  </button>
+                  <button x-show="!group.visited" class="add-to-group" @click="addToGroup(group.id)">Add</button>
                 </li>
               </template>
             </ul>

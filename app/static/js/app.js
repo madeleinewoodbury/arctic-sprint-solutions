@@ -275,8 +275,20 @@ const wishlist = (attractionId, groups) => {
         inAllGroups: groups.every(group => group.visited),
         editList: false,
         attractionId: attractionId,
+
         toggleEditList() {
             this.editList = !this.editList
+        },
+
+        addToGroup(groupId) {
+            // TODO: Backend logic to add attraction to group
+            console.log('add to group', groupId);
+        },
+
+        removeFromGroup(groupId) {
+            // TODO: Backend logic to remove attraction from group
+            console.log('remove from group', groupId);
+        
         }
     }
 }
