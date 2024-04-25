@@ -284,22 +284,38 @@ const wishlist = (attractionId, inWishlist) => {
     }
 }
 
-const removeList = (listId) => {
-    fetch(`/auth/delete-list`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            // TODO: Add CSRF token
+
+const userGroups = (groups) => {
+    const btn = document.querySelector('.add-group-btn')
+
+    return {
+        groups,
+        showGroupForm: false,
+        deleteGroup(groupId) {
+            fetch(`/auth/delete-group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // TODO: Add CSRF token
+                },
+                body: JSON.stringify({ groupId: groupId })
+            }).then(res => {
+                if (res.ok) {
+                    this.groups = this.groups.filter(group => group.id !== groupId)
+                }
+            }).catch(err => {
+                console.error(err)
+            })
         },
-        body: JSON.stringify({ listId: listId })
-    }).then(res => {
-        if (res.ok) {
-            // TODO: Remove the list from the DOM instead of reloading the page
-            location.reload()
+        showForm() {
+            this.showGroupForm = true
+            btn.style.display = 'none'
+        },
+        hideForm() {
+            this.showGroupForm = false
+            btn.style.display = 'block'
         }
-    }).catch(err => {
-        console.error(err)
-    })
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

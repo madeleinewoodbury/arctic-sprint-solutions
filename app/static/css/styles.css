@@ -9,6 +9,7 @@
   --dark-blue: #273343;
   --medium-grey: #646464;
   --danger: #F8D7DA;
+  --error: #c32232;
   --danger-text: #99575E;
   --success: #D4EDDA;
   --success-text: #41753a;
@@ -94,13 +95,14 @@ img {
 }
 
 .btn-danger {
-  background-color: var(--danger);
+  background-color: var(--error);
   color: var(--white);
 }
 .btn-success {
   background-color: var(--success);
   color: var(--white);
 }
+
 
 .icon-btn {
   background-color: transparent;

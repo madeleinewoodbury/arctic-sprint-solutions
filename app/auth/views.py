@@ -1,9 +1,10 @@
 import math
+import json
 from . import auth
 from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePreferencesForm, AddListForm
 from .. import db
 from ..models import *
-from flask import render_template, request, redirect, url_for, session, flash, abort
+from flask import render_template, request, redirect, url_for, session, flash, abort, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import _
 from datetime import datetime
@@ -375,7 +376,7 @@ def profile():
 
     # List Tab
     list_form = AddListForm()
-    user_lists = AttractionGroup.query.filter_by(owner=current_user.id).all()
+    user_groups = json.dumps([group.to_dict() for group in AttractionGroup.query.filter_by(owner=current_user.id).all()])
 
     # Tabs for profile page sections, only one section should be active
     tabs = ['Visited Attractions', 'Profile', 'Wishlist', 'Friends', 'Badges']
@@ -387,7 +388,7 @@ def profile():
         user_preferences=user_preferences,
         visited_attractions=visited_attractions,
         number_of_visited_attractions=len(visited_attractions),
-        user_lists=user_lists,
+        user_groups=user_groups,
         points=points,
         tabs=tabs,
         friends_form=friends_form,
@@ -513,18 +514,19 @@ def add_list():
         flash(_('The list has been created.'), 'success')
     return redirect(url_for('auth.profile', current_tab=2))
 
-@auth.route('/delete-list', methods=['POST'])
+@auth.route('/delete-group', methods=['POST'])
 @login_required
-def delete_list():
+def delete_group():
     data = request.get_json()
-    list_id = data['listId']
-    print(list_id)
+    group_id = data['groupId']
 
-    list = AttractionGroup.query.get(list_id)
-    if list.owner != current_user.id:
+    group = AttractionGroup.query.get(group_id)
+    if group.owner != current_user.id:
         abort(403)
 
-    db.session.delete(list)
+    db.session.delete(group)
     db.session.commit()
+
+    # TODO: Fix the flash message
     flash(_('The list has been deleted.'), 'success')
     return redirect(url_for('auth.profile', current_tab=2))

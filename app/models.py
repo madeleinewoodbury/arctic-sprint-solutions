@@ -131,6 +131,14 @@ class AttractionGroup(db.Model):
         "Attraction", secondary="groupedAttraction", back_populates="groups"
     )
 
+    def to_dict(self):
+        data = {
+            column.name: getattr(self, column.name) for column in self.__table__.columns
+        }
+        data["created_at"] = self.created_at.isoformat() if self.created_at else None
+        data["grouped_attractions"] = [attraction.name for attraction in self.grouped_attractions]
+        return data
+
 
 class AttractionTag(db.Model):
     __tablename__ = "attractionTag"
