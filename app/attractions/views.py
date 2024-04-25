@@ -20,6 +20,7 @@ from app.models import (
 )
 from app import db
 from sqlalchemy import and_, distinct, func, or_
+import json
 
 
 @attractions.route("/select_city", methods=["POST"])
@@ -108,6 +109,7 @@ def get_attraction(attraction_id):
 
     visited = False
     inWishlist = False
+    groups = []
 
     if current_user.is_authenticated:
         # Check for users previous visits
@@ -116,12 +118,21 @@ def get_attraction(attraction_id):
         ).first()
         visited = visited_record is not None
 
-        for group in attraction.groups:
-            if group.owner == current_user.id:
-                inWishlist = True
+        user_groups = AttractionGroup.query.filter_by(owner=current_user.id).all()
+
+        for group in user_groups:
+            list_info = {
+                "id": group.id,
+                "title": group.title,
+                "visibility": group.visibility,
+                "visited": attraction in group.grouped_attractions
+            }
+            groups.append(list_info)
+
+        groups = json.dumps(groups)
 
     return render_template(
-        "attraction.html", attraction=attraction, visited=visited, wishlisted=inWishlist
+        "attraction.html", attraction=attraction, visited=visited, groups=groups
     )
 
 

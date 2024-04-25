@@ -269,17 +269,14 @@ function addToWishlist(attractionId, checked) {
     .catch(error => console.error('Error:', error));
   }
 
-const wishlist = (attractionId, inWishlist) => {
+const wishlist = (attractionId, groups) => {
     return {
-        inWishlist: inWishlist,
+        groups: groups,
+        inAllGroups: groups.every(group => group.visited),
+        editList: false,
         attractionId: attractionId,
-        addToWishlist() {
-            this.inWishlist = true
-            addToWishlist(this.attractionId, true)
-        },
-        removeFromWishlist() {
-            this.inWishlist = false,
-            addToWishlist(this.attractionId, false)
+        toggleEditList() {
+            this.editList = !this.editList
         }
     }
 }
