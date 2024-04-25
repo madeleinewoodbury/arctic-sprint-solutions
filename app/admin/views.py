@@ -21,6 +21,7 @@ from app.models import (
 from flask_admin.contrib.sqla import ModelView
 from app.admin import db
 from sqlalchemy import func
+from itertools import chain
 
 
 class AdminModelView(ModelView):
@@ -35,6 +36,22 @@ class AdminModelView(ModelView):
 
 
 class UserView(AdminModelView):
+    can_export = True
+    column_export_list = (
+        "username",
+        "first_name",
+        "last_name",
+        "list_of_achievements",
+        "list_of_visited_attractions",
+        "email",
+        "created_at",
+        "country")
+    # Oppdaterer CSV export funksjonen.
+    # https://blog.est.im/2022/stdout-05
+    def _export_csv(self, return_url):
+          r = super(UserView, self)._export_csv(return_url)
+          r.response = chain((b'\xef\xbb\xbf',), r.response)
+          return r
 
     can_view_details = True
     column_details_list = [
@@ -228,3 +245,5 @@ class ReportView(BaseView):
             achievements_data=achievements_data,
             attractions_data=attractions_data,
         )
+    
+

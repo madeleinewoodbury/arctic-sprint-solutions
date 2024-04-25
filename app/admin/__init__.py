@@ -36,4 +36,5 @@ def add_admin_views():
     admin_manager.add_view(ReportView(name="Reports", endpoint="reports"))
 
 
+
 add_admin_views()
