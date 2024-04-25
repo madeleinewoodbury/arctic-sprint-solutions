@@ -109,7 +109,7 @@ def update_user_profile(profile_form, activeTab):
         username_change = True
 
     if email_change or username_change:
-        send_email(user.email, 'Changes has bee done to your profile.', 'email/profile_updated',
+        send_email(user.email, 'Changes has been done to your profile.', 'email/profile_updated',
                    user=user, email_change=email_change, username_change=username_change,
                    new_email=profile_form.email.data, new_username=profile_form.username.data)
 
