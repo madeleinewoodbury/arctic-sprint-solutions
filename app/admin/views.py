@@ -41,11 +41,12 @@ class UserView(AdminModelView):
         "username",
         "first_name",
         "last_name",
-        "list_of_achievements",
+        # "list_of_achievements", - Ikke i bruk
         "list_of_visited_attractions",
         "email",
         "created_at",
-        "country")
+        "country",
+        )
     # Oppdaterer CSV export funksjonen.
     # https://blog.est.im/2022/stdout-05
     def _export_csv(self, return_url):
@@ -81,26 +82,89 @@ class UserView(AdminModelView):
 
 
 class AchievementsView(AdminModelView):
+    can_export = True
+    column_export_list = (
+        "title",
+        "description",
+        "user_count",
+    )
+    # Oppdaterer CSV export funksjonen.
+    # https://blog.est.im/2022/stdout-05
+    def _export_csv(self, return_url):
+          r = super(AchievementsView, self)._export_csv(return_url)
+          r.response = chain((b'\xef\xbb\xbf',), r.response)
+          return r
+
     form_columns = ["title", "description"]
     column_list = ["title", "description", "user_count"]
 
 
 class CategoryView(AdminModelView):
+    can_export = True
+    column_export_list = (
+        "name",
+        "attraction_count",
+    )
+    # Oppdaterer CSV export funksjonen.
+    # https://blog.est.im/2022/stdout-05
+    def _export_csv(self, return_url):
+          r = super(CategoryView, self)._export_csv(return_url)
+          r.response = chain((b'\xef\xbb\xbf',), r.response)
+          return r
     form_columns = ["name"]
     column_list = ["name", "attraction_count"]
 
 
 class TagView(AdminModelView):
+    can_export = True
+    column_export_list = (
+        "name",
+    )
+    # Oppdaterer CSV export funksjonen.
+    # https://blog.est.im/2022/stdout-05
+    def _export_csv(self, return_url):
+          r = super(TagView, self)._export_csv(return_url)
+          r.response = chain((b'\xef\xbb\xbf',), r.response)
+          return r
     form_columns = ["name"]
     column_list = ["name"]
 
 
 class AgeGroupView(AdminModelView):
+    can_export = True
+    column_export_list = (
+        "name", 
+        "attraction_count",
+    )
+    # Oppdaterer CSV export funksjonen.
+    # https://blog.est.im/2022/stdout-05
+    def _export_csv(self, return_url):
+          r = super(AgeGroupView, self)._export_csv(return_url)
+          r.response = chain((b'\xef\xbb\xbf',), r.response)
+          return r
     form_columns = ["name"]
     column_list = ["name", "attraction_count"]
 
 
 class AttractionView(AdminModelView):
+    can_export = True
+    column_export_list = (
+        "name",
+        "city_rel",
+        "location",
+        "description",
+        "image",
+        "tags",
+        "points",
+        "age_groups",
+        "visit_count",
+    )
+    # Oppdaterer CSV export funksjonen.
+    # https://blog.est.im/2022/stdout-05
+    def _export_csv(self, return_url):
+          r = super(AttractionView, self)._export_csv(return_url)
+          r.response = chain((b'\xef\xbb\xbf',), r.response)
+          return r
 
     form_columns = [
         "name",
@@ -129,6 +193,21 @@ class AttractionView(AdminModelView):
 
 
 class CitiesView(AdminModelView):
+    can_export = True
+    column_export_list = (
+        "name",
+        "country",
+        "image",
+        "description",
+        "attractions_count",
+    )
+    # Oppdaterer CSV export funksjonen.
+    # https://blog.est.im/2022/stdout-05
+    def _export_csv(self, return_url):
+          r = super(CitiesView, self)._export_csv(return_url)
+          r.response = chain((b'\xef\xbb\xbf',), r.response)
+          return r
+    
     form_columns = [
         "name",
         "country",
