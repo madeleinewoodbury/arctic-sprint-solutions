@@ -1,51 +1,83 @@
 <div class="list-content">
     <div class="user-lists" x-data="userGroups({{ user_groups}})">
-        <h2>Your lists</h2>
-        <div class="list-card-container">
-            <div class="list-card add-card">
-                <button @click="showForm()" class="btn btn-primary add-group-btn">Add List</button>
-                <form x-show="showGroupForm" action="{{ url_for('auth.add_list') }}" method="post" class="list-form">
-                    {{ list_form.hidden_tag() }}
-                    <div class="form-row">
-                        <div class="form-control">
-                            {{ list_form.name.label }}
-                            {{ list_form.name }}
-                            {% for error in profile_form.last_name.errors %}
-                            <span style="color: red;">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="form-control">
-                            {{ list_form.visibility.label }}
-                            <select name="{{ list_form.visibility.name }}" class="form-select">
-                                {% for option, label in list_form.visibility.choices %}
-                                <option value="{{ option }}" {% if option == list_form.visibility.data %} selected {% endif %}>{{ label | translate }}</option>
-                                {% endfor %}
-                            </select>
+        <div x-show="showAttractions">
+            <h2>Group name</h2>
+            <div class="grouped-attraction">
+                <template x-for="attraction in groupedAttractions" :key="attraction.id">
+                    <div class="visited-attractions">
+                        <div class="card-container">
+                            <a href="#" class="attraction-card">
+                                <img :src="attraction.image" alt="Attraction Image">
+                                <div>
+                                    <h3 x-text="attraction.name"></h3>
+                                    <div class="points">
+                                        <span>🏆</span> <span x-text="attraction.points"></span> points
+                                    </div>
+                                </div>
+                            </a>
                         </div>
                     </div>
-                    <div class="btn-container">
-                        <button @click="hideForm()" class="btn btn-danger">Cancel</button>
-                        {{ list_form.add_list }}
-                    </div>
-                </form>
+                </template>
             </div>
-            <template x-for="(group, index) in groups" :key="index">
-                <div class="list-card">
-                    <div class="image-container">
-                        <img :src="group.image ? group.image : '../../static/img/aurora-bg.png'" alt="group.title">
-                    </div>
-                    <h3 x-text="group.title"></h3>
-                    <p x-text="group.visibility"></p>
-                    <div class="btn-container">
-                        <a href="#" class="btn btn-primary">View</a>
-                        <button @click="deleteGroup(group.id)" class="btn btn-danger">Delete</button>
-                    </div>
-                </div>
-            </template>
-
         </div>
+        <div x-show="!showAttractions">
 
+            <h2>Your lists</h2>
+            <div class="list-card-container">
+                <div class="list-card add-card">
+                    <button @click="showForm()"
+                        class="btn btn-primary add-group-btn">Add List</button>
+                    <form x-show="showGroupForm"
+                        action="{{ url_for('auth.add_list') }}" method="post"
+                        class="list-form">
+                        {{ list_form.hidden_tag() }}
+                        <div class="form-row">
+                            <div class="form-control">
+                                {{ list_form.name.label }}
+                                {{ list_form.name }}
+                                {% for error in profile_form.last_name.errors %}
+                                <span style="color: red;">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            <div class="form-control">
+                                {{ list_form.visibility.label }}
+                                <select name="{{ list_form.visibility.name }}"
+                                    class="form-select">
+                                    {% for option, label in
+                                    list_form.visibility.choices %}
+                                    <option value="{{ option }}" {% if
+                                        option==list_form.visibility.data %}
+                                        selected {% endif %}>{{ label |
+                                        translate }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="btn-container">
+                            <button @click="hideForm()"
+                                class="btn btn-danger">Cancel</button>
+                            {{ list_form.add_list }}
+                        </div>
+                    </form>
+                </div>
+                <template x-for="(group, index) in groups" :key="index">
+                    <div class="list-card">
+                        <div class="image-container">
+                            <img :src="group.image ? group.image : '../../static/img/aurora-bg.png'"
+                                alt="group.title">
+                        </div>
+                        <h3 x-text="group.title"></h3>
+                        <p x-text="group.visibility"></p>
+                        <div class="btn-container">
+                            <button @click="getGroupAttractions(group.id)"
+                                class="btn btn-primary">View</button>
+                            <button @click="deleteGroup(group.id)"
+                                class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </template>
+
+            </div>
+        </div>
     </div>
-
 </div>
-

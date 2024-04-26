@@ -328,6 +328,8 @@ const userGroups = (groups) => {
                 image: group.grouped_attractions.length > 0 ? group.grouped_attractions[0].image : null
             }
         }),
+        groupedAttractions: [],
+        showAttractions: false,
         showGroupForm: false,
         deleteGroup(groupId) {
             fetch(`/auth/delete-group`, {
@@ -351,7 +353,26 @@ const userGroups = (groups) => {
         hideForm() {
             this.showGroupForm = false
             btn.style.display = 'block'
+        },
+        getGroupAttractions(groupId) {
+            fetch(`/auth/group-attractions/${groupId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                this.groupedAttractions = response.json()
+                this.showAttractions = true
+            }).then(data => {
+                console.log(data)
+            }).catch(err => {
+                console.error(err)
+            })
         }
+
     }
 }
 

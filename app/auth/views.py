@@ -565,3 +565,14 @@ def delete_group():
     # TODO: Fix the flash message
     flash(_('The list has been deleted.'), 'success')
     return redirect(url_for('auth.profile', current_tab=2))
+
+@auth.route('/group-attractions/<group_id>', methods=['GET'])
+@login_required
+def get_group_attractions(group_id):
+    group = AttractionGroup.query.get(group_id)
+    if group.owner != current_user.id:
+        abort(403)
+
+    attractions = []
+    attractions = group.grouped_attractions
+    return jsonify([attraction.to_dict() for attraction in attractions])
