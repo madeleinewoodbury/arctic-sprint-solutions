@@ -151,7 +151,8 @@ const filterAttractions = () => {
 function profileTabs(tabs, activeTab=0) {    
     return {
         tabs,
-        activeTab: tabs[activeTab],
+        // activeTab: tabs[activeTab],
+        activeTab: tabs[2],
         
         setActiveTab(tab) {
             this.activeTab = tab
@@ -318,12 +319,12 @@ const wishlist = (attractionId, groups) => {
 
 const userGroups = (groups) => {
     const btn = document.querySelector('.add-group-btn')
-    
     return {
         groups: groups.map(group => {
             return {
                 id: group.id,
-                title: group.name,
+                title: group.title,
+                visibility: group.visibility,
                 attractions: group.grouped_attractions,
                 image: group.grouped_attractions.length > 0 ? group.grouped_attractions[0].image : null
             }
@@ -331,6 +332,7 @@ const userGroups = (groups) => {
         groupedAttractions: [],
         showAttractions: false,
         showGroupForm: false,
+        currentGroup: null,
         deleteGroup(groupId) {
             fetch(`/auth/delete-group`, {
                 method: 'POST',
@@ -352,7 +354,7 @@ const userGroups = (groups) => {
         },
         hideForm() {
             this.showGroupForm = false
-            btn.style.display = 'block'
+            btn.style.display = 'flex'
         },
         getGroupAttractions(groupId) {
             fetch(`/auth/group-attractions/${groupId}`, {
@@ -366,11 +368,17 @@ const userGroups = (groups) => {
                 }
                 this.groupedAttractions = response.json()
                 this.showAttractions = true
+                this.currentGroup = this.groups.find(group => group.id === groupId)
             }).then(data => {
                 console.log(data)
             }).catch(err => {
                 console.error(err)
             })
+        },
+        backToGroups() {
+            this.showAttractions = false
+            this.groupedAttractions = []
+            this.currentGroup = null
         }
 
     }
