@@ -21,7 +21,7 @@
     </ul>
     {% if current_user.is_authenticated %}
     <div class="attraction-actions">
-      <div x-data="visitedAttraction({{ attraction.id}}, {{ visited | lower}})" class="wishlist">
+      <div x-data="visitedAttraction({{ attraction.id}}, {{ visited | lower}})">
         <template x-if="!visited">
           <div class="visited-info">
             <button @click="addToVisited()">
@@ -57,16 +57,15 @@
               <span>{{_('Remove from list')}}</span>
             </div>
           </template>
-
+          
           <div class="list-info-panel" x-show="editList">
             <ul>
               <template x-for="group in groups" :key="group.id">
                 <li>
                   <span x-text="group.title"></span>
-                  <button x-show="group.visited" class="remove-from-group" @click="removeFromGroup(group.id)">
-                  Remove
+                  <button x-show="group.visited" class="btn btn-small btn-danger remove-from-group" @click="removeFromGroup(group.id)">Remove
                   </button>
-                  <button x-show="!group.visited" class="add-to-group" @click="addToGroup(group.id)">Add</button>
+                  <button x-show="!group.visited" class="btn btn-small btn-primary add-to-group" @click="addToGroup(group.id)">Add</button>
                 </li>
               </template>
             </ul>

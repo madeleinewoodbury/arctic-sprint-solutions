@@ -151,8 +151,7 @@ const filterAttractions = () => {
 function profileTabs(tabs, activeTab=0) {    
     return {
         tabs,
-        // activeTab: tabs[activeTab],
-        activeTab: tabs[2],
+        activeTab: tabs[activeTab],
         
         setActiveTab(tab) {
             this.activeTab = tab
