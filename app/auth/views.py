@@ -91,17 +91,32 @@ def password_reset(token):
     
 def update_user_profile(profile_form, activeTab):
     # Update user profile
+    email_change = False
+    username_change = False
     user = User.query.filter_by(id=current_user.id).first()
-    user.username = profile_form.username.data
     user.first_name = profile_form.first_name.data
     user.last_name = profile_form.last_name.data
-    user.email = profile_form.email.data
     user.country_id = profile_form.country.data
     
     # Also update password if filled
     if profile_form.password.data:
         user.set_password(profile_form.password.data)
     
+    # Send email notification if email or username has changed
+    if user.email != profile_form.email.data:
+        email_change = True
+
+    if user.username != profile_form.username.data:
+        username_change = True
+
+    if email_change or username_change:
+        send_email(user.email, 'Changes has been done to your profile.', 'email/profile_updated',
+                   user=user, email_change=email_change, username_change=username_change,
+                   new_email=profile_form.email.data, new_username=profile_form.username.data)
+
+    user.email = profile_form.email.data
+    user.username = profile_form.username.data
+
     db.session.commit()
     profile_form.is_active.data = 'false'
     flash(_('Your profile has been updated!'), 'success')
