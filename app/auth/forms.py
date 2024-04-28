@@ -102,6 +102,7 @@ class AddListForm(Form):
 
 
 class EditListForm(Form):
+    group_id = HiddenField()
     name = StringField(_('List Name'), validators=[DataRequired(), Length(max=50)])
     visibility = SelectField(_('Visibility'), choices=[('public', _('Public')), ('private', _('Private'))], default='private')
     edit_list = SubmitField(_('Update'), render_kw={'class': 'btn btn-primary'})

@@ -361,6 +361,17 @@ const userGroups = (groups) => {
         },
 
         getGroupAttractions(groupId) {
+            this.currentGroup = this.groups.find(group => group.id === groupId)
+            const form = document.querySelector('#editListForm')
+            form.querySelector('#group_id').value = groupId
+            form.querySelector('#name').value = this.currentGroup.title
+            const visibilityOptions = form.querySelectorAll('#visibility option')
+            visibilityOptions.forEach(option => {
+                if (option.value === this.currentGroup.visibility) {
+                    option.selected = true
+                }
+            })
+            
             fetch(`/auth/group-attractions/${groupId}`, {
                 method: 'GET',
                 headers: {
@@ -368,11 +379,11 @@ const userGroups = (groups) => {
                 }
             }).then(response => {
                 if (!response.ok) {
+                    this.currentGroup = null
                     throw new Error('Network response was not ok');
                 }
                 this.groupedAttractions = response.json()
                 this.showAttractions = true
-                this.currentGroup = this.groups.find(group => group.id === groupId)
             }).then(data => {
                 console.log(data)
             }).catch(err => {

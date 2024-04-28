@@ -583,14 +583,17 @@ def delete_group():
     flash(_('The list has been deleted.'), 'success')
     return redirect(url_for('auth.profile', current_tab=2))
 
-@auth.route('/edit-group/<group_id>', methods=['POST'])
+@auth.route('/edit-group', methods=['POST'])
 @login_required
-def edit_group(group_id):
+def edit_group():
     form = EditListForm()
-    print(form, group_id)
-    group = AttractionGroup.query.get(group_id)
+
+    if form.validate_on_submit():
+        group_id = form.group_id.data
+        group = AttractionGroup.query.get(group_id)
+
     
-    if group.owner != current_user.id:
+    if (group.owner != current_user.id) or group is None:
         abort(403)
 
     group.title = form.name.data

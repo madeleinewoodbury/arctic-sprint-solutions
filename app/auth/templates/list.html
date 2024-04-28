@@ -12,9 +12,10 @@
                 <h2 x-text="currentGroup && currentGroup.title"></h2>
             </div>
             <!-- TODO: UPDATE WITH js -->
-            <form x-bind:action="'/edit-group/' + currentGroupId"
-                method="post" class="list-form">
+            <form action="{{url_for('auth.edit_group')}}"
+                method="post" class="list-form" id="editListForm">
                 {{ edit_list_form.hidden_tag() }}
+                {{ edit_list_form.group_id }}
                 <div class="form-row">
                     <div class="form-control">
                         {{ edit_list_form.name.label }}
