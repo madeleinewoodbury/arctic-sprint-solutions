@@ -89,7 +89,7 @@ class UserView(AdminModelView):
         if not is_created:
             changed_user = UserView.changed_user
             if model.username != changed_user.username or model.email != changed_user.email:
-                send_email(changed_user.email, 'Urgent: Admin made changes done to your profile.', 'email/profile_updated',
+                send_email(changed_user.email, 'Urgent: Admin made changes to your profile.', 'email/profile_updated',
                     user=changed_user, email_change=changed_user.email, username_change=changed_user.username,
                     new_email=model.email, new_username=model.username)
 
