@@ -151,8 +151,7 @@ const filterAttractions = () => {
 function profileTabs(tabs, activeTab=0) {    
     return {
         tabs,
-        // activeTab: tabs[activeTab],
-        activeTab: tabs[2],
+        activeTab: tabs[activeTab],
         
         setActiveTab(tab) {
             this.activeTab = tab
@@ -256,6 +255,7 @@ const visitedAttraction = (attractionId, visited) => {
 }
 
 const wishlist = (attractionId, groups) => {
+    
     return {
         groups: groups,
         inAllGroups: groups.every(group => group.visited),
@@ -265,6 +265,27 @@ const wishlist = (attractionId, groups) => {
         toggleEditList() {
             this.editList = !this.editList
         },
+
+        createNewGroup() {
+            fetch(`/attractions/add_to_group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ attractionId: attractionId})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if(data.status === 'success') location.reload()
+            })
+            .catch(error => console.error('Error:', error));
+        },
+
 
         addToGroup(groupId) {
             fetch(`/attractions/add_to_group`, {
@@ -390,7 +411,6 @@ const userGroups = (groups) => {
                 console.error(err)
             })
         },
-
 
         backToGroups() {
             this.showAttractions = false

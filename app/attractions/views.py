@@ -174,7 +174,7 @@ def mark_as_visited(attraction_id):
 def add_to_group():
     data = request.get_json()
     attraction_id = data['attractionId']
-    group_id = data['groupId']
+    group_id = data.get('groupId')
 
     if attraction_id and group_id:
         group = AttractionGroup.query.get(group_id)
@@ -185,6 +185,19 @@ def add_to_group():
             db.session.commit()
             return jsonify(
                 {"status": "success", "message": "Attraction added to group."}
+            )
+    
+    if attraction_id:
+        attraction = Attraction.query.get(attraction_id)
+        if attraction:
+            new_group = AttractionGroup(
+                owner=current_user.id, title="Wishlist", visibility="private"
+            )
+            new_group.grouped_attractions.append(attraction)
+            db.session.add(new_group)
+            db.session.commit()
+            return jsonify(
+                {"status": "success", "message": "Attraction added to new group."}
             )
 
     return jsonify({"status": "error", "message": "An error occurred."})
