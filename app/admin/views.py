@@ -22,6 +22,7 @@ from flask_admin.contrib.sqla import ModelView
 from app.admin import db
 from sqlalchemy import func
 from itertools import chain
+from ..email import send_email
 
 
 class AdminModelView(ModelView):
@@ -79,6 +80,18 @@ class UserView(AdminModelView):
         "number_of_achievements",
         # "#attractions"
     ]
+    
+    @staticmethod
+    def on_form_prefill(form, id):
+        UserView.changed_user = User.query.get(id)
+        
+    def on_model_change(self, form, model, is_created):
+        if not is_created:
+            changed_user = UserView.changed_user
+            if model.username != changed_user.username or model.email != changed_user.email:
+                send_email(changed_user.email, 'Urgent: Admin made changes to your profile.', 'email/profile_updated',
+                    user=changed_user, email_change=changed_user.email, username_change=changed_user.username,
+                    new_email=model.email, new_username=model.username)
 
 
 class AchievementsView(AdminModelView):
