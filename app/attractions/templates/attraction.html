@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 
 {% block styles %}
-<link rel="stylesheet" type="text/css"
-    href="{{ url_for('static', filename='css/attraction.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/attraction.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -11,12 +10,12 @@
     <h1 class="text-primary">{{ attraction.name }}</h1>
     <p class="lead">
       {% for cat in attraction.category %}
-        <span>{{ cat.name | translate }} {% if not loop.last %}, {% endif %}</span>
+      <span>{{ cat.name | translate }}{% if not loop.last %}, {% endif %}</span>
       {% endfor %}
     </p>
     <ul class="tags">
       {% for tag in attraction.tags %}
-        <li>{{ tag.name | translate }} {% if not loop.last %}<span>&#xB7;</span> {% endif %}</li>
+      <li>{{ tag.name | translate }} {% if not loop.last %}<span>&#xB7;</span> {% endif %}</li>
       {% endfor %}
     </ul>
     {% if current_user.is_authenticated %}
@@ -25,7 +24,11 @@
         <template x-if="!visited">
           <div class="visited-info">
             <button @click="addToVisited()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H208V208Z"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256">
+                <path
+                  d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H208V208Z">
+                </path>
+              </svg>
             </button>
             <span>{{_('Mark as visited')}}</span>
           </div>
@@ -33,35 +36,49 @@
         <template x-if="visited">
           <div class="visited-info">
             <button @click="removeFromVisited()">
-              <svg class="primary-fill" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,48V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM208,208V48H48V208H208Z"></path></svg>
+              <svg class="primary-fill" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000"
+                viewBox="0 0 256 256">
+                <path
+                  d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,48V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM208,208V48H48V208H208Z">
+                </path>
+              </svg>
             </button>
             <span>{{_('Visited')}}</span>
           </div>
         </template>
-    </div>
+      </div>
 
       <div x-data="wishlist({{ attraction.id}}, {{wishlisted | lower}})" class="wishlist">
-          <template x-if="!inWishlist">
-            <div class="wishlist-info">
-              <button @click="addToWishlist()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72h64a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm80,48H40a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm128-40c0,36.52-50.28,62.08-52.42,63.16a8,8,0,0,1-7.16,0C186.28,206.08,136,180.52,136,144a32,32,0,0,1,56-21.14A32,32,0,0,1,248,144Zm-16,0a16,16,0,0,0-32,0,8,8,0,0,1-16,0,16,16,0,0,0-32,0c0,20.18,26.21,39.14,40,46.93C205.79,183.15,232,164.19,232,144Z"></path></svg>
-              </button>
-              <span>{{_('Add to wishlist')}}</span>
-            </div>
-          </template>
-          <template x-if="inWishlist">
-            <div class="wishlist-info">
-              <button @click="removeFromWishlist()">
-                <svg class="primary-fill" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72h64a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm80,48H40a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm128-40c0,36.52-50.28,62.08-52.42,63.16a8,8,0,0,1-7.16,0C186.28,206.08,136,180.52,136,144a32,32,0,0,1,56-21.14A32,32,0,0,1,248,144Zm-16,0a16,16,0,0,0-32,0,8,8,0,0,1-16,0,16,16,0,0,0-32,0c0,20.18,26.21,39.14,40,46.93C205.79,183.15,232,164.19,232,144Z"></path></svg>
-              </button>
-              <span>{{_('Remove from wishlist')}}</span>
-            </div>
-          </template>
+        <template x-if="!inWishlist">
+          <div class="wishlist-info">
+            <button @click="addToWishlist()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256">
+                <path
+                  d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72h64a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm80,48H40a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm128-40c0,36.52-50.28,62.08-52.42,63.16a8,8,0,0,1-7.16,0C186.28,206.08,136,180.52,136,144a32,32,0,0,1,56-21.14A32,32,0,0,1,248,144Zm-16,0a16,16,0,0,0-32,0,8,8,0,0,1-16,0,16,16,0,0,0-32,0c0,20.18,26.21,39.14,40,46.93C205.79,183.15,232,164.19,232,144Z">
+                </path>
+              </svg>
+            </button>
+            <span>{{_('Add to wishlist')}}</span>
+          </div>
+        </template>
+        <template x-if="inWishlist">
+          <div class="wishlist-info">
+            <button @click="removeFromWishlist()">
+              <svg class="primary-fill" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000"
+                viewBox="0 0 256 256">
+                <path
+                  d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72h64a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm80,48H40a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm128-40c0,36.52-50.28,62.08-52.42,63.16a8,8,0,0,1-7.16,0C186.28,206.08,136,180.52,136,144a32,32,0,0,1,56-21.14A32,32,0,0,1,248,144Zm-16,0a16,16,0,0,0-32,0,8,8,0,0,1-16,0,16,16,0,0,0-32,0c0,20.18,26.21,39.14,40,46.93C205.79,183.15,232,164.19,232,144Z">
+                </path>
+              </svg>
+            </button>
+            <span>{{_('Remove from wishlist')}}</span>
+          </div>
+        </template>
       </div>
     </div>
-  {% endif %}
+    {% endif %}
   </div>
-  
+
 
   <div class="content">
     <div class="image-container">
@@ -69,15 +86,26 @@
       <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
     </div>
     <div class="text-container">
-      <h3>{{ _("About") }}</h3>
-      <p>{{ attraction.description | translate }}</p>
-      <p><strong>{{ _("Location") }}:</strong> {{ attraction.location }}</p>
-      {% if attraction.age_groups %}
+      <div class="top">
+        <h3>{{ _("About") }}</h3>
+        <p>{{ attraction.description | translate }}</p>
+        <p><strong>{{ _("Location") }}:</strong> {{ attraction.location }}</p>
+        {% if attraction.age_groups %}
         <p><strong>{{ _("Suitable for") }}:</strong>
           {% for age_group in attraction.age_groups %}
-          <span>{{ age_group.name | translate }} {% if not loop.last %}, {% endif %}</span>
+          <span>{{ age_group.name | translate }}{% if not loop.last %}, {% endif %}</span>
           {% endfor %}
-      {% endif %}
+          {% endif %}
+      </div>
+      <a class="link-text" href="javascript:window.history.back();">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-move-left">
+          <path d="M6 8L2 12L6 16" />
+          <path d="M2 12H22" />
+        </svg>
+        {{ _("Go Back") }}
+      </a>
     </div>
   </div>
 </section>
