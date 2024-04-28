@@ -20,7 +20,7 @@
     </ul>
     {% if current_user.is_authenticated %}
     <div class="attraction-actions">
-      <div x-data="visitedAttraction({{ attraction.id}}, {{ visited | lower}})" class="wishlist">
+      <div x-data="visitedAttraction({{ attraction.id}}, {{ visited | lower}})">
         <template x-if="!visited">
           <div class="visited-info">
             <button @click="addToVisited()">
@@ -48,32 +48,44 @@
         </template>
       </div>
 
-      <div x-data="wishlist({{ attraction.id}}, {{wishlisted | lower}})" class="wishlist">
-        <template x-if="!inWishlist">
+      <div x-data="wishlist({{ attraction.id}}, {{groups}})" class="wishlist">
+        <template x-if="groups.length == 0">
           <div class="wishlist-info">
-            <button @click="addToWishlist()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256">
-                <path
-                  d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72h64a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm80,48H40a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm128-40c0,36.52-50.28,62.08-52.42,63.16a8,8,0,0,1-7.16,0C186.28,206.08,136,180.52,136,144a32,32,0,0,1,56-21.14A32,32,0,0,1,248,144Zm-16,0a16,16,0,0,0-32,0,8,8,0,0,1-16,0,16,16,0,0,0-32,0c0,20.18,26.21,39.14,40,46.93C205.79,183.15,232,164.19,232,144Z">
-                </path>
-              </svg>
+            <button @click="createNewGroup()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72h64a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm80,48H40a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm128-40c0,36.52-50.28,62.08-52.42,63.16a8,8,0,0,1-7.16,0C186.28,206.08,136,180.52,136,144a32,32,0,0,1,56-21.14A32,32,0,0,1,248,144Zm-16,0a16,16,0,0,0-32,0,8,8,0,0,1-16,0,16,16,0,0,0-32,0c0,20.18,26.21,39.14,40,46.93C205.79,183.15,232,164.19,232,144Z"></path></svg>
             </button>
-            <span>{{_('Add to wishlist')}}</span>
+            <span>{{_('New list')}}</span>
           </div>
         </template>
-        <template x-if="inWishlist">
-          <div class="wishlist-info">
-            <button @click="removeFromWishlist()">
-              <svg class="primary-fill" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000"
-                viewBox="0 0 256 256">
-                <path
-                  d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72h64a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm80,48H40a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm128-40c0,36.52-50.28,62.08-52.42,63.16a8,8,0,0,1-7.16,0C186.28,206.08,136,180.52,136,144a32,32,0,0,1,56-21.14A32,32,0,0,1,248,144Zm-16,0a16,16,0,0,0-32,0,8,8,0,0,1-16,0,16,16,0,0,0-32,0c0,20.18,26.21,39.14,40,46.93C205.79,183.15,232,164.19,232,144Z">
-                </path>
-              </svg>
-            </button>
-            <span>{{_('Remove from wishlist')}}</span>
+          <template x-if="groups.length > 0 && !inAllGroups">
+            <div class="wishlist-info">
+              <button @click="toggleEditList()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72h64a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm80,48H40a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm128-40c0,36.52-50.28,62.08-52.42,63.16a8,8,0,0,1-7.16,0C186.28,206.08,136,180.52,136,144a32,32,0,0,1,56-21.14A32,32,0,0,1,248,144Zm-16,0a16,16,0,0,0-32,0,8,8,0,0,1-16,0,16,16,0,0,0-32,0c0,20.18,26.21,39.14,40,46.93C205.79,183.15,232,164.19,232,144Z"></path></svg>
+              </button>
+              <span>{{_('Add to list')}}</span>
+            </div>
+          </template>
+          <template x-if="groups.length > 0 && inAllGroups">
+            <div class="wishlist-info">
+              <button @click="toggleEditList()">
+                <svg class="primary-fill" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,72h64a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm80,48H40a8,8,0,0,0,0,16h80a8,8,0,0,0,0-16Zm128-40c0,36.52-50.28,62.08-52.42,63.16a8,8,0,0,1-7.16,0C186.28,206.08,136,180.52,136,144a32,32,0,0,1,56-21.14A32,32,0,0,1,248,144Zm-16,0a16,16,0,0,0-32,0,8,8,0,0,1-16,0,16,16,0,0,0-32,0c0,20.18,26.21,39.14,40,46.93C205.79,183.15,232,164.19,232,144Z"></path></svg>
+              </button>
+              <span>{{_('Remove from list')}}</span>
+            </div>
+          </template>
+          
+          <div class="list-info-panel" x-show="editList">
+            <ul>
+              <template x-for="group in groups" :key="group.id">
+                <li>
+                  <span x-text="group.title"></span>
+                  <button x-show="group.visited" class="btn btn-small btn-danger remove-from-group" @click="removeFromGroup(group.id)">Remove
+                  </button>
+                  <button x-show="!group.visited" class="btn btn-small btn-primary add-to-group" @click="addToGroup(group.id)">Add</button>
+                </li>
+              </template>
+            </ul>
           </div>
-        </template>
       </div>
     </div>
     {% endif %}
