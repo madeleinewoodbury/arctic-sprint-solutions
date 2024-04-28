@@ -1,7 +1,7 @@
 import math
 import json
 from . import auth
-from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePreferencesForm, AddListForm
+from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePreferencesForm, AddListForm, EditListForm
 from .. import db
 from ..models import *
 from flask import render_template, request, redirect, url_for, session, flash, abort, jsonify
@@ -391,6 +391,7 @@ def profile():
 
     # List Tab
     list_form = AddListForm()
+    edit_list_form = EditListForm()
     user_groups = json.dumps([group.to_dict() for group in AttractionGroup.query.filter_by(owner=current_user.id).all()])
 
     # Tabs for profile page sections, only one section should be active
@@ -408,6 +409,7 @@ def profile():
         tabs=tabs,
         friends_form=friends_form,
         list_form=list_form,
+        edit_list_form=edit_list_form,
         users=users,
         friendships=friendships,
         unlocked_progress = unlocked_progression, 
@@ -579,6 +581,23 @@ def delete_group():
 
     # TODO: Fix the flash message
     flash(_('The list has been deleted.'), 'success')
+    return redirect(url_for('auth.profile', current_tab=2))
+
+@auth.route('/edit-group/<group_id>', methods=['POST'])
+@login_required
+def edit_group(group_id):
+    form = EditListForm()
+    print(form, group_id)
+    group = AttractionGroup.query.get(group_id)
+    
+    if group.owner != current_user.id:
+        abort(403)
+
+    group.title = form.name.data
+    group.visibility = form.visibility.data
+    db.session.commit()
+
+    flash(_('The list has been updated.'), 'success')
     return redirect(url_for('auth.profile', current_tab=2))
 
 @auth.route('/group-attractions/<group_id>', methods=['GET'])

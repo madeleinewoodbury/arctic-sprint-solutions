@@ -2,9 +2,47 @@
     <div class="user-lists" x-data="userGroups({{ user_groups}})">
         <div x-show="showAttractions">
             <div class="title-container">
-                <button @click="backToGroups()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path></svg></button>
+                <button @click="backToGroups()"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="32"
+                        height="32" fill="#000000" viewBox="0 0 256 256">
+                        <path
+                            d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z">
+                        </path>
+                    </svg></button>
                 <h2 x-text="currentGroup && currentGroup.title"></h2>
             </div>
+            <!-- TODO: UPDATE WITH js -->
+            <form x-bind:action="'/edit-group/' + currentGroupId"
+                method="post" class="list-form">
+                {{ edit_list_form.hidden_tag() }}
+                <div class="form-row">
+                    <div class="form-control">
+                        {{ edit_list_form.name.label }}
+                        {{ edit_list_form.name }}
+                        {% for error in profile_form.last_name.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-control">
+                        {{ edit_list_form.visibility.label }}
+                        <select name="{{ edit_list_form.visibility.name }}"
+                            class="form-select">
+                            {% for option, label in
+                            edit_list_form.visibility.choices %}
+                            <option value="{{ option }}" {% if
+                                option==edit_list_form.visibility.data %}
+                                selected {% endif %}>{{ label |
+                                translate }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="btn-container">
+                    <button @click="hideForm()"
+                        class="btn btn-danger">Cancel</button>
+                    {{ list_form.add_list }}
+                </div>
+            </form>
             <div class="grouped-attractions">
                 <div class="card-container">
                     <template x-for="attraction in groupedAttractions"

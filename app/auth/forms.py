@@ -99,3 +99,9 @@ class AddListForm(Form):
     name = StringField(_('List Name'), validators=[DataRequired(), Length(max=50)])
     visibility = SelectField(_('Visibility'), choices=[('public', _('Public')), ('private', _('Private'))], default='private')
     add_list = SubmitField(_('Save'), render_kw={'class': 'btn btn-primary'})
+
+
+class EditListForm(Form):
+    name = StringField(_('List Name'), validators=[DataRequired(), Length(max=50)])
+    visibility = SelectField(_('Visibility'), choices=[('public', _('Public')), ('private', _('Private'))], default='private')
+    edit_list = SubmitField(_('Update'), render_kw={'class': 'btn btn-primary'})

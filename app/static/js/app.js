@@ -151,7 +151,8 @@ const filterAttractions = () => {
 function profileTabs(tabs, activeTab=0) {    
     return {
         tabs,
-        activeTab: tabs[activeTab],
+        // activeTab: tabs[activeTab],
+        activeTab: tabs[2],
         
         setActiveTab(tab) {
             this.activeTab = tab
@@ -332,6 +333,7 @@ const userGroups = (groups) => {
         showAttractions: false,
         showGroupForm: false,
         currentGroup: null,
+
         deleteGroup(groupId) {
             fetch(`/auth/delete-group`, {
                 method: 'POST',
@@ -347,14 +349,17 @@ const userGroups = (groups) => {
                 console.error(err)
             })
         },
+
         showForm() {
             this.showGroupForm = true
             btn.style.display = 'none'
         },
+
         hideForm() {
             this.showGroupForm = false
             btn.style.display = 'flex'
         },
+
         getGroupAttractions(groupId) {
             fetch(`/auth/group-attractions/${groupId}`, {
                 method: 'GET',
@@ -374,6 +379,8 @@ const userGroups = (groups) => {
                 console.error(err)
             })
         },
+
+
         backToGroups() {
             this.showAttractions = false
             this.groupedAttractions = []
