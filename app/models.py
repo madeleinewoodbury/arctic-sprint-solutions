@@ -344,6 +344,28 @@ class User(UserMixin, db.Model):
             url = "http://www.gravatar.com/avatar"
         hash = hashlib.md5(self.email.lower().encode("utf-8")).hexdigest()
         return f"{url}/{hash}?s={size}&d={default}&r={rating}"
+    
+    @property
+    def level(self):
+        BASE_POINTS = 42
+        GROWTH_RATE = 1.05
+        current_level = 1
+        points_required = BASE_POINTS
+        points_remaining = sum(item.attraction.points for item in self.visited_attractions)
+
+        while points_remaining >= points_required:
+            points_remaining -= points_required
+            current_level += 1
+            points_required = int((points_required + BASE_POINTS) * GROWTH_RATE - points_required)
+            
+        points_missing = points_required - points_remaining
+        level = {
+            "current_level": current_level,
+            "points_required": points_required,
+            "points_missing": points_missing,
+            "progress": points_remaining
+            }
+        return level
 
 
 class Anonymous(AnonymousUserMixin):

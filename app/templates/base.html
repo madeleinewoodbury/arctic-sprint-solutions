@@ -112,8 +112,7 @@
         </div>
         <ul class="nav-links">
             <li>
-                <a href="{{ url_for('attractions.get_attractions') }}">{{
-                    _("Attractions") }}</a>
+                <a href="{{ url_for('attractions.get_attractions') }}">{{_("Attractions") }}</a>
             </li>
     
             {% if current_user.is_anonymous %}
@@ -133,14 +132,16 @@
                 </form>
             </li>
             <li>
-                <a class="cta" href="{{ url_for('auth.login') }}">{{ _("Sign In")
-                    }}</a>
+                <a class="cta" href="{{ url_for('auth.login') }}">{{ _("Sign In")}}</a>
             </li>
+
             {% else %}
+            <li>
+                <p>{{ _("LVL:") }} {{ current_user.level['current_level'] }}</p>
+            </li>
             <li x-data="{open: false}" class="settings-nav">
                 <button @click="open = !open">
-                    <img src="{{ current_user.gravatar() }}" alt=""
-                        class="gravatar-img">
+                    <img src="{{ current_user.gravatar() }}" alt="" class="gravatar-img">
                 </button>
                 </button>
                 <ul x-show="open" x-transition:enter="slide-in-right-enter-active"
