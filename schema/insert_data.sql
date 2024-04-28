@@ -326,7 +326,8 @@ INSERT INTO `tag` (`id`, `name`) VALUES
 (14, 'Summer'),
 (15, 'Fall'),
 (16, 'Spring'),
-(17, 'Year-round');
+(17, 'Year-round'),
+(18, 'Nightlife');
 
 
 --
@@ -362,10 +363,20 @@ INSERT INTO `attraction` (`id`, `name`, `city`, `location`, `description`, `imag
 (4, 'The Polar Museum', 1, 'Søndre Tollbodgate 11B', 'Expeditions, everyday life and adventures in the Arctic from the 17th century up to the present.\r\nIn our historic buildings, which are the former Customs premises in Tromsø, we communicate polar history with national and local roots. Our permanent exhibitions deal with sealing, overwintering, polar expeditions and the cultural history of Svalbard. The former boathouse houses temporary exhibitions based on new polar research.', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/7c/72/d9/polarmuseet-2017.jpg?w=1200&h=-1&s=1', 25),
 (5, 'Ølhallen Brewpub', 1, 'Storgata 4', 'Ølhallen opened in 1928 and is the oldest pub in Tromsø. It is a place where townspeople of all ages meet and taste the best beers from Mack as well as other Norwegian breweries. We have one of the largest tap selections in Europe serving Norwegian quality beer from 72 different taps! All beers are possible to buy in tasting size glass. We also have tasting trays', 'https://images.citybreakcdn.com/image.aspx?ImageId=7267566&height=560&width=1440&crop=1', 15),
 (6, 'Tromsø Villmarkssenter', 1, 'Straumsvegen 601, 9105 Kvaløya', '30 years ago, the renowned dog sled racer Tove Sørensen opened her home to guests from all over the world. Since then, she and her family have dedicated their life to educating visitors about Alaskan huskies, dog sledding and the arctic nature through sustainable outdoor activities.', 'https://images.citybreakcdn.com/image.aspx?ImageId=6689293&height=800&width=1200&crop=1', 30),
-(7, 'Storgata Camping', 1, 'Storgata 5, 9008 Tromsø', 'Storgata Camping\r\nStorgata Camping has the biggest indoor minigolfcourse in Norway! With 18 different challenges to conquer.', 'https://images.citybreakcdn.com/image.aspx?ImageId=8859233&height=560&width=1440&crop=1', 10),
-(8, 'Fiskekompaniet Sjøsiden', 1, 'Killengreens gate, 9007 Tromsø', 'n a stressful society dominated by kiosks and fast-food chains, we would like to offer you some of the genuine and healthy food we harvest from the ocean.', 'https://images.citybreakcdn.com/image.aspx?ImageId=7207348&height=560&width=1440&crop=1', 10),
+(7, 'Storgata Camping', 1, 'Storgata 5, 9008 Tromsø', 'Storgata Camping has the biggest indoor minigolfcourse in Norway! With 18 different challenges to conquer.', 'https://images.citybreakcdn.com/image.aspx?ImageId=8859233&height=560&width=1440&crop=1', 10),
+(8, 'Fiskekompaniet Sjøsiden', 1, 'Killengreens gate, 9007 Tromsø', 'In a stressful society dominated by kiosks and fast-food chains, we would like to offer you some of the genuine and healthy food we harvest from the ocean.', 'https://images.citybreakcdn.com/image.aspx?ImageId=7207348&height=560&width=1440&crop=1', 10),
 (9, 'Northern Light Safari', 1, NULL, 'This tour is conducted by Northern Yachting. If you want to see the experience the Northern Lights, there is no better way to experience it than to join us on a trip. On board our beautiful catamaran, our guests can lie on the well-known catamaran net, to look straight up at the sky while the sea sculpts smoothly below.', 'https://images.citybreakcdn.com/image.aspx?ImageId=7094166&height=800&width=1200&crop=1', 42),
-(10, 'Galleri Nord', 1, 'Sjøgata 7, 9259 Tromsø', 'At Galleri Nord you will find a variety of pictorial art, sculptures, handicrafts and design products from Tromsø and Northern Norway. They sell photographs of Northern Norway taken by award-winning photographers, art cards and gift articles. In addition, the gallery provides ateliers for local artist – you are welcome to visit and watch the artists at work.', 'https://images.citybreakcdn.com/image.aspx?ImageId=6323760&height=560&width=1440&crop=1', 15);
+(10, 'Galleri Nord', 1, 'Sjøgata 7, 9259 Tromsø', 'At Galleri Nord you will find a variety of pictorial art, sculptures, handicrafts and design products from Tromsø and Northern Norway. They sell photographs of Northern Norway taken by award-winning photographers, art cards and gift articles. In addition, the gallery provides ateliers for local artist – you are welcome to visit and watch the artists at work.', 'https://images.citybreakcdn.com/image.aspx?ImageId=6323760&height=560&width=1440&crop=1', 15),
+(11, 'ByBowling', 1, 'Storgata 68A, 9008 Tromsø', 'Bowling - pool - shuffleboard - darts - in the heart of Tromsø city center! Perfect place for birthdays, team building, and corporate events. Bar with a wide selection of drinks, and all rights for alcohol service.', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1c/a0/90/bf/vip-lanes.jpg?w=1200&h=-1&s=1', 10),
+(12, 'Buldreterminalen', 1, 'Kvaløyvegen 329, 9016 Tromsø', 'Buldreterminalen offers a plethora of climbing challenges for all ages. The venue spans 2100 square meters and features challenges suitable for beginners, experienced climbers, old, and young alike. They also have an area dedicated to children with a weekly focus on climbing games, bouldering for kids, and climbing walls with automatic safety features.\r\nWithin the terminal, you\'ll also find a café where they sell fresh pastries and coffee. The shop stocks equipment you may need for both indoor and outdoor climbing, available for both sale and rental.', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2b/93/e9/44/have-a-seat-and-encourage.jpg?w=1200&h=-1&s=1', 15),
+(13, 'Hval- og arktisk dyrelivsafari', 1, 'Stortorget 2, 9008 Tromsø', 'Increase your chances of seeing humpback whales and killer whales as they roam along the coastline of Northern Norway from October to January. The boat trip departing from Tromsø takes you on a scenic cruise through fjords and islands in search of whales. With stunning views of the beautiful Norwegian fjords, you can observe the whales from a respectful distance, providing an unforgettable experience.', 'https://ntc.objects.frb.io/assets/images/Mane-Image-Photo_LigaSirava-4-of-8.jpg', 25),
+(14, 'Arktiske-Alpine botaniske hage', 1, 'Universitet i Tromsø postboks 6050 Langnes, 9037 Tromsø', 'The garden features 28 themed collections of saxifrage, sweetroot, and primrose families, aconites, Himalayan plants, the southernmost South America, and plants from good old North Norwegian gardens, which are especially fascinating for many experts who come to visit. Many of the species here cannot be found in other gardens. \r\nDuring your tour of the garden, you can also visit the café located on the premises, Hansine Hansen Café, housed in the old 1850s building that was relocated to the area from the city center. In the café\'s guestbook, you can read through a long and interesting history of many visitors.', 'https://lh3.googleusercontent.com/p/AF1QipMPXMygFtuW62SGNM2gWkxDIHlsA3IlQ45u5T7G=s680-w680-h510', 15),
+(15, 'Telegrafbukta', 1, 'Unnamed Road 9006, 9006 Tromsø', 'Telegrafbukta is a scenic and popular park area located on the southwest tip of Tromsø Island. The area is often referred to as Tromsø\'s Gran Canaria. Both locals and tourists frequent the beach area during the summer for relaxation and swimming. Swimming in the natural surroundings of Northern Norway provides a unique experience.', 'https://lh3.googleusercontent.com/p/AF1QipPiQEJJtDU9uNdBHjZbao8bhBKYDczvoPfK8yak=s680-w680-h510', 15),
+(16, 'Gründer cafe og bar', 1, 'Storgata 44, 9008 Tromsø', 'The place offers tasty lunch dishes and a party atmosphere in the evenings. Gründer is among the more popular nightlife spots in Tromsø. Delicious meals are served from 11:00 every day and transform into a nightclub in the evenings with two different floors, featuring lively dancing and high energy.', 'https://vcdn.polarismedia.no/4ba75809-f114-4f43-8c32-00ac27f87e2b?fit=clip&h=700&q=80&tight=false&w=1000', 10),
+(17, 'Arctic Escape', 1, 'Grønnegata 53 etg. 3, 9008 Tromsø', 'The world\'s northernmost escape room. Escape rooms may not need an explanation, but here you and your team players can be assigned missions to solve in a room filled with puzzles, locks, codes, etc., which must be solved within 60 minutes. With good teamwork, this provides a unique and enjoyable experience. No prior experience is necessary, just a good mood and an open mind.', 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/3f/f7/b0/arctic-escape.jpg?w=1200&h=-1&s=1', 15),
+(18, 'Fiske og fjordcruise', 1, 'Havnegata, 9008 Tromsø', 'If fishing and sightseeing are what you\'re looking for, this tour on an old, newly renovated boat from 1917 might be just the thing. Here, you can enjoy a cruise and fishing adventure with a knowledgeable guide through beautiful fjords, while experiencing fishing amidst spectacular surroundings.', 'https://cdn.getyourguide.com/img/tour/84a3e143d07901be.jpeg/145.jpg', 20),
+(19, 'Tromsdalstinden', 1, 'Tromsdalen', 'Tromsdalstinden is a well-known landmark for the people of Tromsø, often referred to simply as \"tinden\" (the peak). Tromsdalstinden is a mountain peak located at the innermost part of Tromsdalen, with an altitude of 1238 meters, positioned to provide a spectacular view.', 'https://vcdn.polarismedia.no/fe2c3b5a-19d8-4a15-aecd-08fd3e34b996?fit=clip&h=1000&q=80&tight=false&w=1000', 20),
+(20, 'Raketten bar og pølse', 1, 'Erling Bangsunds plass 1, 9008 Tromsø', '\"Løkkekiosken\" was built in 1911 and is now called \"Raketten\" (The Rocket), as it somewhat resembles a rocket in appearance. Here, you can experience a unique adventure with Norway\'s smallest bar serving locally produced beer and the city\'s best sausages also other small dishes. Raketten is located in the heart of Tromsø city center.', 'https://g.acdn.no/obscura/API/dynamic/r1/ece5/tr_2000_2000_s_f/0000/trom/2022/1/26/8/Raketten-30.jpg?chk=76E76B', 10);
 
 
 --
@@ -377,21 +388,48 @@ INSERT INTO `attractionAgeGroup` (`attraction_id`, `age_group_id`) VALUES
 (6, 1),
 (8, 1),
 (9, 1),
+(11, 1),
+(13, 1),
+(15, 1),
+(17, 1),
+(18, 1),
+(20, 1),
 (1, 2),
 (1, 3),
+(12, 4),
+(19, 4),
+(12, 5),
+(19, 5),
 (5, 6),
 (7, 6),
 (10, 6),
+(12, 6),
+(16, 6),
+(19, 6),
 (7, 7),
 (10, 7),
+(12, 7),
+(14, 7),
+(16, 7),
+(19, 7),
 (5, 8),
 (7, 8),
+(12, 8),
+(14, 8),
+(16, 8),
+(19, 8),
 (5, 9),
 (10, 9),
+(14, 9),
+(16, 9),
+(19, 9),
 (5, 10),
 (10, 10),
+(14, 10),
+(19, 10),
 (5, 11),
-(10, 11);
+(10, 11),
+(14, 11);
 
 
 --
@@ -413,7 +451,22 @@ INSERT INTO `attractionCategory` (`category_id`, `attraction_id`) VALUES
 (6, 8),
 (3, 9),
 (5, 9),
-(2, 10);
+(2, 10),
+(6, 11),
+(7, 11),
+(5, 12),
+(3, 13),
+(4, 14),
+(3, 15),
+(7, 15),
+(6, 16),
+(8, 17),
+(3, 18),
+(5, 18),
+(3, 19),
+(5, 19),
+(1, 20),
+(6, 20);
 
 
 --
@@ -447,7 +500,38 @@ INSERT INTO `attractionTag` (`tag_id`, `attraction_id`) VALUES
 (1, 9),
 (8, 9),
 (13, 9),
-(17, 10);
+(17, 10),
+(3, 11),
+(9, 11),
+(18, 11),
+(3, 12),
+(10, 12),
+(1, 13),
+(7, 13),
+(13, 13),
+(1, 14),
+(3, 14),
+(9, 14),
+(14, 14),
+(1, 15),
+(8, 15),
+(17, 15),
+(17, 16),
+(18, 16),
+(3, 17),
+(9, 17),
+(17, 17),
+(1, 18),
+(7, 18),
+(8, 18),
+(17, 18),
+(1, 19),
+(8, 19),
+(14, 19),
+(15, 19),
+(2, 20),
+(6, 20),
+(17, 20);
 
 
 --
