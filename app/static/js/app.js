@@ -353,6 +353,7 @@ const userGroups = (groups) => {
         groupedAttractions: [],
         showAttractions: false,
         showGroupForm: false,
+        editForm: false,
         currentGroup: null,
 
         deleteGroup(groupId) {
@@ -379,6 +380,10 @@ const userGroups = (groups) => {
         hideForm() {
             this.showGroupForm = false
             btn.style.display = 'flex'
+        },
+
+        showEditForm() {
+            this.editForm = !this.editForm
         },
 
         getGroupAttractions(groupId) {

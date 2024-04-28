@@ -361,6 +361,10 @@
   width: 50%;
 }
 
+.profile .edit-list {
+  margin-bottom: 1rem;
+}
+
 
 .profile .list-form {
   background-color: var(--bg-light);
@@ -718,5 +722,10 @@
   .profile .list-card-container {
     grid-template-columns: repeat(3, 1fr);
   }
+
+  .profile .edit-list .list-form{
+    width: 50%;
+  }
+  
 
 }
