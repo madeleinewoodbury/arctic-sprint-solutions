@@ -1,4 +1,4 @@
-from flask import render_template, abort, request, jsonify, session
+from flask import render_template, abort, request, jsonify, session, redirect, url_for
 from flask_login import login_required, current_user
 from .forms import SearchForm, FilterAttractionsForm, SelectCityForm
 from . import attractions
@@ -20,6 +20,7 @@ from app.models import (
 )
 from app import db
 from sqlalchemy import and_, distinct, func, or_
+import json
 
 
 @attractions.route("/select_city", methods=["POST"])
@@ -107,7 +108,7 @@ def get_attraction(attraction_id):
         abort(404)  # Raise a 404 error if not found.
 
     visited = False
-    inWishlist = False
+    groups = []
 
     if current_user.is_authenticated:
         # Check for users previous visits
@@ -116,12 +117,21 @@ def get_attraction(attraction_id):
         ).first()
         visited = visited_record is not None
 
-        for group in attraction.groups:
-            if group.owner == current_user.id:
-                inWishlist = True
+        user_groups = AttractionGroup.query.filter_by(owner=current_user.id).all()
+
+        for group in user_groups:
+            list_info = {
+                "id": group.id,
+                "title": group.title,
+                "visibility": group.visibility,
+                "visited": attraction in group.grouped_attractions
+            }
+            groups.append(list_info)
+
+        groups = json.dumps(groups)
 
     return render_template(
-        "attraction.html", attraction=attraction, visited=visited, wishlisted=inWishlist
+        "attraction.html", attraction=attraction, visited=visited, groups=groups
     )
 
 
@@ -155,6 +165,61 @@ def mark_as_visited(attraction_id):
             db.session.delete(existing_record)
             db.session.commit()
             return jsonify({"status": "success", "message": "Attraction mark removed."})
+
+    return jsonify({"status": "error", "message": "An error occurred."})
+
+
+@attractions.route("/attractions/add_to_group", methods=["POST"])
+@login_required
+def add_to_group():
+    data = request.get_json()
+    attraction_id = data['attractionId']
+    group_id = data.get('groupId')
+
+    if attraction_id and group_id:
+        group = AttractionGroup.query.get(group_id)
+        attraction = Attraction.query.get(attraction_id)
+
+        if group and attraction:
+            group.grouped_attractions.append(attraction)
+            db.session.commit()
+            return jsonify(
+                {"status": "success", "message": "Attraction added to group."}
+            )
+    
+    if attraction_id:
+        attraction = Attraction.query.get(attraction_id)
+        if attraction:
+            new_group = AttractionGroup(
+                owner=current_user.id, title="Wishlist", visibility="private"
+            )
+            new_group.grouped_attractions.append(attraction)
+            db.session.add(new_group)
+            db.session.commit()
+            return jsonify(
+                {"status": "success", "message": "Attraction added to new group."}
+            )
+
+    return jsonify({"status": "error", "message": "An error occurred."})
+
+
+@attractions.route("/attractions/remove_from_group", methods=["POST"])
+@login_required
+def remove_from_group():
+    data = request.get_json()
+    attraction_id = data['attractionId']
+    group_id = data['groupId']
+
+    if attraction_id and group_id:
+        group = AttractionGroup.query.get(group_id)
+        attraction = Attraction.query.get(attraction_id)
+
+        if group and attraction:
+            group.grouped_attractions.remove(attraction)
+            db.session.commit()
+            return jsonify(
+                {"status": "success", "message": "Attraction removed from group."}
+            )
 
     return jsonify({"status": "error", "message": "An error occurred."})
 

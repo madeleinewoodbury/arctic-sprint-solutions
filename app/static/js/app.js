@@ -254,36 +254,181 @@ const visitedAttraction = (attractionId, visited) => {
     }
 }
 
-function addToWishlist(attractionId, checked) {
-    fetch(`/attractions/${attractionId}/add_to_wishlist`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ wishlist: checked })
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);  // Handle server response here
-    })
-    .catch(error => console.error('Error:', error));
-  }
-
-const wishlist = (attractionId, inWishlist) => {
+const wishlist = (attractionId, groups) => {
+    
     return {
-        inWishlist: inWishlist,
+        groups: groups,
+        inAllGroups: groups.every(group => group.visited),
+        editList: false,
         attractionId: attractionId,
-        addToWishlist() {
-            this.inWishlist = true
-            addToWishlist(this.attractionId, true)
+
+        toggleEditList() {
+            this.editList = !this.editList
         },
-        removeFromWishlist() {
-            this.inWishlist = false,
-            addToWishlist(this.attractionId, false)
+
+        createNewGroup() {
+            fetch(`/attractions/add_to_group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ attractionId: attractionId})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if(data.status === 'success') location.reload()
+            })
+            .catch(error => console.error('Error:', error));
+        },
+
+
+        addToGroup(groupId) {
+            fetch(`/attractions/add_to_group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ groupId: groupId , attractionId: attractionId})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                this.groups = this.groups.map(group => {
+                    if (group.id === groupId) {
+                        group.visited = true
+                    }
+                    return group
+                })
+                this.inAllGroups = this.groups.every(group => group.visited)
+                return response.json();
+            })
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        },
+        
+        removeFromGroup(groupId) {
+            fetch(`/attractions/remove_from_group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ groupId: groupId , attractionId: attractionId})
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                this.groups = this.groups.map(group => {
+                    if (group.id === groupId) {
+                        group.visited = false
+                    }
+                    return group
+                })
+                this.inAllGroups = this.groups.every(group => group.visited)
+                return response.json();
+            }).then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
         }
     }
 }
 
+
+const userGroups = (groups) => {
+    const btn = document.querySelector('.add-group-btn')
+    return {
+        groups: groups.map(group => {
+            return {
+                id: group.id,
+                title: group.title,
+                visibility: group.visibility,
+                attractions: group.grouped_attractions,
+                image: group.grouped_attractions.length > 0 ? group.grouped_attractions[0].image : null
+            }
+        }),
+        groupedAttractions: [],
+        showAttractions: false,
+        showGroupForm: false,
+        editForm: false,
+        currentGroup: null,
+
+        deleteGroup(groupId) {
+            fetch(`/auth/delete-group`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ groupId: groupId })
+            }).then(res => {
+                if (res.ok) {
+                    this.groups = this.groups.filter(group => group.id !== groupId)
+                }
+            }).catch(err => {
+                console.error(err)
+            })
+        },
+
+        showForm() {
+            this.showGroupForm = true
+            btn.style.display = 'none'
+        },
+
+        hideForm() {
+            this.showGroupForm = false
+            btn.style.display = 'flex'
+        },
+
+        showEditForm() {
+            this.editForm = !this.editForm
+        },
+
+        getGroupAttractions(groupId) {
+            this.currentGroup = this.groups.find(group => group.id === groupId)
+            const form = document.querySelector('#editListForm')
+            form.querySelector('#group_id').value = groupId
+            form.querySelector('#name').value = this.currentGroup.title
+            const visibilityOptions = form.querySelectorAll('#visibility option')
+            visibilityOptions.forEach(option => {
+                if (option.value === this.currentGroup.visibility) {
+                    option.selected = true
+                }
+            })
+            
+            fetch(`/auth/group-attractions/${groupId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then(response => {
+                if (!response.ok) {
+                    this.currentGroup = null
+                    throw new Error('Network response was not ok');
+                }
+                this.groupedAttractions = response.json()
+                this.showAttractions = true
+            }).then(data => {
+                console.log(data)
+            }).catch(err => {
+                console.error(err)
+            })
+        },
+
+        backToGroups() {
+            this.showAttractions = false
+            this.groupedAttractions = []
+            this.currentGroup = null
+        },
+
+        goToAttraction(attractionId) {
+            window.location.href = `/attractions/${attractionId}`
+        }
+
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     disableCheckboxes()

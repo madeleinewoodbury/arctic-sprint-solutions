@@ -1,6 +1,7 @@
 import math
+import json
 from . import auth
-from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePreferencesForm
+from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePreferencesForm, AddListForm, EditListForm
 from .. import db
 from ..models import *
 from flask import render_template, request, redirect, url_for, session, flash, abort, jsonify
@@ -388,18 +389,10 @@ def profile():
     # Calculating badge progress for all badges.
     unlocked_progression, in_progress_badges = get_user_badge_progress(current_user.id)
 
-    # Wishlist Tab
-    user_wishlist = AttractionGroup.query.filter_by(
-        owner=current_user.id).first()
-    wishlist_attractions = []
-
-    if user_wishlist:
-        wishlist_attractions = [
-            {
-                'attraction': Attraction.query.get(attraction.id)
-            }
-            for attraction in user_wishlist.grouped_attractions
-        ]
+    # List Tab
+    list_form = AddListForm()
+    edit_list_form = EditListForm()
+    user_groups = json.dumps([group.to_dict() for group in AttractionGroup.query.filter_by(owner=current_user.id).all()])
 
     # Tabs for profile page sections, only one section should be active
     tabs = ['Visited Attractions', 'Profile', 'Wishlist', 'Friends', 'Badges']
@@ -410,12 +403,13 @@ def profile():
         preferences_form=preferences_form,
         user_preferences=user_preferences,
         visited_attractions=visited_attractions,
-        wishlist_attractions=wishlist_attractions,
         number_of_visited_attractions=len(visited_attractions),
-        number_of_wishlist_attractions=len(wishlist_attractions),
+        user_groups=user_groups,
         points=points,
         tabs=tabs,
         friends_form=friends_form,
+        list_form=list_form,
+        edit_list_form=edit_list_form,
         users=users,
         friendships=friendships,
         unlocked_progress = unlocked_progression, 
@@ -554,3 +548,68 @@ def delete_user(token):
     else:
         flash('Your user has NOT been deleted.', 'error')
         return (redirect(url_for('auth.login')))
+
+
+@auth.route('/add-list', methods=['POST'])
+@login_required
+def add_list():
+    form = AddListForm()
+
+    if form.validate_on_submit():
+        new_list = AttractionGroup(
+            owner=current_user.id,
+            title=form.name.data,
+            visibility=form.visibility.data
+        )
+        db.session.add(new_list)
+        db.session.commit()
+        flash(_('The list has been created.'), 'success')
+    return redirect(url_for('auth.profile', current_tab=2))
+
+@auth.route('/delete-group', methods=['POST'])
+@login_required
+def delete_group():
+    data = request.get_json()
+    group_id = data['groupId']
+
+    group = AttractionGroup.query.get(group_id)
+    if group.owner != current_user.id:
+        abort(403)
+
+    db.session.delete(group)
+    db.session.commit()
+
+    # TODO: Fix the flash message
+    flash(_('The list has been deleted.'), 'success')
+    return redirect(url_for('auth.profile', current_tab=2))
+
+@auth.route('/edit-group', methods=['POST'])
+@login_required
+def edit_group():
+    form = EditListForm()
+
+    if form.validate_on_submit():
+        group_id = form.group_id.data
+        group = AttractionGroup.query.get(group_id)
+
+    
+    if (group.owner != current_user.id) or group is None:
+        abort(403)
+
+    group.title = form.name.data
+    group.visibility = form.visibility.data
+    db.session.commit()
+
+    flash(_('The list has been updated.'), 'success')
+    return redirect(url_for('auth.profile', current_tab=2))
+
+@auth.route('/group-attractions/<group_id>', methods=['GET'])
+@login_required
+def get_group_attractions(group_id):
+    group = AttractionGroup.query.get(group_id)
+    if group.owner != current_user.id:
+        abort(403)
+
+    attractions = []
+    attractions = group.grouped_attractions
+    return jsonify([attraction.to_dict() for attraction in attractions])

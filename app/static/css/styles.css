@@ -10,6 +10,7 @@
   --medium-grey: #646464;
   --danger: #F8D7DA;
   --danger-hover: #f7929b;
+  --error: #c32232;
   --danger-text: #99575E;
   --success: #D4EDDA;
   --success-text: #41753a;
@@ -96,8 +97,9 @@ img {
 }
 
 .btn-danger {
-  background-color: var(--danger);
-  color: var(--danger-text);
+  background-color: var(--error);
+  color: #fff;
+  /* color: var(--danger-text); */
 }
 
 .btn-danger:hover {
@@ -117,6 +119,7 @@ img {
   background-color: var(--success);
   color: var(--white);
 }
+
 
 .icon-btn {
   background-color: transparent;
@@ -279,7 +282,7 @@ nav {
   padding: 1rem;
   border-radius: .5rem;
   margin-top: 5px;
-  z-index: 100;
+  z-index: 150;
   -webkit-box-shadow: 0px 4px 17px -8px rgba(0,0,0,0.75);
   -moz-box-shadow: 0px 4px 17px -8px rgba(0,0,0,0.75);
   box-shadow: 0px 4px 17px -8px rgba(0,0,0,0.75);  
@@ -290,7 +293,7 @@ nav {
 }
 
 .mobile-nav .close-button {
- z-index: 101;
+ z-index: 151;
  position: absolute;
  right: 1rem;
  top: 1rem;
@@ -307,7 +310,7 @@ nav {
   overflow-y: scroll;
   background-color: var(--dark-blue);
   padding: 1rem;
-  z-index: 100;
+  z-index: 150;
 }
 
 .mobile-nav .settings-content ul{
@@ -415,7 +418,7 @@ nav {
   position: absolute;
   bottom: 0;
   margin: 2rem;
-  z-index: 10;
+  z-index: 151;
 }
 
 .flask-flash {
