@@ -421,6 +421,10 @@ const userGroups = (groups) => {
             this.showAttractions = false
             this.groupedAttractions = []
             this.currentGroup = null
+        },
+
+        goToAttraction(attractionId) {
+            window.location.href = `/attractions/${attractionId}`
         }
 
     }

@@ -510,6 +510,7 @@
   border-radius: .5rem;
   box-shadow: 3px 6px 25px -18px rgba(0,0,0,0.75);
   position: relative;
+  cursor: pointer;
 }
 
 .profile .attraction-card img {

@@ -50,7 +50,7 @@
                 <div class="card-container">
                     <template x-for="attraction in groupedAttractions"
                         :key="attraction.id">
-                        <a href="#" class="attraction-card">
+                        <a @click="goToAttraction(attraction.id)" class="attraction-card">
                             <img :src="attraction.image" alt="Attraction Image">
                             <div>
                                 <h3 x-text="attraction.name"></h3>
