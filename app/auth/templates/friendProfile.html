@@ -22,13 +22,13 @@
           <span>{{ _("Points:") }} 
             <strong>{{points}}</strong></span>
           <span>{{ _("Level:") }} 
-            <strong>{{level.current_level}}</strong></span>
+            <strong>{{friend.level.current_level}}</strong></span>
         </div>
         <div class="progress-container">
-          <progress class="progress-bar" value="{{ level.progress }}" max="{{ level.points_required }}"></progress>
+          <progress class="progress-bar" value="{{ friend.level.progress }}" max="{{ friend.level.points_required }}"></progress>
           <span class="progress-text">
-            <strong>{{ level.points_missing }}</strong> {{ _("points until level ") }}
-            <strong>{{level.current_level + 1}}</strong></span>
+            <strong>{{ friend.level.points_missing }}</strong> {{ _("points until level ") }}
+            <strong>{{ friend.level.current_level + 1 }}</strong></span>
       </div>
       </div>
     </div>
