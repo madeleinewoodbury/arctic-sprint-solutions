@@ -14,6 +14,7 @@ from flask_login import LoginManager
 from flask_admin import Admin
 from flask_babel import Babel
 from flask_mail import Mail 
+from flask_moment import Moment
 from flask_caching import Cache
 from googletrans import Translator
 from .translate import get_locale, translate_filter
@@ -44,6 +45,8 @@ def create_app(config_name):
     mail.init_app(app)
     cache.init_app(app)
     babel = Babel(app, locale_selector=get_locale)
+    moment = Moment(app)
+    moment.locale = get_locale
 
     # Register new filter for jinja
     app.jinja_env.filters["translate"] = translate_filter

@@ -23,7 +23,7 @@ class Config():
     # Translation
     LANGUAGES = {
         'en': 'English', 
-        'no': 'Norwegian'
+        'nb': 'Norwegian'
         # 'ja': 'Japanese',
         # 'es': 'Spanish',
         # 'fr': 'French',

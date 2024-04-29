@@ -100,6 +100,48 @@
           {% endfor %}
       {% endif %}
     </div>
+    
   </div>
+
+    {% if current_user.is_authenticated %}
+      <div class="new-comment-container">
+        <p>VIL DU KOMMENTERE?!</p>
+        <form action="" method="post">
+          {{ form.hidden_tag() }}
+          {{ form.comment.label }}
+          {{ form.comment }}
+          {{ form.submit() }}
+        </form>
+      </div>
+    {% endif %}
+
+  <div class="text-comment-container">
+    {% if comments %}
+        {{ pagination.info }}
+        {{ pagination.links }}
+        {% for comment in comments %}
+          <div class="comment-container">
+            <div class="comment-user-info">
+              <div class="comment-image">
+                <img src="{{ comment.user.gravatar() }}" alt="">
+              </div>
+              <p class="comment-username">{{ comment.user.username }}</p>
+              <div>
+                <p class="comment-created">{{ moment(comment.created_at).fromNow(refresh=True) }}</p>
+            </div>
+            </div>
+            <div class="comment-content">
+              <p>{{ comment.comment_text }}</p>
+            </div>
+            {% if comment.edited_at %}
+              <div class="comment-edit-info">
+                <p>Edited: {{ comment.editor.username }}, {{ moment(comment.edited_at).fromNow(refresh=True) }}</p>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      {{ pagination.links }}
+    {% endif %}
 </section>
 {% endblock %}
