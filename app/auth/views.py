@@ -500,6 +500,7 @@ def friend_profile(user_id):
     if friend is None:
         abort(404)
 
+    groups = AttractionGroup.query.filter_by(owner=user_id, visibility='public').all()
     visited_attractions = get_visited_attractions(user_id)
     points = sum(item['attraction'].points for item in visited_attractions)
     level = get_user_level(points)
@@ -508,6 +509,7 @@ def friend_profile(user_id):
     return render_template(
         'friendProfile.html',
         friend=friend,
+        groups=groups,
         visited_attractions=visited_attractions,
         number_of_visited_attractions=len(visited_attractions),
         points=points,

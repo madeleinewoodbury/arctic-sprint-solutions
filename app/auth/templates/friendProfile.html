@@ -79,6 +79,22 @@
         {% endif %}
     </div>
   </div>
+
+    {% if groups %}
+    <div class="friend-groups">
+      <h2>Groups</h2>
+      <div class="card-container">
+        {% for group in groups %}
+        <a href="#" class="group-card">
+          <div>
+            <h3>{{ group.title }}</h3>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
 </section>
 
 {% endblock %}
