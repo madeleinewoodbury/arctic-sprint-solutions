@@ -3,7 +3,6 @@ from flask import render_template, session, redirect, url_for, flash, request, c
 from flask_babel import _, refresh
 
 
-
 @main.route('/')
 @main.route('/index')
 def index():

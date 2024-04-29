@@ -154,9 +154,27 @@ function profileTabs(tabs, activeTab=0) {
         activeTab: tabs[activeTab],
         
         setActiveTab(tab) {
-            this.activeTab = tab
-        },
+            this.activeTab = tab;
+            const tabIndex = this.tabs.findIndex(t => t === tab)
+            updateUrlParams({ current_tab: tabIndex })
+        }
     }
+}
+
+// Function to update URL parameters
+function updateUrlParams(params) {
+    const urlParams = new URLSearchParams(window.location.search)
+    for (const key in params) {
+        if (params.hasOwnProperty(key)) {
+            if (params[key] !== null && params[key] !== undefined) {
+                urlParams.set(key, params[key])
+            } else {
+                urlParams.delete(key)
+            }
+        }
+    }
+    const newUrl = window.location.pathname + '?' + urlParams.toString()
+    history.pushState({}, '', newUrl)
 }
 
 // Function to update the availability and count labels of given checkboxes
@@ -224,6 +242,19 @@ const selectCity = (citySelect, form) => {
     })
 }
 
+
+
+function goBack() {
+    // Check if there's a history to go back to
+    if (window.history.length > 1) {
+        var previousUrl = document.referrer;
+        window.location.href = previousUrl;
+    } else {
+        alert("No previous page available.");
+    }
+}
+
+
 function markAsVisited(attractionId, checked) {
   fetch(`/attractions/${attractionId}/mark_as_visited`, {
     method: "POST",
@@ -234,9 +265,14 @@ function markAsVisited(attractionId, checked) {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data); // Handle server response here
+      console.log(data)
+        // Update level element
+        const levelElement = document.getElementById('level')
+        if (levelElement) {
+            levelElement.innerHTML = `<strong>${data.current_level}</strong>`
+        }
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => console.error("Error:", error))
 }
 
 const visitedAttraction = (attractionId, visited) => {
