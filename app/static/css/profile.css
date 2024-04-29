@@ -110,6 +110,24 @@
   padding: 1rem;
 }
 
+.profile a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.profile .link-text {
+  font-size: 1.1rem;
+  text-align: right;
+  color: var(--primary);
+  text-transform: uppercase;
+  font-family: var(--secondary-font);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: .5rem;
+}
+
 /* Tabs */
 .profile-tabs{
   display: flex;
