@@ -147,11 +147,13 @@ def get_attraction(attraction_id):
 
         groups = json.dumps(groups)
 
-    form = CommentForm()
+    comment_form = CommentForm()
+    # edit_form = CommentForm()
 
-    if form.validate_on_submit():
+    # edit_form.comment.data = 
+    if comment_form.validate_on_submit():
         comment = Comment(
-            comment_text = form.comment.data,
+            comment_text = comment_form.comment.data,
             user_id = current_user.id,
             attraction_id = attraction_id
         )
@@ -161,8 +163,21 @@ def get_attraction(attraction_id):
 
     return render_template(
         "attraction.html", attraction=attraction, visited=visited, groups=groups, 
-        comments=comment_list, pagination=pagination, form=form
+        comments=comment_list, pagination=pagination, comment_form=comment_form
     )
+
+
+# API GET comment
+@attractions.route("/attractions/comment/<comment_id>", methods=["GET"])
+def get_comment(comment_id):
+    comment_data = Comment.query.filter_by(id=comment_id).first()
+    if comment_data:
+        return jsonify({'text': comment_data.comment_text})
+
+# API POST comment
+@attractions.route("/comment/<comment_id>", methods=["POST"])
+def post_comment(comment_id):
+    pass
 
 
 # Function for marking an attraction as visited

@@ -107,10 +107,10 @@
       <div class="new-comment-container">
         <p>VIL DU KOMMENTERE?!</p>
         <form action="" method="post">
-          {{ form.hidden_tag() }}
-          {{ form.comment.label }}
-          {{ form.comment }}
-          {{ form.submit() }}
+          {{ comment_form.hidden_tag() }}
+          {{ comment_form.comment.label }}
+          {{ comment_form.comment }}
+          {{ comment_form.submit() }}
         </form>
       </div>
     {% endif %}
@@ -127,16 +127,26 @@
               </div>
               <p class="comment-username">{{ comment.user.username }}</p>
               <div>
-                <p class="comment-created">{{ moment(comment.created_at).fromNow(refresh=True) }}</p>
+                <p class="comment-created" style="font-size: 60%;">{{ moment(comment.created_at).fromNow(refresh=True) }}</p>
             </div>
             </div>
-            <div class="comment-content">
+            <div class="comment-content" id="comment-id-{{ comment.id }}" style="display: block;">
               <p>{{ comment.comment_text }}</p>
             </div>
+            <div class="comment-content" id="comment-id-edit-{{ comment.id }}" style="display: none;">
+              <p>NÅ ER DU I EDIT MODUS!!!!!</p>
+              <button>POST</button> <!-- post_comment(comment_id) -->
+            </div>
+            
             {% if comment.edited_at %}
               <div class="comment-edit-info">
                 <p>Edited: {{ comment.editor.username }}, {{ moment(comment.edited_at).fromNow(refresh=True) }}</p>
               </div>
+            {% endif %}
+            {% if current_user.id == comment.user.id %}
+            <div class="btn-container"></div>
+              <button class="btn btn-primary" type="button" onclick="toggleEditComment('{{ comment.id }}')">{{ _("Edit Comment") }}</button>
+            </div>
             {% endif %}
           </div>
         {% endfor %}
@@ -144,4 +154,58 @@
       {{ pagination.links }}
     {% endif %}
 </section>
+
+<script>
+  function toggleEditComment(id) {
+    var comment_string = "comment-id-" + id;
+    var comment_edit_string = "comment-id-edit-" + id;
+    var comment = document.getElementById(comment_string)
+    var comment_edit = document.getElementById(comment_edit_string)
+
+    if (comment.style.display == "block") {
+      comment.style.display = "none";
+      comment_edit.style.display = "block";
+    }
+    else {
+      comment.style.display = "block";
+      comment.data = get_comment(id);
+      comment_edit.style.display = "none";
+    }
+  }
+
+  async function get_comment(comment_id) {
+    try {
+      json_response = await fetch("/attractions/comment/" + comment_id);
+      console.log(json_response)
+      data = json_response.json();
+    }
+    catch (error) {
+      alert('Error')
+    }
+    return data;
+  }
+
+async function post_comment(comment_id) {
+  comment_edit_string = "comment-id-edit-" + comment_id;
+  var edit_text = document.getElementById(comment_edit_string).value;
+
+  try {
+    json_response = await fetch(('/attractions/comment/' + comment_id), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({edit_text: edit_text})
+    });
+    response = await json_response.json();
+  }
+  catch (error) {
+    alert('Error');
+  }
+}
+
+</script>
+
 {% endblock %}
+
+
