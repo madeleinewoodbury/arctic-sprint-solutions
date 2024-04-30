@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import render_template, abort, request, jsonify, session, redirect, url_for
 from flask_login import login_required, current_user
 from flask_paginate import Pagination, get_page_args
@@ -172,12 +173,31 @@ def get_attraction(attraction_id):
 def get_comment(comment_id):
     comment_data = Comment.query.filter_by(id=comment_id).first()
     if comment_data:
-        return jsonify({'text': comment_data.comment_text})
+        return jsonify({
+            'text': comment_data.comment_text,
+            'edited_at': comment_data.edited_at,
+            'editor_id': comment_data.editor.username
+            })
 
 # API POST comment
-@attractions.route("/comment/<comment_id>", methods=["POST"])
+@attractions.route("/attractions/comment/<comment_id>", methods=["POST"])
 def post_comment(comment_id):
-    pass
+    #try:
+    data = request.get_json()
+    edit_text = data.get('edit_text')
+
+    comment = Comment.query.filter_by(id=comment_id).first()
+
+    comment.editor_id = current_user.id
+    comment.edited_at = datetime.utcnow()
+    comment.comment_text = edit_text
+
+    db.session.add(comment)
+    db.session.commit()
+
+    return jsonify({'success': True})
+    # except:
+    #     return jsonify({'success': False})
 
 
 # Function for marking an attraction as visited

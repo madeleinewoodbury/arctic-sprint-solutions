@@ -105,7 +105,7 @@
 
     {% if current_user.is_authenticated %}
       <div class="new-comment-container">
-        <p>VIL DU KOMMENTERE?!</p>
+        <p>{{ _("Leave a comment") }}</p>
         <form action="" method="post">
           {{ comment_form.hidden_tag() }}
           {{ comment_form.comment.label }}
@@ -134,19 +134,21 @@
               <p>{{ comment.comment_text }}</p>
             </div>
             <div class="comment-content" id="comment-id-edit-{{ comment.id }}" style="display: none;">
-              <p>NÅ ER DU I EDIT MODUS!!!!!</p>
-              <button>POST</button> <!-- post_comment(comment_id) -->
+              <textarea name="" id="comment-id-edit-textarea-{{ comment.id }}" cols="30" rows="10">{{ comment.comment_text }}</textarea>
+              <button class="btn btn-primary" type="button" onclick="post_comment('{{ comment.id }}')">{{ _("Post") }}</button>
             </div>
             
             {% if comment.edited_at %}
-              <div class="comment-edit-info">
+              <div class="comment-edit-info-{{ comment.id }}">
                 <p>Edited: {{ comment.editor.username }}, {{ moment(comment.edited_at).fromNow(refresh=True) }}</p>
               </div>
             {% endif %}
-            {% if current_user.id == comment.user.id %}
-            <div class="btn-container"></div>
-              <button class="btn btn-primary" type="button" onclick="toggleEditComment('{{ comment.id }}')">{{ _("Edit Comment") }}</button>
-            </div>
+            {% if current_user.is_authenticated %}
+              {% if (current_user.id == comment.user.id) or (current_user.role_rel.title == 'Moderator') or (current_user.role_rel.title == 'Administrator') %}
+              <div class="btn-container"></div>
+                <button class="btn btn-primary" type="button" onclick="toggleEditComment('{{ comment.id }}')">{{ _("Edit Comment") }}</button>
+              </div>
+              {% endif %}
             {% endif %}
           </div>
         {% endfor %}
@@ -156,28 +158,36 @@
 </section>
 
 <script>
-  function toggleEditComment(id) {
+  async function toggleEditComment(id) {
     var comment_string = "comment-id-" + id;
     var comment_edit_string = "comment-id-edit-" + id;
+    // Legge til en streng for editor
+    // Legge til en streng for edited_at
     var comment = document.getElementById(comment_string)
     var comment_edit = document.getElementById(comment_edit_string)
+    // editor
+    // edited_at
 
     if (comment.style.display == "block") {
       comment.style.display = "none";
       comment_edit.style.display = "block";
     }
     else {
+      var data = await get_comment(id);
+      comment.innerText = data.text;
       comment.style.display = "block";
-      comment.data = get_comment(id);
       comment_edit.style.display = "none";
+      // dersom editor og edited_at not NULL
+        // Oppdatere editor og edited_at
+        // Force edited tab til block.
     }
   }
+
 
   async function get_comment(comment_id) {
     try {
       json_response = await fetch("/attractions/comment/" + comment_id);
-      console.log(json_response)
-      data = json_response.json();
+      data = await json_response.json();
     }
     catch (error) {
       alert('Error')
@@ -186,9 +196,8 @@
   }
 
 async function post_comment(comment_id) {
-  comment_edit_string = "comment-id-edit-" + comment_id;
+  comment_edit_string = "comment-id-edit-textarea-" + comment_id;
   var edit_text = document.getElementById(comment_edit_string).value;
-
   try {
     json_response = await fetch(('/attractions/comment/' + comment_id), {
       method: 'POST',
@@ -202,6 +211,7 @@ async function post_comment(comment_id) {
   catch (error) {
     alert('Error');
   }
+  toggleEditComment(comment_id);
 }
 
 </script>
