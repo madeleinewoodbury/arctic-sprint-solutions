@@ -17,9 +17,13 @@
     </div>
     <div class="content">
         <div class="form-wrapper" id="search-attractions-form" x-data="attractionFilters()" x-init="initFilters">
-            {% if current_user.is_authenticated %}
+            {% if request.path == url_for('attractions.suggested_attractions') %}
+            <form action="{{ url_for('attractions.get_attractions') }}" method="POST" class="full-width-btn-form">
+                <button type="submit" class="full-width-btn quick-search-btn">{{ _("See all attractions!") }}</button>
+            </form>
+            {% elif current_user.is_authenticated %}
             <form action="{{ url_for('attractions.suggested_attractions') }}" method="POST" class="full-width-btn-form">
-                <button type="submit" class="full-width-btn quick-search-btn">Suggest for me!</button>
+                <button type="submit" class="full-width-btn quick-search-btn">{{ _("Suggest for me!") }}</button>
             </form>
             {% endif %}
             <form class="search" method="POST" action="{{ url_for('attractions.search_attractions') }}">
@@ -96,8 +100,8 @@
         <div class="attractions-container">
             {% if attractions == [] %}
             <br>
-            <h2>Sorry, we couldn't find any attractions based on the given criteria.</h2>
-            <h3>Please try again with different search terms or filters, or you can always <a href="{{ url_for('attractions.get_attractions') }}">go back to the main attractions page</a>.</h3>
+            <h2>{{ _("Sorry, we couldn't find any attractions based on the given criteria.") }}</h2>
+            <h3>{{ _("Please try again with different search terms or filters, or you can always") }} <a href="{{ url_for('attractions.get_attractions') }}">{{ _("go back to the main attractions page") }}</a>.</h3>
             {% endif %}
     
             <div class="attractions-grid" id="filtered-results">
@@ -110,15 +114,15 @@
             <!-- Pagination controls -->
             {% if total_pages > 0 %}
             <div class="pagination">
-                <span>Page {{ current_page }} of {{ total_pages }}</span>
+                <span>{{ _("Page") }} {{ current_page }} {{ _("of") }} {{ total_pages }}</span>
                 {% if current_page > 1 %}
                 <a href="?page=1{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">First</a>
-                <a href="?page={{ current_page - 1 }}{% for arg in request.args %}&{{ arg }}={{ request.args[arg] }}{% endfor %}">Previous</a>
-                {% endif %}
-                {% if current_page < total_pages %}
-                <a href="?page={{ current_page + 1 }}{% for arg in request.args %}&{{ arg }}={{ request.args[arg] }}{% endfor %}">Next</a>
-                <a href="?page={{ total_pages }}{% for arg in request.args %}&{{ arg }}={{ request.args[arg] }}{% endfor %}">Last</a>
-                {% endif %}
+                <a href="?page={{ current_page - 1 }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">Previous</a>
+            {% endif %}
+            {% if current_page < total_pages %}
+                <a href="?page={{ current_page + 1 }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">Next</a>
+                <a href="?page={{ total_pages }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">Last</a>
+            {% endif %}
             </div>
             {% endif %}
         </div>
