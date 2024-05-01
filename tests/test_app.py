@@ -5,21 +5,18 @@ from werkzeug.exceptions import ServiceUnavailable
 from app import create_app
 
 
-
-# Test for 503 error
+# Class for 503 error testing
+#python -m unittest tests.test_app.TestServiceUnavailable
 class TestServiceUnavailable(unittest.TestCase):
     def setUp(self):
-        app = create_app("testing")
-        app.config['TESTING'] = True
-        self.app = app.test_client()
+        self.app = create_app("testing").test_client()
 
-    def test_index_page_unavailable(self):
+    def test_service_unavailable_error(self):
         with self.app:
-            # Access the route to trigger the exception
-            with self.assertRaises(ServiceUnavailable):
-                self.app.get('/service_unavailable')
+            response = self.app.get('/service_unavailable')
+            self.assertEqual(response.status_code, 503)  
 
 
 
-
-
+if __name__ == "__main__":
+    unittest.main()

@@ -13,9 +13,10 @@ def index():
 
 @main.route('/service_unavailable')
 def service_unavailable():
-    raise ServiceUnavailable("Service is temporarily unavailable.")
-
-
+    try:
+        raise ServiceUnavailable("Service is temporarily unavailable.")
+    except ServiceUnavailable as e:
+        return render_template('503.html'), 503
 
 
 @main.route('/change-language', methods=['GET', 'POST'])
