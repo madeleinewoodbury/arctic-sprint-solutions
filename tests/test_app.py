@@ -16,6 +16,17 @@ class TestServiceUnavailable(unittest.TestCase):
             response = self.app.get('/service_unavailable')
             self.assertEqual(response.status_code, 503)  
 
+# Class for 404 error testing
+#python -m unittest tests.test_app.TestNonExistantRoute
+class TestNonExistantRoute(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app("testing").test_client()
+
+    def test_404_error(self):
+        with self.app:
+            response = self.app.get('/nonexistent_route')
+            self.assertEqual(response.status_code, 404)
+
 
 
 if __name__ == "__main__":

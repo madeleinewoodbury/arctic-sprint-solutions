@@ -11,14 +11,6 @@ def index():
     return render_template('index.html')
 
 
-@main.route('/service_unavailable')
-def service_unavailable():
-    try:
-        raise ServiceUnavailable("Service is temporarily unavailable.")
-    except ServiceUnavailable as e:
-        return render_template('503.html'), 503
-
-
 @main.route('/change-language', methods=['GET', 'POST'])
 def language():
     if request.method == 'POST':
@@ -38,4 +30,16 @@ def about():
     return render_template('about.html')
 
 
+# For testing purposes - 503
+@main.route('/service_unavailable')
+def service_unavailable():
+    try:
+        raise ServiceUnavailable("Service is temporarily unavailable.")
+    except ServiceUnavailable as e:
+        return render_template('503.html'), 503
 
+
+# For testing purposes - 404
+@main.route('/nonexistent_route')
+def nonexistent_route():
+    return render_template('404.html'), 404
