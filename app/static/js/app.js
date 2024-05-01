@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
         filterPriority = filterPriority.split(','); // Convert comma-separated string to an array
     }
 
-    let search_text = urlParams.get('search');
+    let search_text = urlParams.get('q');
 
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Construct the URL with separate arguments for each filter type
             const urlParams = new URLSearchParams();
             if (search_text) {
-                urlParams.append('search', search_text);
+                urlParams.append('q', search_text);
             }
             if (selectedCategories.length > 0) {
                 urlParams.append('categories', selectedCategories.join(','));

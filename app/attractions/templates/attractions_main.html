@@ -22,7 +22,7 @@
                 <button type="submit" class="full-width-btn quick-search-btn">Suggest for me!</button>
             </form>
             {% endif %}
-            <form class="search" method="POST" action="{{ url_for('attractions.get_attractions', search=search_form.search_text.data) }}">
+            <form class="search" method="POST" action="{{ url_for('attractions.search_attractions') }}">
                 {{ search_form.hidden_tag() }}
                 <div class="search-text form-control">
                     {{ search_form.search_text }}
@@ -42,7 +42,7 @@
             </div>
             {% if categories_visible or age_groups_visible or tags_visible %}
             <div class="filter-wrapper" id="filter-attractions-form" x-show="showFilters">
-                <form class="filter" action="/attractions/newnew" method="GET">
+                <form class="filter" action="/attractions" method="POST">
                     <p><a href="{{ url_for('attractions.get_attractions') }}">{{ _("Clear all filters") }}</a></p>
                     <div class="filters-container">
                         <div class="form-control">
@@ -96,8 +96,8 @@
         <div class="attractions-container">
             {% if attractions == [] %}
             <br>
-            <h2>Sorry, we couldn't find any attractions based on «{{ search_form.search_text.data }}».</h2>
-            <h3>Please try again or <a href="{{ url_for('attractions.get_attractions') }}">go back</a>.</h3>
+            <h2>Sorry, we couldn't find any attractions based on the given criteria.</h2>
+            <h3>Please try again with different search terms or filters, or you can always <a href="{{ url_for('attractions.get_attractions') }}">go back to the main attractions page</a>.</h3>
             {% endif %}
     
             <div class="attractions-grid" id="filtered-results">
@@ -106,20 +106,30 @@
                 {% include 'attractions_items.html' %}
                 {% endfor %}
             </div>
-                        <!-- Pagination controls -->
-<div class="pagination">
-    <span>Page {{ current_page }} of {{ total_pages }}</span>
-    {% if current_page > 1 %}
-        <a href="?page=1{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">First</a>
-        <a href="?page={{ current_page - 1 }}{% for arg in request.args %}&{{ arg }}={{ request.args[arg] }}{% endfor %}">Previous</a>
-    {% endif %}
-    {% if current_page < total_pages %}
-        <a href="?page={{ current_page + 1 }}{% for arg in request.args %}&{{ arg }}={{ request.args[arg] }}{% endfor %}">Next</a>
-        <a href="?page={{ total_pages }}{% for arg in request.args %}&{{ arg }}={{ request.args[arg] }}{% endfor %}">Last</a>
-    {% endif %}
-</div>
-
+            
+            <!-- Pagination controls -->
+            {% if total_pages > 0 %}
+            <div class="pagination">
+                <span>Page {{ current_page }} of {{ total_pages }}</span>
+                {% if current_page > 1 %}
+                <a href="?page=1{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">First</a>
+                <a href="?page={{ current_page - 1 }}{% for arg in request.args %}&{{ arg }}={{ request.args[arg] }}{% endfor %}">Previous</a>
+                {% endif %}
+                {% if current_page < total_pages %}
+                <a href="?page={{ current_page + 1 }}{% for arg in request.args %}&{{ arg }}={{ request.args[arg] }}{% endfor %}">Next</a>
+                <a href="?page={{ total_pages }}{% for arg in request.args %}&{{ arg }}={{ request.args[arg] }}{% endfor %}">Last</a>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
+<script>
+    document.querySelector('.search').addEventListener('submit', function(event) {
+        event.preventDefault()
+        var searchText = document.getElementById('search_text').value
+        var url = "{{ url_for('attractions.search_attractions') }}" + "?q=" + encodeURIComponent(searchText)
+        window.location.href = url
+    })
+</script>
 {% endblock %}
