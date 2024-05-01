@@ -59,6 +59,10 @@
                     </li>
                     {% if current_user.is_anonymous %}
                     <li>
+                        <a class="cta" href="{{ url_for('main.about') }}">{{ _("About
+                            ") }}</a>
+                    </li>
+                    <li>
                         <a class="cta" href="{{ url_for('auth.login') }}">{{ _("Sign
                             In") }}</a>
                     </li>
@@ -71,6 +75,7 @@
                         <a href="{{ url_for('auth.profile')}}">{{ _("View Profile")
                             }}</a>
                     </li>
+                    
                     <li>
                         <a href="{{ url_for('main.language') }}">{{ _("Babel Fish")
                             }}</a>

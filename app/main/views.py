@@ -1,6 +1,7 @@
 from . import main
 from flask import render_template, session, redirect, url_for, flash, request, current_app
 from flask_babel import _, refresh
+from werkzeug.exceptions import ServiceUnavailable
 
 
 
@@ -8,6 +9,13 @@ from flask_babel import _, refresh
 @main.route('/index')
 def index():
     return render_template('index.html')
+
+
+@main.route('/service_unavailable')
+def service_unavailable():
+    raise ServiceUnavailable("Service is temporarily unavailable.")
+
+
 
 
 @main.route('/change-language', methods=['GET', 'POST'])
@@ -22,3 +30,11 @@ def language():
         flash(_("Language not recognized."), 'error')
         return redirect(url_for('main.index'))
     return render_template('change_language.html')
+
+
+@main.route('/about')
+def about():
+    return render_template('about.html')
+
+
+
