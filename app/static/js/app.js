@@ -38,6 +38,111 @@ const attractionFilters = () => {
     }
 }
 
+//document.addEventListener('DOMContentLoaded', function() {
+    // Add event listener to checkboxes
+//    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+//    checkboxes.forEach(function(checkbox) {
+//        checkbox.addEventListener('change', function() {
+            // Submit the form when any checkbox is checked or unchecked
+//            document.querySelector('.filter').submit();
+//        })
+//    })
+//})
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listener to checkboxes
+    const checkboxes = document.querySelectorAll('.filter input[type="checkbox"]')
+    if (!checkboxes) return
+    let selectedCategories = []
+    let selectedAgeGroups = []
+    let selectedTags = []
+
+    const urlParams = new URLSearchParams(window.location.search);
+
+    let filterPriority = urlParams.get('filterPriority');
+    if (filterPriority === null) {
+        filterPriority = []; // Set default value as an empty array
+    } else {
+        filterPriority = filterPriority.split(','); // Convert comma-separated string to an array
+    }
+
+    let search_text = urlParams.get('search');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            checkboxes.forEach(cb => {
+                if (cb.checked && cb.name === 'categories') {
+                    selectedCategories.push(cb.value)
+                    if (!filterPriority.includes(cb.name)) {
+                        filterPriority.push(cb.name)
+                    }
+                } else if (cb.checked && cb.name === 'age_groups') {
+                    selectedAgeGroups.push(cb.value)
+                    if (!filterPriority.includes(cb.name)) {
+                        filterPriority.push(cb.name)
+                    }
+                } else if (cb.checked && cb.name === 'tags') {
+                    selectedTags.push(cb.value)
+                    if (!filterPriority.includes(cb.name)) {
+                        filterPriority.push(cb.name)
+                    }
+                }
+            })
+
+            // Updates the filterPriority if any filter groups have been reset.
+            if (selectedCategories.length === 0 && filterPriority.includes('categories')) {
+                filterPriority.splice(filterPriority.indexOf('categories'), 1)
+            }
+            if (selectedAgeGroups.length === 0 && filterPriority.includes('age_groups')) {
+                filterPriority.splice(filterPriority.indexOf('age_groups'), 1)
+            }
+            if (selectedTags.length === 0 && filterPriority.includes('tags')) {
+                filterPriority.splice(filterPriority.indexOf('tags'), 1)
+            }
+            
+        // Construct the URL with separate arguments for each filter type
+        let url = '/attractions?';
+        if (selectedCategories.length > 0) {
+            url += 'categories=' + selectedCategories.join(',') + '&'
+        }
+        if (selectedAgeGroups.length > 0) {
+            url += 'age_groups=' + selectedAgeGroups.join(',') + '&'
+        }
+        if (selectedTags.length > 0) {
+            url += 'tags=' + selectedTags.join(',') + '&'
+        }
+        if (filterPriority.length > 0) {
+            url += 'filterPriority=' + filterPriority.join(',')
+        }
+
+            // Construct the URL with separate arguments for each filter type
+            const urlParams = new URLSearchParams();
+            if (search_text) {
+                urlParams.append('search', search_text);
+            }
+            if (selectedCategories.length > 0) {
+                urlParams.append('categories', selectedCategories.join(','));
+            }
+            if (selectedAgeGroups.length > 0) {
+                urlParams.append('age_groups', selectedAgeGroups.join(','));
+            }
+            if (selectedTags.length > 0) {
+                urlParams.append('tags', selectedTags.join(','));
+            }
+            if (filterPriority.length > 0) {
+                urlParams.append('filterPriority', filterPriority.join(','));
+            }
+
+            // Redirect to the new URL
+            const baseUrl = window.location.href.split('?')[0];
+            const newUrl = `${baseUrl}?${urlParams.toString()}`;
+            window.location.href = newUrl;
+        })
+    })
+})
+
 // Function to update checkboxes based on the number of available attractions
 const disableCheckboxes = () => {
     const attractionsContainer = document.getElementById('filtered-results')
@@ -467,8 +572,6 @@ const userGroups = (groups) => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    disableCheckboxes()
-    filterAttractions()
     truncateAttractionDescription()
     citySelectDesktop()
     citySelectMobile()
