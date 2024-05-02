@@ -507,6 +507,9 @@ def friend_profile(user_id):
     level = get_user_level(points)
     unlocked_progression, in_progress_badges = get_user_badge_progress(user_id)
 
+    tabs = ['Visited Attractions', 'Badges', 'Groups']
+    activeTab = 0
+
     return render_template(
         'friendProfile.html',
         friend=friend,
@@ -515,6 +518,8 @@ def friend_profile(user_id):
         number_of_visited_attractions=len(visited_attractions),
         points=points,
         level=level,
+        tabs=tabs,
+        activeTab=activeTab,
         unlocked_progress = unlocked_progression
     )
 
