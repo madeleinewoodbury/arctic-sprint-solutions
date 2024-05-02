@@ -395,7 +395,7 @@ def profile():
     user_groups = json.dumps([group.to_dict() for group in AttractionGroup.query.filter_by(owner=current_user.id).all()])
 
     # Tabs for profile page sections, only one section should be active
-    tabs = ['Visited Attractions', 'Profile', 'Wishlist', 'Friends', 'Badges']
+    tabs = ['Visited Attractions', 'Profile', 'Lists', 'Friends', 'Badges']
 
     return render_template(
         'profile.html',
@@ -507,7 +507,7 @@ def friend_profile(user_id):
     level = get_user_level(points)
     unlocked_progression, in_progress_badges = get_user_badge_progress(user_id)
 
-    tabs = ['Visited Attractions', 'Badges', 'Groups']
+    tabs = ['Visited Attractions', 'Badges', 'Lists']
     activeTab = 0
 
     return render_template(

@@ -127,6 +127,7 @@
           </div>
         </div>
         <div x-show="!showAttractions">
+          <div x-show="groups.length > 0">
           <h2>{{ _("Attraction lists") }}</h2>
           <div class="list-card-container">
             <template x-for="(group, index) in groups" :key="index">
@@ -148,6 +149,9 @@
               </div>
             </template>
           </div>
+        </div>
+        <div x-show="groups.length === 0">
+          <p class="text-white">No attraction lists available.</p>
         </div>
       </div>
       {% endif %}
