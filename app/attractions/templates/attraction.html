@@ -120,7 +120,7 @@
         {{ pagination.info }}
         {{ pagination.links }}
         {% for comment in comments %}
-          <div class="comment-container">
+          <div class="comment-container" id="comment-{{ comment.id }}">
             <div class="comment-user-info">
               <div class="comment-image">
                 <img src="{{ comment.user.gravatar() }}" alt="">
@@ -145,8 +145,9 @@
             
             {% if current_user.is_authenticated %}
               {% if (current_user.id == comment.user.id) or (current_user.role_rel.title == 'Moderator') or (current_user.role_rel.title == 'Administrator') %}
-              <div class="btn-container"></div>
+              <div class="btn-container-comment">
                 <button class="btn btn-primary" type="button" onclick="toggle_edit_comment('{{ comment.id }}')">{{ _("Edit Comment") }}</button>
+                <button class="btn btn-danger" type="button" onclick="post_delete_comment('{{ comment.id }}')">{{ _("Delete Comment") }}</button>
               </div>
               {% endif %}
             {% endif %}
@@ -212,7 +213,7 @@
     return data;
   }
 
-async function post_comment(comment_id) {
+  async function post_comment(comment_id) {
   comment_edit_string = "comment-id-edit-textarea-" + comment_id;
   var edit_text = document.getElementById(comment_edit_string).value;
   try {
@@ -229,6 +230,27 @@ async function post_comment(comment_id) {
     alert('Error: posting data.');
   }
   toggle_edit_comment(comment_id);
+}
+
+async function post_delete_comment(comment_id) {
+  try {
+    json_response = await fetch(('/attractions/comment/delete'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({comment_id: comment_id})
+    });
+    response = await json_response.json();
+
+    if (response.success == true) {
+      comment_string = "comment-" + comment_id;
+      document.getElementById(comment_string).remove();
+    }
+  }
+  catch (error) {
+    alert('Error: Deleting Comment.');
+  }
 }
 
 </script>

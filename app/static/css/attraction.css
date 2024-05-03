@@ -411,6 +411,10 @@
   word-wrap: break-word;
 }
 
+.btn-container-comment {
+  display: block;
+  height: 100%;
+}
   
 }
 

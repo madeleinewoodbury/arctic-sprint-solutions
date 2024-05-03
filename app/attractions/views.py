@@ -113,7 +113,6 @@ def get_attraction(attraction_id):
     visited = False
     groups = []
 
-
     # Finner kommentarer
     search = False
     q = request.args.get('q')
@@ -149,9 +148,7 @@ def get_attraction(attraction_id):
         groups = json.dumps(groups)
 
     comment_form = CommentForm()
-    # edit_form = CommentForm()
 
-    # edit_form.comment.data = 
     if comment_form.validate_on_submit():
         comment = Comment(
             comment_text = comment_form.comment.data,
@@ -182,22 +179,45 @@ def get_comment(comment_id):
 # API POST comment
 @attractions.route("/attractions/comment/<comment_id>", methods=["POST"])
 def post_comment(comment_id):
-    #try:
-    data = request.get_json()
-    edit_text = data.get('edit_text')
+    try:
+        data = request.get_json()
+        edit_text = data.get('edit_text')
 
-    comment = Comment.query.filter_by(id=comment_id).first()
+        comment = Comment.query.filter_by(id=comment_id).first()
 
-    comment.editor_id = current_user.id
-    comment.edited_at = datetime.utcnow()
-    comment.comment_text = edit_text
+        if (current_user == comment.user) or (current_user.role_rel.title == 'Moderator') or current_user.role_rel.title == 'Administrator':
+            comment.editor_id = current_user.id
+            comment.edited_at = datetime.utcnow()
+            comment.comment_text = edit_text
 
-    db.session.add(comment)
-    db.session.commit()
+            db.session.add(comment)
+            db.session.commit()
 
-    return jsonify({'success': True})
-    # except:
-    #     return jsonify({'success': False})
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False})
+    except:
+        return jsonify({'success': False})
+    
+
+# API POST comment
+@attractions.route("/attractions/comment/delete", methods=["POST"])
+def post_delete_comment():
+    try:
+        data = request.get_json()
+        comment_id = data.get('comment_id')
+
+        comment = Comment.query.filter_by(id=comment_id).first()
+
+        if (current_user == comment.user) or (current_user.role_rel.title == 'Moderator') or (current_user.role_rel.title == 'Administrator'):
+            db.session.delete(comment)
+            db.session.commit()
+
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False})
+    except:
+        return jsonify({'success': False})
 
 
 # Function for marking an attraction as visited
