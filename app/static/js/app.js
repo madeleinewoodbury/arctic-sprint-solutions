@@ -243,18 +243,31 @@ const selectCity = (citySelect, form) => {
     })
 }
 
-
-
-function goBack() {
-    // Check if there's a history to go back to
-    if (window.history.length > 1) {
-        var previousUrl = document.referrer;
-        window.location.href = previousUrl;
-    } else {
-        alert("No previous page available.");
-    }
+// Appends the current URL to the previousURLs stack
+function storePreviousUrl() {
+    var previousUrls = localStorage.getItem('previousUrls')
+    previousUrls = previousUrls ? JSON.parse(previousUrls) : []
+    previousUrls.push(window.location.href)
+    localStorage.setItem('previousUrls', JSON.stringify(previousUrls))
 }
 
+// Pops and redirects to the top-most URL in the previousUrls stack
+function goBack() {
+    var previousUrls = localStorage.getItem('previousUrls')
+
+    if (previousUrls) {
+        previousUrls = JSON.parse(previousUrls)
+
+        if (previousUrls.length > 0) {
+            var previousUrl = previousUrls.pop()
+            localStorage.setItem('previousUrls', JSON.stringify(previousUrls))
+            window.location.href = previousUrl
+            return
+        }
+    }
+    // Handle the case when there are no previous URLs or local storage is empty
+    alert("No previous page available.")
+}
 
 function markAsVisited(attractionId, checked) {
   fetch(`/attractions/${attractionId}/mark_as_visited`, {
@@ -462,6 +475,7 @@ const userGroups = (groups) => {
 
         goToAttraction(attractionId) {
             window.location.href = `/attractions/${attractionId}`
+            storePreviousUrl()
         }
 
     }
@@ -512,6 +526,7 @@ const friendGroups = (groups) => {
 
         goToAttraction(attractionId) {
             window.location.href = `/attractions/${attractionId}`
+            storePreviousUrl()
         }
 
     }

@@ -58,6 +58,7 @@
           <div class="card-container">
             {% for visited in visited_attractions %}
             <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}"
+            onclick="storePreviousUrl()"
               class="attraction-card">
               <img src="{{ visited.attraction.image }}" alt="Attraction Image">
               <div>
