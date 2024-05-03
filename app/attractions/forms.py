@@ -5,7 +5,7 @@ from app.models import City
 from flask_babel import lazy_gettext as _
 
 class SearchForm(Form):
-    search_text = StringField(_('Search Attractions'), validators=[DataRequired()], render_kw={'placeholder': _('Search Attractions')})
+    search_text = StringField(_('Search Attractions'), render_kw={'placeholder': _('Search Attractions')})
     submit = SubmitField(_('Search'), render_kw={'class': 'search-btn'})
 
 class MultiCheckboxField(SelectMultipleField):

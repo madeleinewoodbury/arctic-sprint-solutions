@@ -23,7 +23,7 @@ from app.models import (
 )
 
 
-
+# Select current city
 @attractions.route("/select_city", methods=["POST"])
 def select_city():
     form = SelectCityForm(request.form)
@@ -34,193 +34,9 @@ def select_city():
     else:
         errors = form.errors
         return jsonify({"success": False, "errors": errors}), 400
-
-
-# Get attractions based on search text.
-@attractions.route("/attractions/search", methods=["GET", "POST"])
-def search_attractions():
-    if "selected_city" in session:
-        selected_city = session["selected_city"]
-    else:
-        session["selected_city"] = 1
-        selected_city = session["selected_city"]
-    city = City.query.get(selected_city)
     
-    # Parse URL parameters for filtering
-    search_text = request.args.get('q', '')
-    filter_priority = request.args.get('filterPriority')
-    filter_priority_list = filter_priority.split(',') if filter_priority else []
-    categories = request.args.get('categories', '')
-    category = [int(x) for x in categories.split(',') if x.isdigit()] if categories else []
-    age_groups = request.args.get('age_groups', '')
-    age_group = [int(x) for x in age_groups.split(',') if x.isdigit()] if age_groups else []
-    tags = request.args.get('tags', '')
-    tag = [int(x) for x in tags.split(',') if x.isdigit()] if tags else []
-    page = request.args.get("page", default=1, type=int)
-    per_page = 6
-        
-    # Setup forms
-    search_form = SearchForm()
-    search_form.search_text.data = search_text
-    filter_form = FilterAttractionsForm()
-    filter_form.categories.data = category
-    filter_form.age_groups.data = age_group
-    filter_form.tags.data = tag
     
-    # Setup query filters
-    filters = [Attraction.city == city.id]
-    filters.append(Attraction.name.contains(search_text)) 
-    base_attraction_ids = [(attraction.id) for attraction in Attraction.query.filter(and_(*filters)).all()] 
-    if category:
-        filters.append(Attraction.category.any(AttractionCategory.category_id.in_(category)))
-    if age_group:
-        filters.append(Attraction.age_groups.any(AttractionAgeGroup.age_group_id.in_(age_group)))
-    if tag:
-        filters.append(Attraction.tags.any(AttractionTag.tag_id.in_(tag)))
-    
-    # Paginate the queried attractions
-    attractions_pagination = Attraction.query.filter(and_(*filters)).paginate(page=page, per_page=per_page)
-
-    # Prepare data for rendering HTML template
-    attractions = attractions_pagination.items
-    total_pages = attractions_pagination.pages
-    current_page = attractions_pagination.page
-
-    ca, ag, ta = get_filter_ids(filter_priority_list, category, age_group, tag)
-    update_filter_form_choices(filter_form, base_attraction_ids, ca, ag, ta)
-    
-    # Render HTML template with attractions and pagination information
-    return render_template(
-        "attractions_main.html",
-        attractions=attractions,
-        search_form=search_form,
-        filter_form=filter_form,
-        total_pages=total_pages,
-        current_page=current_page,
-        city=city
-    )
-
-# Get all attractions.
-@attractions.route("/attractions", methods=["GET", "POST"])
-def get_attractions():
-    if "selected_city" in session:
-        selected_city = session["selected_city"]
-    else:
-        session["selected_city"] = 1
-        selected_city = session["selected_city"]
-    city = City.query.get(selected_city)
-    
-    # Parse URL parameters for filtering
-    filter_priority = request.args.get('filterPriority')
-    filter_priority_list = filter_priority.split(',') if filter_priority else []
-    categories = request.args.get('categories', '')
-    category = [int(x) for x in categories.split(',') if x.isdigit()] if categories else []
-    age_groups = request.args.get('age_groups', '')
-    age_group = [int(x) for x in age_groups.split(',') if x.isdigit()] if age_groups else []
-    tags = request.args.get('tags', '')
-    tag = [int(x) for x in tags.split(',') if x.isdigit()] if tags else []
-    page = request.args.get("page", default=1, type=int)
-    per_page = 6
-    MAX_NUM_OF_SUGGESTIONS = 3
-    
-    # Setup forms
-    search_form = SearchForm()
-    filter_form = FilterAttractionsForm()
-    filter_form.categories.data = category
-    filter_form.age_groups.data = age_group
-    filter_form.tags.data = tag
-    
-    # Setup query filters
-    filters = [Attraction.city == city.id]
-    if category:
-        filters.append(Attraction.category.any(AttractionCategory.category_id.in_(category)))
-    if age_group:
-        filters.append(Attraction.age_groups.any(AttractionAgeGroup.age_group_id.in_(age_group)))
-    if tag:
-        filters.append(Attraction.tags.any(AttractionTag.tag_id.in_(tag)))
-    
-    base_attraction_ids = [(attraction.id) for attraction in Attraction.query.filter(Attraction.city == city.id).all()] 
-    attraction_ids = [(attraction.id) for attraction in Attraction.query.filter(and_(*filters)).all()]
-
-    # Prioritise fitting suggestions if logged in
-    suggested_ids = set()
-    if current_user.is_authenticated:
-        suggested_attractions = suggest_attractions_for_user(current_user.id)
-        visited_attractions = {
-            va.attraction_id for va in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
-        }
-        suggested_attractions = [
-            attr for attr in suggested_attractions if attr["attraction_id"] not in visited_attractions
-        ]
-        suggested_attractions = sorted(
-            suggested_attractions, key=lambda x: x["score"], reverse=True
-            )[:MAX_NUM_OF_SUGGESTIONS]
-        suggested_ids = [attr["attraction_id"] for attr in suggested_attractions]
-        attraction_ids = sorted(
-            attraction_ids,
-            key=lambda x: (
-                x not in suggested_ids,
-                suggested_ids.index(x) if x in suggested_ids else float("inf")
-            )
-        )
-
-    # Paginate the queried attractions
-    attractions_pagination = (Attraction.query.filter(Attraction.id.in_(attraction_ids))
-                           .order_by(func.field(Attraction.id, *attraction_ids))
-                           .paginate(page=page, per_page=per_page)
-                           )
-    
-    # Prepare data for rendering HTML template
-    attractions = attractions_pagination.items
-    total_pages = attractions_pagination.pages
-    current_page = attractions_pagination.page
-    
-    cat_ids, age_ids, tag_ids = get_filter_ids(filter_priority_list, category, age_group, tag)
-    #update_filter_form_choices(filter_form, base_attraction_ids, ca, ag, ta)
-    print(cat_ids)
-    print(age_ids)
-    print(tag_ids)
-    
-    filter_form.categories.choices = [(cat.id, cat.name) for cat in Category.query.filter(Attraction.id.in_(cat_ids)).all()]
-    filter_form.age_groups.choices = [(age.id, age.name) for age in AgeGroup.query.filter(AgeGroup.id.in_(age_ids)).all()]
-    filter_form.tags.choices = [(tag.id, tag.name) for tag in Tag.query.filter(Tag.id.in_(tag_ids)).all()]
-
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        # Prepare AJAX response data.
-        attractions_html = [
-        render_template("attractions_items.html", attraction=attraction.to_dict(), suggested_ids=suggested_ids)
-        for attraction in attractions
-        ]
-        category_json = [str(category_id) for category_id in cat_ids]
-        age_group_json = [str(age_group_id) for age_group_id in age_ids]
-        tag_json = [str(tag_id) for tag_id in tag_ids]
-        print(category_json)
-        print(age_group_json)
-        print(tag_json)
-
-        return jsonify(
-            {
-            "attractions": attractions_html,
-            "categoryIDs": category_json,
-            "ageGroupIDs": age_group_json,
-            "tagIDs": tag_json,
-            }
-        )
-    
-    # Render HTML template with attractions and pagination information
-    return render_template(
-        "attractions_main.html",
-        attractions=attractions,
-        suggested_ids=suggested_ids,
-        search_form=search_form,
-        filter_form=filter_form,
-        total_pages=total_pages,
-        current_page=current_page,
-        city=city
-    )
-
-
-# Get single attraction.
+# Get single attraction
 @attractions.route("/attractions/<int:attraction_id>", methods=["GET"])
 def get_attraction(attraction_id):
     attraction = Attraction.query.get(attraction_id)
@@ -254,6 +70,203 @@ def get_attraction(attraction_id):
     return render_template(
         "attraction.html", attraction=attraction, visited=visited, groups=groups
     )
+
+
+# Get all attractions
+@attractions.route("/attractions", methods=["GET", "POST"])
+def get_attractions():
+    if "selected_city" in session:
+        selected_city = session["selected_city"]
+    else:
+        session["selected_city"] = 1
+        selected_city = session["selected_city"]
+    city = City.query.get(selected_city)
+    
+    # Parse URL parameters for filtering
+    filter_priority = request.args.get('filterPriority')
+    filter_priority_list = filter_priority.split(',') if filter_priority else []
+    categories = request.args.get('categories', '')
+    category = [int(x) for x in categories.split(',') if x.isdigit()] if categories else []
+    age_groups = request.args.get('age_groups', '')
+    age_group = [int(x) for x in age_groups.split(',') if x.isdigit()] if age_groups else []
+    tags = request.args.get('tags', '')
+    tag = [int(x) for x in tags.split(',') if x.isdigit()] if tags else []
+    page = request.args.get("page", default=1, type=int)
+    MAX_NUM_OF_SUGGESTIONS = 3
+    
+    # Setup forms
+    search_form = SearchForm()
+    filter_form = FilterAttractionsForm()
+    filter_form.categories.data = category
+    filter_form.age_groups.data = age_group
+    filter_form.tags.data = tag
+    
+    # Setup query filters
+    filters = [Attraction.city == city.id]
+    if category:
+        filters.append(Attraction.category.any(AttractionCategory.category_id.in_(category)))
+    if age_group:
+        filters.append(Attraction.age_groups.any(AttractionAgeGroup.age_group_id.in_(age_group)))
+    if tag:
+        filters.append(Attraction.tags.any(AttractionTag.tag_id.in_(tag)))
+    attraction_ids = [(attraction.id) for attraction in Attraction.query.filter(and_(*filters)).all()]
+
+    # Prioritise fitting suggestions if logged in
+    suggested_ids = set()
+    if current_user.is_authenticated:
+        suggested_attractions = suggest_attractions_for_user(current_user.id)
+        visited_attractions = {
+            va.attraction_id for va in VisitedAttraction.query.filter_by(user_id=current_user.id).all()
+        }
+        suggested_attractions = [
+            attr for attr in suggested_attractions if attr["attraction_id"] not in visited_attractions
+        ]
+        suggested_attractions = sorted(
+            suggested_attractions, key=lambda x: x["score"], reverse=True
+            )[:MAX_NUM_OF_SUGGESTIONS]
+        suggested_ids = [attr["attraction_id"] for attr in suggested_attractions]
+        attraction_ids = sorted(
+            attraction_ids,
+            key=lambda x: (
+                x not in suggested_ids,
+                suggested_ids.index(x) if x in suggested_ids else float("inf")
+            )
+        )
+
+    # Paginate the queried attractions
+    per_page = 6
+    attractions_pagination = (Attraction.query.filter(Attraction.id.in_(attraction_ids))
+                           .order_by(func.field(Attraction.id, *attraction_ids))
+                           .paginate(page=page, per_page=per_page)
+                           )
+    attractions = attractions_pagination.items
+    total_pages = attractions_pagination.pages
+    current_page = attractions_pagination.page
+    
+    # Setup forms
+    search_form = SearchForm()
+    filter_form = FilterAttractionsForm()
+    filter_form.categories.data = category
+    filter_form.age_groups.data = age_group
+    filter_form.tags.data = tag
+    cat_ids, age_ids, tag_ids = get_filter_ids(filter_priority_list, category, age_group, tag)
+    filter_form.categories.choices = [(cat.id, cat.name) for cat in Category.query.filter(Category.id.in_(cat_ids)).all()]
+    filter_form.age_groups.choices = [(age.id, age.name) for age in AgeGroup.query.filter(AgeGroup.id.in_(age_ids)).all()]
+    filter_form.tags.choices = [(tag.id, tag.name) for tag in Tag.query.filter(Tag.id.in_(tag_ids)).all()]
+
+    # Perform AJAX response if requested
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        attractions_html = [
+        render_template("attractions_items.html", attraction=attraction.to_dict(), suggested_ids=suggested_ids)
+        for attraction in attractions
+        ]
+        category_json = [str(category_id) for category_id in cat_ids]
+        age_group_json = [str(age_group_id) for age_group_id in age_ids]
+        tag_json = [str(tag_id) for tag_id in tag_ids]
+
+        return jsonify(
+            {
+            "attractions": attractions_html,
+            "categoryIDs": category_json,
+            "ageGroupIDs": age_group_json,
+            "tagIDs": tag_json,
+            }
+        )
+    
+    # Render HTML template with attractions and pagination information
+    return render_template(
+        "attractions_main.html",
+        attractions=attractions,
+        suggested_ids=suggested_ids,
+        search_form=search_form,
+        filter_form=filter_form,
+        total_pages=total_pages,
+        current_page=current_page,
+        city=city
+    )
+
+
+# Get attractions based on search text
+@attractions.route("/attractions/search", methods=["GET", "POST"])
+def search_attractions():
+    if "selected_city" in session:
+        selected_city = session["selected_city"]
+    else:
+        session["selected_city"] = 1
+        selected_city = session["selected_city"]
+    city = City.query.get(selected_city)
+    
+    # Parse URL parameters for filtering
+    search_text = request.args.get('q', '')
+    filter_priority = request.args.get('filterPriority')
+    filter_priority_list = filter_priority.split(',') if filter_priority else []
+    categories = request.args.get('categories', '')
+    category = [int(x) for x in categories.split(',') if x.isdigit()] if categories else []
+    age_groups = request.args.get('age_groups', '')
+    age_group = [int(x) for x in age_groups.split(',') if x.isdigit()] if age_groups else []
+    tags = request.args.get('tags', '')
+    tag = [int(x) for x in tags.split(',') if x.isdigit()] if tags else []
+    page = request.args.get("page", default=1, type=int)
+
+    # Setup query filters
+    filters = [Attraction.city == city.id]
+    filters.append(Attraction.name.contains(search_text)) 
+    base_attraction_ids = [(attraction.id) for attraction in Attraction.query.filter(and_(*filters)).all()] 
+    if category:
+        filters.append(Attraction.category.any(AttractionCategory.category_id.in_(category)))
+    if age_group:
+        filters.append(Attraction.age_groups.any(AttractionAgeGroup.age_group_id.in_(age_group)))
+    if tag:
+        filters.append(Attraction.tags.any(AttractionTag.tag_id.in_(tag)))
+    
+    # Paginate the queried attractions
+    per_page = 6
+    attractions_pagination = Attraction.query.filter(and_(*filters)).paginate(page=page, per_page=per_page)
+    attractions = attractions_pagination.items
+    total_pages = attractions_pagination.pages
+    current_page = attractions_pagination.page
+    
+    # Setup forms
+    search_form = SearchForm()
+    search_form.search_text.data = search_text
+    filter_form = FilterAttractionsForm()
+    filter_form.categories.data = category
+    filter_form.age_groups.data = age_group
+    filter_form.tags.data = tag
+    cat_ids, age_ids, tag_ids = get_filter_ids(filter_priority_list, category, age_group, tag, base_attraction_ids)
+    update_filter_form_choices(filter_form, cat_ids, age_ids, tag_ids)
+ 
+    # Perform AJAX response if requested
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        attractions_html = [
+        render_template("attractions_items.html", attraction=attraction.to_dict())
+        for attraction in attractions
+        ]
+        category_json = [str(category_id) for category_id in cat_ids]
+        age_group_json = [str(age_group_id) for age_group_id in age_ids]
+        tag_json = [str(tag_id) for tag_id in tag_ids]
+
+        return jsonify(
+            {
+            "attractions": attractions_html,
+            "categoryIDs": category_json,
+            "ageGroupIDs": age_group_json,
+            "tagIDs": tag_json,
+            }
+        )
+    
+    # Render HTML template with attractions and pagination information
+    return render_template(
+        "attractions_main.html",
+        attractions=attractions,
+        search_form=search_form,
+        filter_form=filter_form,
+        total_pages=total_pages,
+        current_page=current_page,
+        city=city
+    )
+
+
 
 # Function for marking an attraction as visited
 @attractions.route("/attractions/<int:attraction_id>/mark_as_visited", methods=["POST"])
@@ -714,7 +727,7 @@ def suggest_attractions_for_user(user_id):
 
     return attractions_with_scores
 
-def update_filter_form_choices(filter_form, attraction_ids, category_ids=[], age_group_ids=[], tag_ids=[]):
+def update_filter_form_choices_newtest(filter_form, attraction_ids, category_ids=[], age_group_ids=[], tag_ids=[]):
     categories = (
         db.session.query(Category.id, Category.name)
         .join(AttractionCategory)
@@ -776,17 +789,22 @@ def update_filter_form_choices(filter_form, attraction_ids, category_ids=[], age
     filter_form.tags.choices = [(tag.id, tag.name) for tag in tags]
 
 
-def get_filter_ids(filter_priority, selected_categories, selected_age_groups, selected_tags):
+
+def get_filter_ids(filter_priority, selected_categories, selected_age_groups, selected_tags, base_attractions_ids):
     if filter_priority and filter_priority[0] == "categories":
         category_ids, primary_attraction_ids = get_primary_filter_ids(
-            "categories", selected_categories
+            "categories", selected_categories, base_attractions_ids
         )
-        age_group_ids = get_secondary_filter_ids("age_groups", primary_attraction_ids)
-        tag_ids = get_secondary_filter_ids("tags", primary_attraction_ids)
+        age_group_ids = get_secondary_filter_ids("age_groups", primary_attraction_ids, base_attractions_ids)
+        tag_ids = get_secondary_filter_ids("tags", primary_attraction_ids, base_attractions_ids)
         if len(filter_priority) > 1:
             if filter_priority[1] == "age_groups":
                 tag_ids = get_tertiary_filter_ids(
-                    "tags", selected_categories, selected_age_groups, selected_tags
+                    "tags", 
+                    selected_categories, 
+                    selected_age_groups, 
+                    selected_tags, 
+                    base_attractions_ids
                 )
             elif filter_priority[1] == "tags":
                 age_group_ids = get_tertiary_filter_ids(
@@ -794,18 +812,23 @@ def get_filter_ids(filter_priority, selected_categories, selected_age_groups, se
                     selected_categories,
                     selected_age_groups,
                     selected_tags,
+                    base_attractions_ids
                 )
 
     elif filter_priority and filter_priority[0] == "age_groups":
         age_group_ids, primary_attraction_ids = get_primary_filter_ids(
-            "age_groups", selected_age_groups
+            "age_groups", selected_age_groups, base_attractions_ids
         )
-        category_ids = get_secondary_filter_ids("categories", primary_attraction_ids)
-        tag_ids = get_secondary_filter_ids("tags", primary_attraction_ids)
+        category_ids = get_secondary_filter_ids("categories", primary_attraction_ids, base_attractions_ids)
+        tag_ids = get_secondary_filter_ids("tags", primary_attraction_ids, base_attractions_ids)
         if len(filter_priority) > 1:
             if filter_priority[1] == "categories":
                 tag_ids = get_tertiary_filter_ids(
-                    "tags", selected_categories, selected_age_groups, selected_tags
+                    "tags", 
+                    selected_categories, 
+                    selected_age_groups, 
+                    selected_tags, 
+                    base_attractions_ids
                 )
             elif filter_priority[1] == "tags":
                 category_ids = get_tertiary_filter_ids(
@@ -813,12 +836,13 @@ def get_filter_ids(filter_priority, selected_categories, selected_age_groups, se
                     selected_categories,
                     selected_age_groups,
                     selected_tags,
+                    base_attractions_ids
                 )
 
     elif filter_priority and filter_priority[0] == "tags":
-        tag_ids, primary_attraction_ids = get_primary_filter_ids("tags", selected_tags)
-        category_ids = get_secondary_filter_ids("categories", primary_attraction_ids)
-        age_group_ids = get_secondary_filter_ids("age_groups", primary_attraction_ids)
+        tag_ids, primary_attraction_ids = get_primary_filter_ids("tags", selected_tags, base_attractions_ids)
+        category_ids = get_secondary_filter_ids("categories", primary_attraction_ids, base_attractions_ids)
+        age_group_ids = get_secondary_filter_ids("age_groups", primary_attraction_ids, base_attractions_ids)
         if len(filter_priority) > 1:
             if filter_priority[1] == "categories":
                 age_group_ids = get_tertiary_filter_ids(
@@ -826,6 +850,7 @@ def get_filter_ids(filter_priority, selected_categories, selected_age_groups, se
                     selected_categories,
                     selected_age_groups,
                     selected_tags,
+                    base_attractions_ids
                 )
             elif filter_priority[1] == "age_groups":
                 category_ids = get_tertiary_filter_ids(
@@ -833,20 +858,26 @@ def get_filter_ids(filter_priority, selected_categories, selected_age_groups, se
                     selected_categories,
                     selected_age_groups,
                     selected_tags,
+                    base_attractions_ids
                 )
     else:
         category_ids = (
             db.session.query(AttractionCategory.category_id)
+            .filter(AttractionCategory.attraction_id.in_(base_attractions_ids))
             .distinct(AttractionCategory.category_id)
             .all()
         )
         age_group_ids = (
             db.session.query(AttractionAgeGroup.age_group_id)
+            .filter(AttractionAgeGroup.attraction_id.in_(base_attractions_ids))
             .distinct(AttractionAgeGroup.age_group_id)
             .all()
         )
         tag_ids = (
-            db.session.query(AttractionTag.tag_id).distinct(AttractionTag.tag_id).all()
+            db.session.query(AttractionTag.tag_id)
+            .filter(AttractionTag.attraction_id.in_(base_attractions_ids))
+            .distinct(AttractionTag.tag_id)
+            .all()
         )
     
     category_ids_flat = [cat_id[0] for cat_id in category_ids]
@@ -856,220 +887,75 @@ def get_filter_ids(filter_priority, selected_categories, selected_age_groups, se
     return category_ids_flat, age_group_ids_flat, tags_ids_flat
 
 
-def update_filter_form_choicesOLD(filter_form, attraction_ids, category_ids=[], age_group_ids=[], tag_ids=[]):
-    categories = (
-        db.session.query(Category.id, Category.name)
-        .join(AttractionCategory)
-        .filter(and_(AttractionCategory.attraction_id.in_(attraction_ids),
-                    AttractionCategory.category_id.in_(category_ids)))
-        .distinct()
-        .order_by(Category.name)
-        .all()
-    )
-        
-    age_groups = (
-        db.session.query(AgeGroup.id, AgeGroup.name)
-        .join(AttractionAgeGroup)
-        .filter(and_(AttractionAgeGroup.attraction_id.in_(attraction_ids),
-                    AttractionAgeGroup.age_group_id.in_(age_group_ids)))
-        .distinct()
-        .order_by(AgeGroup.name)
-        .all()
-    )
 
-    tags = (
-        db.session.query(Tag.id, Tag.name)
-        .join(AttractionTag)
-        .filter(and_(AttractionTag.attraction_id.in_(attraction_ids),
-                    AttractionTag.tag_id.in_(tag_ids)))
-        .distinct()
-        .order_by(Tag.name)
-        .all()
-    )
-    
-    if not category_ids and not age_group_ids and not tag_ids:
-        categories = (
-            db.session.query(Category.id, Category.name)
-            .join(AttractionCategory)
-            .filter(AttractionCategory.attraction_id.in_(attraction_ids))
-            .distinct()
-            .order_by(Category.name)
-            .all()
-        )
-        age_groups = (
-            db.session.query(AgeGroup.id, AgeGroup.name)
-            .join(AttractionAgeGroup)
-            .filter(AttractionAgeGroup.attraction_id.in_(attraction_ids))
-            .distinct()
-            .order_by(AgeGroup.name)
-            .all()
-        )
-        tags = (
-            db.session.query(Tag.id, Tag.name)
-            .join(AttractionTag)
-            .filter(AttractionTag.attraction_id.in_(attraction_ids))
-            .distinct()
-            .order_by(Tag.name)
-            .all()
-        )
-
-    filter_form.categories.choices = [(cat.id, cat.name) for cat in categories]
-    filter_form.age_groups.choices = [(age.id, age.name) for age in age_groups]
-    filter_form.tags.choices = [(tag.id, tag.name) for tag in tags]
-
-
-def get_filter_idsOLD(filter_priority, selected_categories, selected_age_groups, selected_tags):
-    if filter_priority and filter_priority[0] == "categories":
-        category_ids, primary_attraction_ids = get_primary_filter_ids(
-            "categories", selected_categories
-        )
-        age_group_ids = get_secondary_filter_ids("age_groups", primary_attraction_ids)
-        tag_ids = get_secondary_filter_ids("tags", primary_attraction_ids)
-        if len(filter_priority) > 1:
-            if filter_priority[1] == "age_groups":
-                tag_ids = get_tertiary_filter_ids(
-                    "tags", selected_categories, selected_age_groups, selected_tags
-                )
-            elif filter_priority[1] == "tags":
-                age_group_ids = get_tertiary_filter_ids(
-                    "age_groups",
-                    selected_categories,
-                    selected_age_groups,
-                    selected_tags,
-                )
-
-    elif filter_priority and filter_priority[0] == "age_groups":
-        age_group_ids, primary_attraction_ids = get_primary_filter_ids(
-            "age_groups", selected_age_groups
-        )
-        category_ids = get_secondary_filter_ids("categories", primary_attraction_ids)
-        tag_ids = get_secondary_filter_ids("tags", primary_attraction_ids)
-        if len(filter_priority) > 1:
-            if filter_priority[1] == "categories":
-                tag_ids = get_tertiary_filter_ids(
-                    "tags", selected_categories, selected_age_groups, selected_tags
-                )
-            elif filter_priority[1] == "tags":
-                category_ids = get_tertiary_filter_ids(
-                    "categories",
-                    selected_categories,
-                    selected_age_groups,
-                    selected_tags,
-                )
-
-    elif filter_priority and filter_priority[0] == "tags":
-        tag_ids, primary_attraction_ids = get_primary_filter_ids("tags", selected_tags)
-        category_ids = get_secondary_filter_ids("categories", primary_attraction_ids)
-        age_group_ids = get_secondary_filter_ids("age_groups", primary_attraction_ids)
-        if len(filter_priority) > 1:
-            if filter_priority[1] == "categories":
-                age_group_ids = get_tertiary_filter_ids(
-                    "age_groups",
-                    selected_categories,
-                    selected_age_groups,
-                    selected_tags,
-                )
-            elif filter_priority[1] == "age_groups":
-                category_ids = get_tertiary_filter_ids(
-                    "categories",
-                    selected_categories,
-                    selected_age_groups,
-                    selected_tags,
-                )
-    else:
-        category_ids = []
-        age_group_ids = []
-        tag_ids = []
-    
-    category_ids = [int(category_id) for (category_id,) in category_ids]
-    age_group_ids = [int(age_group_id) for (age_group_id,) in age_group_ids]
-    tag_ids = [int(tag_id) for (tag_id,) in tag_ids]
-    
-    return category_ids, age_group_ids, tag_ids
-
-def get_primary_filter_ids(filter_type, selected_filter_type_ids):
+def get_primary_filter_ids(filter_type, selected_filter_type_ids, base_attractions_ids):
     if filter_type == "categories":
         relationship = AttractionCategory.category_id
         attribute = Attraction.category
+        filter = AttractionCategory.attraction_id.in_(base_attractions_ids)
     elif filter_type == "age_groups":
         relationship = AttractionAgeGroup.age_group_id
         attribute = Attraction.age_groups
+        filter = AttractionAgeGroup.attraction_id.in_(base_attractions_ids)
     elif filter_type == "tags":
         relationship = AttractionTag.tag_id
         attribute = Attraction.tags
-
+        filter = AttractionTag.attraction_id.in_(base_attractions_ids)
+    
     primary_attraction_ids_query = (
-        db.session.query(Attraction.id)
-        .filter(attribute.any(relationship.in_(selected_filter_type_ids)))
-        .all()
+        db.session.query(Attraction.id).filter(attribute.any(relationship.in_(selected_filter_type_ids))).all()
     )
     primary_attraction_ids = [
         attraction_id for (attraction_id,) in primary_attraction_ids_query
     ]
-
-    primary_filter_ids = db.session.query(relationship).distinct(relationship).all()
-
+    primary_filter_ids = db.session.query(relationship).filter(filter).distinct(relationship).all()
     return primary_filter_ids, primary_attraction_ids
 
 
-def get_secondary_filter_ids(filter_type, primary_attraction_ids):
+def get_secondary_filter_ids(filter_type, primary_attraction_ids, base_attractions_ids):
     if filter_type == "categories":
         model = AttractionCategory
         relationship = AttractionCategory.category_id
+        filters = [AttractionCategory.attraction_id.in_(base_attractions_ids)]
     elif filter_type == "age_groups":
         model = AttractionAgeGroup
         relationship = AttractionAgeGroup.age_group_id
+        filters = [AttractionAgeGroup.attraction_id.in_(base_attractions_ids)]
     elif filter_type == "tags":
         model = AttractionTag
         relationship = AttractionTag.tag_id
+        filters = [AttractionTag.attraction_id.in_(base_attractions_ids)]
 
+    filters.append(model.attraction_id.in_(primary_attraction_ids))
     secondary_filter_ids = (
         db.session.query(relationship)
-        .filter((model.attraction_id.in_(primary_attraction_ids)))
+        .filter(and_(*filters))
         .distinct(relationship)
         .all()
     )
-
     return secondary_filter_ids
 
 
 def get_tertiary_filter_ids(
-    filter_type, selected_categories, selected_age_groups, selected_tags
-):
-    filters = []
+    filter_type, selected_categories, selected_age_groups, selected_tags, base_attractions_ids):
+    filters = [Attraction.id.in_(base_attractions_ids)]
     if filter_type == "categories":
         model = AttractionCategory
         relationship = AttractionCategory.category_id
-        filters.append(
-            Attraction.age_groups.any(
-                AttractionAgeGroup.age_group_id.in_(selected_age_groups)
-            )
-        )
+        filters.append(Attraction.age_groups.any(AttractionAgeGroup.age_group_id.in_(selected_age_groups)))
         filters.append(Attraction.tags.any(AttractionTag.tag_id.in_(selected_tags)))
 
     elif filter_type == "age_groups":
         model = AttractionAgeGroup
         relationship = AttractionAgeGroup.age_group_id
-        filters.append(
-            Attraction.category.any(
-                AttractionCategory.category_id.in_(selected_categories)
-            )
-        )
+        filters.append(Attraction.category.any(AttractionCategory.category_id.in_(selected_categories)))
         filters.append(Attraction.tags.any(AttractionTag.tag_id.in_(selected_tags)))
 
     elif filter_type == "tags":
         model = AttractionTag
         relationship = AttractionTag.tag_id
-        filters.append(
-            Attraction.category.any(
-                AttractionCategory.category_id.in_(selected_categories)
-            )
-        )
-        filters.append(
-            Attraction.age_groups.any(
-                AttractionAgeGroup.age_group_id.in_(selected_age_groups)
-            )
-        )
+        filters.append(Attraction.category.any(AttractionCategory.category_id.in_(selected_categories)))
+        filters.append(Attraction.age_groups.any(AttractionAgeGroup.age_group_id.in_(selected_age_groups)))
 
     secondary_attraction_ids_query = (
         db.session.query(Attraction.id).filter(and_(*filters)).all()
@@ -1077,54 +963,21 @@ def get_tertiary_filter_ids(
     secondary_attraction_ids = [
         attraction_id for (attraction_id,) in secondary_attraction_ids_query
     ]
-
     tertiary_filter_ids = (
         db.session.query(relationship)
         .filter((model.attraction_id.in_(secondary_attraction_ids)))
         .distinct(relationship)
         .all()
     )
-
     return tertiary_filter_ids
 
 
-
-
-
-
-
-
-def update_filter_form_choices_OLD(attraction_ids, filter_form):
-    if attraction_ids:
-        categories = (
-            db.session.query(Category.id, Category.name)
-            .join(AttractionCategory)
-            .filter(AttractionCategory.attraction_id.in_(attraction_ids))
-            .distinct()
-            .order_by(Category.name)
-            .all()
-        )
-
-        age_groups = (
-            db.session.query(AgeGroup.id, AgeGroup.name)
-            .join(AttractionAgeGroup)
-            .filter(AttractionAgeGroup.attraction_id.in_(attraction_ids))
-            .distinct()
-            .order_by(AgeGroup.name)
-            .all()
-        )
-
-        tags = (
-            db.session.query(Tag.id, Tag.name)
-            .join(AttractionTag)
-            .filter(AttractionTag.attraction_id.in_(attraction_ids))
-            .distinct()
-            .order_by(Tag.name)
-            .all()
-        )
-    else:
-        categories, age_groups, tags = [], [], []
-
-    filter_form.categories.choices = [(c.id, c.name) for c in categories]
-    filter_form.age_groups.choices = [(ag.id, ag.name) for ag in age_groups]
-    filter_form.tags.choices = [(t.id, t.name) for t in tags]
+def update_filter_form_choices(filter_form, category_ids, age_group_ids, tag_ids):
+    categories = Category.query.filter(Category.id.in_(category_ids)).order_by(Category.name).all()
+    age_groups = AgeGroup.query.filter(AgeGroup.id.in_(age_group_ids)).order_by(AgeGroup.id).all()
+    tags = Tag.query.filter(Tag.id.in_(tag_ids)).order_by(Tag.name).all()
+    
+    filter_form.categories.choices = [(cat.id, cat.name) for cat in categories]
+    filter_form.age_groups.choices = [(age.id, age.name) for age in age_groups]
+    filter_form.tags.choices = [(tag.id, tag.name) for tag in tags]
+    
