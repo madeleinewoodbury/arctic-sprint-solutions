@@ -130,10 +130,14 @@
 </div>
 <script>
     document.querySelector('.search').addEventListener('submit', function(event) {
-        event.preventDefault()
-        var searchText = document.getElementById('search_text').value
-        var url = "{{ url_for('attractions.search_attractions') }}" + "?q=" + encodeURIComponent(searchText)
-        window.location.href = url
+        event.preventDefault();
+        var searchText = document.getElementById('search_text').value.trim()
+        if (searchText === '') {
+            window.location.href = "{{ url_for('attractions.get_attractions') }}"
+        } else {
+            var url = "{{ url_for('attractions.search_attractions') }}" + "?q=" + encodeURIComponent(searchText)
+            window.location.href = url
+        }
     })
 </script>
 {% endblock %}
