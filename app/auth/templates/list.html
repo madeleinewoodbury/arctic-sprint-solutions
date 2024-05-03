@@ -118,8 +118,7 @@
                         <span class="visibility"
                             x-text="group.visibility"></span>
                         <div class="image-container">
-                            <img :src="group.image ? group.image : '../../static/img/aurora-bg.png'"
-                                alt="group.title">
+                            <img :src="group.image ? group.image : '{{ url_for('static', filename='img/aurora-bg.png') }}'" :alt="group.title">
                         </div>
                         <div class="text-container">
                             <h3 x-text="group.title"></h3>

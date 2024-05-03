@@ -1,6 +1,8 @@
+from datetime import datetime
 from flask import render_template, abort, request, jsonify, session, redirect, url_for
 from flask_login import login_required, current_user
-from .forms import SearchForm, FilterAttractionsForm, SelectCityForm
+from flask_paginate import Pagination, get_page_args
+from .forms import SearchForm, FilterAttractionsForm, SelectCityForm, CommentForm
 from . import attractions
 from app.models import (
     Attraction,
@@ -8,6 +10,7 @@ from app.models import (
     AttractionCategory,
     AttractionTag,
     Category,
+    Comment,
     AgeGroup,
     Tag,
     User,
@@ -100,7 +103,7 @@ def get_attractions():
 
 
 # Get single attraction.
-@attractions.route("/attractions/<int:attraction_id>", methods=["GET"])
+@attractions.route("/attractions/<int:attraction_id>", methods=["GET", "POST"])
 def get_attraction(attraction_id):
     attraction = Attraction.query.get(attraction_id)
 
@@ -109,6 +112,20 @@ def get_attraction(attraction_id):
 
     visited = False
     groups = []
+
+    # Finner kommentarer
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    comments = Comment.query.filter_by(attraction_id=attraction_id).order_by(Comment.created_at.desc())
+
+    # Litt problematisk med visning, siden vi ikke bruker de støttede rammeverkene.
+    pagination = Pagination(page=page, total=comments.count(), search=search, record_name='comments', css_framework='semantic')
+
+    comment_list = comments.offset(offset).limit(per_page).all()
 
     if current_user.is_authenticated:
         # Check for users previous visits
@@ -130,9 +147,22 @@ def get_attraction(attraction_id):
 
         groups = json.dumps(groups)
 
+    comment_form = CommentForm()
+
+    if comment_form.validate_on_submit():
+        comment = Comment(
+            comment_text = comment_form.comment.data,
+            user_id = current_user.id,
+            attraction_id = attraction_id
+        )
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('attractions.get_attraction', attraction_id=attraction_id))
+
     return render_template(
         "attraction.html", attraction=attraction, visited=visited, groups=groups
     )
+
 
 # Function for marking an attraction as visited
 @attractions.route("/attractions/<int:attraction_id>/mark_as_visited", methods=["POST"])

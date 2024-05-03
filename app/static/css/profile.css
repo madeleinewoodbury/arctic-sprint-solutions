@@ -443,14 +443,16 @@
   height: 60px;
 }
 
-.profile .user-lists .title-container {
+.profile .user-lists .title-container,
+.profile .friend-groups .title-container{
   display: flex;
   align-items: center;
   gap: 1rem;
   width: fit-content;
 }
 
-.profile .user-lists .title-container button {
+.profile .user-lists .title-container button ,
+.profile .friend-groups .title-container button{
   background-color: transparent;
   border: none;
   outline: none;
@@ -458,12 +460,14 @@
   padding-bottom: 1rem;
 }
 
-.profile .user-lists .title-container button svg {
+.profile .user-lists .title-container button svg,
+.profile .friend-groups .title-container button svg{
   fill: var(--white);
 }
 
 
-.profile .user-lists .title-container button:hover svg{
+.profile .user-lists .title-container button:hover svg,
+.profile .friend-groups .title-container button:hover svg{
   fill: var(--primary);
 }
 
@@ -475,7 +479,8 @@
 }
 
 .profile .visited-attractions h2,
-.profile .user-lists h2 {
+.profile .user-lists h2,
+.profile .friend-groups h2 {
   color: var(--white);
   font-size: 1.75rem;
   font-weight: normal;

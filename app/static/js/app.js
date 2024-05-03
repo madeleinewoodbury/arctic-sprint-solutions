@@ -148,7 +148,8 @@ const filterAttractions = () => {
 }
 
 // Displays the profile tabs and select active tab
-function profileTabs(tabs, activeTab=0) {    
+function profileTabs(tabs, activeTab=0) {   
+    console.log(tabs, activeTab); 
     return {
         tabs,
         activeTab: tabs[activeTab],
@@ -433,6 +434,56 @@ const userGroups = (groups) => {
                     option.selected = true
                 }
             })
+            
+            fetch(`/auth/group-attractions/${groupId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then(response => {
+                if (!response.ok) {
+                    this.currentGroup = null
+                    throw new Error('Network response was not ok');
+                }
+                this.groupedAttractions = response.json()
+                this.showAttractions = true
+            }).then(data => {
+                console.log(data)
+            }).catch(err => {
+                console.error(err)
+            })
+        },
+
+        backToGroups() {
+            this.showAttractions = false
+            this.groupedAttractions = []
+            this.currentGroup = null
+        },
+
+        goToAttraction(attractionId) {
+            window.location.href = `/attractions/${attractionId}`
+        }
+
+    }
+}
+
+const friendGroups = (groups) => {
+
+    return {
+        groups: groups.map(group => {
+            return {
+                id: group.id,
+                title: group.title,
+                attractions: group.grouped_attractions,
+                image: group.grouped_attractions.length > 0 ? group.grouped_attractions[0].image : null
+            }
+        }),
+        groupedAttractions: [],
+        showAttractions: false,
+        currentGroup: null,
+
+        getGroupAttractions(groupId) {
+            this.currentGroup = this.groups.find(group => group.id === groupId)
             
             fetch(`/auth/group-attractions/${groupId}`, {
                 method: 'GET',
