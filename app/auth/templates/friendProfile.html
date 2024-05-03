@@ -7,6 +7,15 @@
 
 {% block content %}
 <section class="profile" x-data="profileTabs({{tabs}}, {{activeTab}})">
+  <a id="lastPageLink" class="link-text" href="javascript:goBack()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="lucide lucide-move-left">
+      <path d="M6 8L2 12L6 16" />
+      <path d="M2 12H22" />
+    </svg>
+    {{ _("Go Back") }}
+  </a>
   <div class="top">
     <div class="user-info">
       <div class="flag-container">
@@ -41,15 +50,6 @@
   </ul>
 
   <div class="content">
-    <a id="lastPageLink" class="link-text" href="javascript:goBack()">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="lucide lucide-move-left">
-        <path d="M6 8L2 12L6 16" />
-        <path d="M2 12H22" />
-      </svg>
-      {{ _("Go Back") }}
-    </a>
     <template x-if="activeTab === tabs[0]">    
       <div class="content-info">
         <div class="visited-attractions">
