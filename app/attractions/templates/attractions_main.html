@@ -135,7 +135,7 @@
         if (searchText === '') {
             window.location.href = "{{ url_for('attractions.get_attractions') }}"
         } else {
-            var url = "{{ url_for('attractions.search_attractions') }}" + "?q=" + encodeURIComponent(searchText)
+            var url = "{{ url_for('attractions.get_attractions') }}" + "?q=" + encodeURIComponent(searchText)
             window.location.href = url
         }
     })

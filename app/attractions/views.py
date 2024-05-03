@@ -83,6 +83,7 @@ def get_attractions():
     city = City.query.get(selected_city)
     
     # Parse URL parameters for filtering
+    search_text = request.args.get('q', '')
     filter_priority = request.args.get('filterPriority')
     filter_priority_list = filter_priority.split(',') if filter_priority else []
     categories = request.args.get('categories', '')
@@ -96,6 +97,8 @@ def get_attractions():
     
     # Setup query filters
     filters = [Attraction.city == city.id]
+    if search_text:
+        filters.append(Attraction.name.contains(search_text)) 
     base_attraction_ids = [(attraction.id) for attraction in Attraction.query.filter(and_(*filters)).all()] 
     if category:
         filters.append(Attraction.category.any(AttractionCategory.category_id.in_(category)))
@@ -128,17 +131,20 @@ def get_attractions():
         )
 
     # Paginate the queried attractions
+    if attraction_ids:
+        query = Attraction.query.filter(Attraction.id.in_(attraction_ids)).order_by(func.field(Attraction.id, *attraction_ids))
+    else:
+        query = Attraction.query.filter(Attraction.id.in_([]))
+    
     per_page = 6
-    attractions_pagination = (Attraction.query.filter(Attraction.id.in_(attraction_ids))
-                           .order_by(func.field(Attraction.id, *attraction_ids))
-                           .paginate(page=page, per_page=per_page)
-                           )
+    attractions_pagination = query.paginate(page=page, per_page=per_page)
     attractions = attractions_pagination.items
     total_pages = attractions_pagination.pages
     current_page = attractions_pagination.page
     
     # Setup forms
     search_form = SearchForm()
+    search_form.search_text.data = search_text
     filter_form = FilterAttractionsForm()
     filter_form.categories.data = category
     filter_form.age_groups.data = age_group
@@ -170,87 +176,6 @@ def get_attractions():
         "attractions_main.html",
         attractions=attractions,
         suggested_ids=suggested_ids,
-        search_form=search_form,
-        filter_form=filter_form,
-        total_pages=total_pages,
-        current_page=current_page,
-        city=city
-    )
-
-
-# Get attractions based on search text
-@attractions.route("/attractions/search", methods=["GET", "POST"])
-def search_attractions():
-    if "selected_city" in session:
-        selected_city = session["selected_city"]
-    else:
-        session["selected_city"] = 1
-        selected_city = session["selected_city"]
-    city = City.query.get(selected_city)
-    
-    # Parse URL parameters for filtering
-    search_text = request.args.get('q', '')
-    filter_priority = request.args.get('filterPriority')
-    filter_priority_list = filter_priority.split(',') if filter_priority else []
-    categories = request.args.get('categories', '')
-    category = [int(x) for x in categories.split(',') if x.isdigit()] if categories else []
-    age_groups = request.args.get('age_groups', '')
-    age_group = [int(x) for x in age_groups.split(',') if x.isdigit()] if age_groups else []
-    tags = request.args.get('tags', '')
-    tag = [int(x) for x in tags.split(',') if x.isdigit()] if tags else []
-    page = request.args.get("page", default=1, type=int)
-
-    # Setup query filters
-    filters = [Attraction.city == city.id]
-    filters.append(Attraction.name.contains(search_text)) 
-    base_attraction_ids = [(attraction.id) for attraction in Attraction.query.filter(and_(*filters)).all()] 
-    if category:
-        filters.append(Attraction.category.any(AttractionCategory.category_id.in_(category)))
-    if age_group:
-        filters.append(Attraction.age_groups.any(AttractionAgeGroup.age_group_id.in_(age_group)))
-    if tag:
-        filters.append(Attraction.tags.any(AttractionTag.tag_id.in_(tag)))
-    
-    # Paginate the queried attractions
-    per_page = 6
-    attractions_pagination = Attraction.query.filter(and_(*filters)).paginate(page=page, per_page=per_page)
-    attractions = attractions_pagination.items
-    total_pages = attractions_pagination.pages
-    current_page = attractions_pagination.page
-    
-    # Setup forms
-    search_form = SearchForm()
-    search_form.search_text.data = search_text
-    filter_form = FilterAttractionsForm()
-    filter_form.categories.data = category
-    filter_form.age_groups.data = age_group
-    filter_form.tags.data = tag
-    cat_ids, age_ids, tag_ids = get_filter_ids(filter_priority_list, category, age_group, tag, base_attraction_ids)
-    update_filter_form_choices(filter_form, cat_ids, age_ids, tag_ids)
- 
-    # Perform AJAX response if requested
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        attractions_html = [
-        render_template("attractions_items.html", attraction=attraction.to_dict())
-        for attraction in attractions
-        ]
-        category_json = [str(category_id) for category_id in cat_ids]
-        age_group_json = [str(age_group_id) for age_group_id in age_ids]
-        tag_json = [str(tag_id) for tag_id in tag_ids]
-
-        return jsonify(
-            {
-            "attractions": attractions_html,
-            "categoryIDs": category_json,
-            "ageGroupIDs": age_group_json,
-            "tagIDs": tag_json,
-            }
-        )
-    
-    # Render HTML template with attractions and pagination information
-    return render_template(
-        "attractions_main.html",
-        attractions=attractions,
         search_form=search_form,
         filter_form=filter_form,
         total_pages=total_pages,
