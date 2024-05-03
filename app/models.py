@@ -188,6 +188,20 @@ class City(db.Model):
 
     def __repr__(self) -> str:
         return self.name
+    
+
+class Comment(db.Model):
+    __tablename__ = "comment"
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    edited_at = db.Column(db.DateTime)
+    comment_text = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    editor_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    attraction_id = db.Column(db.Integer, db.ForeignKey("attraction.id"))
+
+    user = db.relationship("User", foreign_keys=[user_id], backref="comments")
+    editor = db.relationship("User", foreign_keys=[editor_id], backref="edited_comments")
 
 
 class Friendship(db.Model):

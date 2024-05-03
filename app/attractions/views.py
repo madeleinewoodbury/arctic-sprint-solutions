@@ -1,6 +1,8 @@
+from datetime import datetime
 from flask import render_template, abort, request, jsonify, session, redirect, url_for
 from flask_login import login_required, current_user
-from .forms import SearchForm, FilterAttractionsForm, SelectCityForm
+from flask_paginate import Pagination, get_page_args
+from .forms import SearchForm, FilterAttractionsForm, SelectCityForm, CommentForm
 from . import attractions
 from app.models import (
     Attraction,
@@ -8,6 +10,7 @@ from app.models import (
     AttractionCategory,
     AttractionTag,
     Category,
+    Comment,
     AgeGroup,
     Tag,
     User,
@@ -100,7 +103,7 @@ def get_attractions():
 
 
 # Get single attraction.
-@attractions.route("/attractions/<int:attraction_id>", methods=["GET"])
+@attractions.route("/attractions/<int:attraction_id>", methods=["GET", "POST"])
 def get_attraction(attraction_id):
     attraction = Attraction.query.get(attraction_id)
 
@@ -109,6 +112,20 @@ def get_attraction(attraction_id):
 
     visited = False
     groups = []
+
+    # Finner kommentarer
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+
+    page, per_page, offset = get_page_args(page_parameter='page', per_page_parameter='per_page')
+    comments = Comment.query.filter_by(attraction_id=attraction_id).order_by(Comment.created_at.desc())
+
+    # Litt problematisk med visning, siden vi ikke bruker de støttede rammeverkene.
+    pagination = Pagination(page=page, total=comments.count(), search=search, record_name='comments', css_framework='semantic')
+
+    comment_list = comments.offset(offset).limit(per_page).all()
 
     if current_user.is_authenticated:
         # Check for users previous visits
@@ -130,9 +147,77 @@ def get_attraction(attraction_id):
 
         groups = json.dumps(groups)
 
+    comment_form = CommentForm()
+
+    if comment_form.validate_on_submit():
+        comment = Comment(
+            comment_text = comment_form.comment.data,
+            user_id = current_user.id,
+            attraction_id = attraction_id
+        )
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('attractions.get_attraction', attraction_id=attraction_id))
+
     return render_template(
-        "attraction.html", attraction=attraction, visited=visited, groups=groups
+        "attraction.html", attraction=attraction, visited=visited, groups=groups, 
+        comments=comment_list, pagination=pagination, comment_form=comment_form
     )
+
+
+# API GET comment
+@attractions.route("/attractions/comment/<comment_id>", methods=["GET"])
+def get_comment(comment_id):
+    comment_data = Comment.query.filter_by(id=comment_id).first()
+    if comment_data:
+        return jsonify({
+            'text': comment_data.comment_text,
+            'edited_at': comment_data.edited_at if comment_data.edited_at else None,
+            'editor_id': comment_data.editor.username if comment_data.editor else None
+            })
+
+# API POST comment
+@attractions.route("/attractions/comment/<comment_id>", methods=["POST"])
+def post_comment(comment_id):
+    try:
+        data = request.get_json()
+        edit_text = data.get('edit_text')
+
+        comment = Comment.query.filter_by(id=comment_id).first()
+
+        if (current_user == comment.user) or (current_user.role_rel.title == 'Moderator') or current_user.role_rel.title == 'Administrator':
+            comment.editor_id = current_user.id
+            comment.edited_at = datetime.utcnow()
+            comment.comment_text = edit_text
+
+            db.session.add(comment)
+            db.session.commit()
+
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False})
+    except:
+        return jsonify({'success': False})
+    
+
+# API POST comment
+@attractions.route("/attractions/comment/delete", methods=["POST"])
+def post_delete_comment():
+    try:
+        data = request.get_json()
+        comment_id = data.get('comment_id')
+
+        comment = Comment.query.filter_by(id=comment_id).first()
+
+        if (current_user == comment.user) or (current_user.role_rel.title == 'Moderator') or (current_user.role_rel.title == 'Administrator'):
+            db.session.delete(comment)
+            db.session.commit()
+
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False})
+    except:
+        return jsonify({'success': False})
 
 
 # Function for marking an attraction as visited

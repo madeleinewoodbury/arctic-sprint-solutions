@@ -100,6 +100,161 @@
           {% endfor %}
       {% endif %}
     </div>
+    
   </div>
+
+    {% if current_user.is_authenticated %}
+      <div class="new-comment-container">
+        <p>{{ _("Leave a comment") }}</p>
+        <form action="" method="post">
+          {{ comment_form.hidden_tag() }}
+          {{ comment_form.comment.label }}
+          {{ comment_form.comment }}
+          {{ comment_form.submit() }}
+        </form>
+      </div>
+    {% endif %}
+
+  <div class="text-comment-container">
+    {% if comments %}
+        {{ pagination.info }}
+        {{ pagination.links }}
+        {% for comment in comments %}
+          <div class="comment-container" id="comment-{{ comment.id }}">
+            <div class="comment-user-info">
+              <div class="comment-image">
+                <img src="{{ comment.user.gravatar() }}" alt="">
+              </div>
+              <p class="comment-username">{{ comment.user.username }}</p>
+              <div>
+                <p class="comment-created" style="font-size: 60%;">{{ moment(comment.created_at).fromNow(refresh=True) }}</p>
+            </div>
+            </div>
+            <div class="comment-content" id="comment-id-{{ comment.id }}" style="display: block;">
+              <pre>{{ comment.comment_text }}</pre>
+            </div>
+            <div class="comment-content" id="comment-id-edit-{{ comment.id }}" style="display: none;">
+              <textarea name="" id="comment-id-edit-textarea-{{ comment.id }}" cols="30" rows="10">{{ comment.comment_text }}</textarea>
+              <button class="btn btn-primary" type="button" onclick="post_comment('{{ comment.id }}')">{{ _("Post") }}</button>
+            </div>
+            
+            <div id="comment-edit-info-{{ comment.id }}" style="display: {% if not comment.edited_at %} none {% endif %};">
+              <p id="comment-edit-info-text-{{ comment.id }}">Edited: {{ comment.editor.username }}, {{ moment(comment.edited_at).fromNow(refresh=True) }}</p>
+            </div>
+            
+            
+            {% if current_user.is_authenticated %}
+              {% if (current_user.id == comment.user.id) or (current_user.role_rel.title == 'Moderator') or (current_user.role_rel.title == 'Administrator') %}
+              <div class="btn-container-comment">
+                <button class="btn btn-primary" type="button" onclick="toggle_edit_comment('{{ comment.id }}')">{{ _("Edit Comment") }}</button>
+                <button class="btn btn-danger" type="button" onclick="post_delete_comment('{{ comment.id }}')">{{ _("Delete Comment") }}</button>
+              </div>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      {{ pagination.links }}
+    {% endif %}
 </section>
+
+<script>
+  async function toggle_edit_comment(id) {
+    var comment_string = "comment-id-" + id;
+    var comment_edit_string = "comment-id-edit-" + id;
+
+    var comment = document.getElementById(comment_string)
+    var comment_edit = document.getElementById(comment_edit_string)
+
+    if (comment.style.display == "block") {
+      comment.style.display = "none";
+      comment_edit.style.display = "block";
+    }
+    else {
+      var data = await get_comment(id);
+      comment.innerText = data.text;
+      comment.style.display = "block";
+      comment_edit.style.display = "none";
+      if (data.edited_at) {
+        show_edited(data, id);
+      }
+    }
+    
+  }
+
+  async function show_edited(data, id) {
+    // Legge til en streng for editor
+    var comment_editor_string = "comment-edit-info-" + id;
+    var comment_editor_text_string = "comment-edit-info-text-" + id;
+
+    var comment_editor = document.getElementById(comment_editor_string)
+    var comment_editor_text = document.getElementById(comment_editor_text_string)
+
+    // dersom editor og edited_at not NULL
+    if (data.edited_at) {
+        // Oppdatere editor og edited_at
+        // Force edited tab til block.
+        comment_editor.style.display = "block";
+        var edited_text = 'Edited: ' + data.editor_id + ', ' + moment(data.edited_at).fromNow(refresh=true);
+        comment_editor_text.innerText = edited_text;
+
+      }
+  }
+
+
+  async function get_comment(comment_id) {
+    try {
+      json_response = await fetch("/attractions/comment/" + comment_id);
+      data = await json_response.json();
+    }
+    catch (error) {
+      alert('Error: getting data.')
+    }
+    return data;
+  }
+
+  async function post_comment(comment_id) {
+  comment_edit_string = "comment-id-edit-textarea-" + comment_id;
+  var edit_text = document.getElementById(comment_edit_string).value;
+  try {
+    json_response = await fetch(('/attractions/comment/' + comment_id), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({edit_text: edit_text})
+    });
+    response = await json_response.json();
+  }
+  catch (error) {
+    alert('Error: posting data.');
+  }
+  toggle_edit_comment(comment_id);
+}
+
+async function post_delete_comment(comment_id) {
+  try {
+    json_response = await fetch(('/attractions/comment/delete'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({comment_id: comment_id})
+    });
+    response = await json_response.json();
+
+    if (response.success == true) {
+      comment_string = "comment-" + comment_id;
+      document.getElementById(comment_string).remove();
+    }
+  }
+  catch (error) {
+    alert('Error: Deleting Comment.');
+  }
+}
+
+</script>
+
 {% endblock %}
+
+
