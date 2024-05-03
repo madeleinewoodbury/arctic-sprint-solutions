@@ -149,7 +149,6 @@ const filterAttractions = () => {
 
 // Displays the profile tabs and select active tab
 function profileTabs(tabs, activeTab=0) {   
-    console.log(tabs, activeTab); 
     return {
         tabs,
         activeTab: tabs[activeTab],
@@ -157,7 +156,10 @@ function profileTabs(tabs, activeTab=0) {
         setActiveTab(tab) {
             this.activeTab = tab;
             const tabIndex = this.tabs.findIndex(t => t === tab)
-            updateUrlParams({ current_tab: tabIndex })
+            updateUrlParams({ 
+                current_tab: tabIndex,
+                groupId: undefined
+             })
         }
     }
 }
@@ -437,6 +439,7 @@ const userGroups = (groups) => {
         },
 
         getGroupAttractions(groupId) {
+            updateUrlParams({ groupId: groupId })
             this.currentGroup = this.groups.find(group => group.id === groupId)
             const form = document.querySelector('#editListForm')
             form.querySelector('#group_id').value = groupId
@@ -468,6 +471,7 @@ const userGroups = (groups) => {
         },
 
         backToGroups() {
+            updateUrlParams({ groupId: undefined })
             this.showAttractions = false
             this.groupedAttractions = []
             this.currentGroup = null
@@ -477,12 +481,10 @@ const userGroups = (groups) => {
             window.location.href = `/attractions/${attractionId}`
             storePreviousUrl()
         }
-
     }
 }
 
 const friendGroups = (groups) => {
-
     return {
         groups: groups.map(group => {
             return {
@@ -497,6 +499,7 @@ const friendGroups = (groups) => {
         currentGroup: null,
 
         getGroupAttractions(groupId) {
+            updateUrlParams({ groupId: groupId })
             this.currentGroup = this.groups.find(group => group.id === groupId)
             
             fetch(`/auth/group-attractions/${groupId}`, {
@@ -519,6 +522,7 @@ const friendGroups = (groups) => {
         },
 
         backToGroups() {
+            updateUrlParams({ groupId: undefined })
             this.showAttractions = false
             this.groupedAttractions = []
             this.currentGroup = null
@@ -528,7 +532,6 @@ const friendGroups = (groups) => {
             window.location.href = `/attractions/${attractionId}`
             storePreviousUrl()
         }
-
     }
 }
 
