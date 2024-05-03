@@ -83,7 +83,7 @@ def get_attractions():
     city = City.query.get(selected_city)
     
     # Parse URL parameters for filtering
-    search_text = request.args.get('q', '')
+    search_text = request.args.get('search', '')
     filter_priority = request.args.get('filterPriority')
     filter_priority_list = filter_priority.split(',') if filter_priority else []
     categories = request.args.get('categories', '')

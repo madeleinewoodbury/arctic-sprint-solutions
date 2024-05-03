@@ -26,7 +26,7 @@
                 <button type="submit" class="full-width-btn quick-search-btn">{{ _("Suggest for me!") }}</button>
             </form>
             {% endif %}
-            <form class="search" method="POST" action="{{ url_for('attractions.search_attractions') }}">
+            <form class="search" method="POST" action="{{ url_for('attractions.get_attractions', search=search_form.search_text.data) }}">
                 {{ search_form.hidden_tag() }}
                 <div class="search-text form-control">
                     {{ search_form.search_text }}
@@ -135,7 +135,7 @@
         if (searchText === '') {
             window.location.href = "{{ url_for('attractions.get_attractions') }}"
         } else {
-            var url = "{{ url_for('attractions.get_attractions') }}" + "?q=" + encodeURIComponent(searchText)
+            var url = "{{ url_for('attractions.get_attractions') }}" + "?search=" + encodeURIComponent(searchText)
             window.location.href = url
         }
     })

@@ -46,7 +46,7 @@ const filterAttractionsGridContent = () => {
 
     // Parse URL parameters
     const urlParams = new URLSearchParams(window.location.search);
-    let search_text = urlParams.get('q');
+    let search_text = urlParams.get('search');
     let filterPriority = urlParams.get('filterPriority') ? urlParams.get('filterPriority').split(',') : [];
     let selectedCategories = urlParams.get('categories') ? urlParams.get('categories').split(',') : [];
     let selectedAgeGroups = urlParams.get('age_groups') ? urlParams.get('age_groups').split(',') : [];
@@ -97,7 +97,7 @@ const filterAttractionsGridContent = () => {
             // Construct the URL with separate arguments for each filter type
             const urlParams = new URLSearchParams();
             if (search_text) {
-                urlParams.append('q', search_text);
+                urlParams.append('search', search_text);
             }
             if (selectedCategories.length > 0) {
                 urlParams.append('categories', selectedCategories.join(','));
