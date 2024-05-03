@@ -467,8 +467,10 @@ def remove_friend(user_id):
 @auth.route('/friend/profile/<int:user_id>', methods=['GET'])
 @login_required
 def friend_profile(user_id):
+    current_tab = request.args.get('current_tab')
+    activeTab = current_tab if current_tab else 0
     friend = User.query.get(user_id)
-
+    
     if friend is None:
         abort(404)
 
@@ -479,7 +481,6 @@ def friend_profile(user_id):
     unlocked_progression, in_progress_badges = get_user_badge_progress(user_id)
 
     tabs = ['Visited Attractions', 'Badges', 'Lists']
-    activeTab = 0
 
     return render_template(
         'friendProfile.html',
