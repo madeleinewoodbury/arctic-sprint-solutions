@@ -1,6 +1,7 @@
 from . import main
-from flask import render_template, session, redirect, url_for, flash, request, current_app
+from flask import render_template, session, redirect, url_for, flash, request, current_app, send_from_directory
 from flask_babel import _, refresh
+import os
 
 
 
@@ -22,3 +23,9 @@ def language():
         flash(_("Language not recognized."), 'error')
         return redirect(url_for('main.index'))
     return render_template('change_language.html')
+
+@main.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(main.root_path, 'app\static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    #return send_from_directory(os.path.join(main.root_path, 'app\static'),
+                            # 'favicon.ico', mimetype='image/vnd.microsoft.icon')

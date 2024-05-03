@@ -25,4 +25,4 @@ class SelectCityForm(Form):
 
 class CommentForm(Form):
     comment = TextAreaField()
-    submit = SubmitField(_('Post'), render_kw={'class': 'search-btn'})
+    submit = SubmitField(_('Post'), render_kw={'class': 'btn btn-primary'})

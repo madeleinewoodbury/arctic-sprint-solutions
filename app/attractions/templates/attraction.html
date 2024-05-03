@@ -131,22 +131,22 @@
             </div>
             </div>
             <div class="comment-content" id="comment-id-{{ comment.id }}" style="display: block;">
-              <p>{{ comment.comment_text }}</p>
+              <pre>{{ comment.comment_text }}</pre>
             </div>
             <div class="comment-content" id="comment-id-edit-{{ comment.id }}" style="display: none;">
               <textarea name="" id="comment-id-edit-textarea-{{ comment.id }}" cols="30" rows="10">{{ comment.comment_text }}</textarea>
               <button class="btn btn-primary" type="button" onclick="post_comment('{{ comment.id }}')">{{ _("Post") }}</button>
             </div>
             
-            {% if comment.edited_at %}
-              <div class="comment-edit-info-{{ comment.id }}">
-                <p>Edited: {{ comment.editor.username }}, {{ moment(comment.edited_at).fromNow(refresh=True) }}</p>
-              </div>
-            {% endif %}
+            <div id="comment-edit-info-{{ comment.id }}" style="display: {% if not comment.edited_at %} none {% endif %};">
+              <p id="comment-edit-info-text-{{ comment.id }}">Edited: {{ comment.editor.username }}, {{ moment(comment.edited_at).fromNow(refresh=True) }}</p>
+            </div>
+            
+            
             {% if current_user.is_authenticated %}
               {% if (current_user.id == comment.user.id) or (current_user.role_rel.title == 'Moderator') or (current_user.role_rel.title == 'Administrator') %}
               <div class="btn-container"></div>
-                <button class="btn btn-primary" type="button" onclick="toggleEditComment('{{ comment.id }}')">{{ _("Edit Comment") }}</button>
+                <button class="btn btn-primary" type="button" onclick="toggle_edit_comment('{{ comment.id }}')">{{ _("Edit Comment") }}</button>
               </div>
               {% endif %}
             {% endif %}
@@ -158,15 +158,12 @@
 </section>
 
 <script>
-  async function toggleEditComment(id) {
+  async function toggle_edit_comment(id) {
     var comment_string = "comment-id-" + id;
     var comment_edit_string = "comment-id-edit-" + id;
-    // Legge til en streng for editor
-    // Legge til en streng for edited_at
+
     var comment = document.getElementById(comment_string)
     var comment_edit = document.getElementById(comment_edit_string)
-    // editor
-    // edited_at
 
     if (comment.style.display == "block") {
       comment.style.display = "none";
@@ -177,10 +174,30 @@
       comment.innerText = data.text;
       comment.style.display = "block";
       comment_edit.style.display = "none";
-      // dersom editor og edited_at not NULL
+      if (data.edited_at) {
+        show_edited(data, id);
+      }
+    }
+    
+  }
+
+  async function show_edited(data, id) {
+    // Legge til en streng for editor
+    var comment_editor_string = "comment-edit-info-" + id;
+    var comment_editor_text_string = "comment-edit-info-text-" + id;
+
+    var comment_editor = document.getElementById(comment_editor_string)
+    var comment_editor_text = document.getElementById(comment_editor_text_string)
+
+    // dersom editor og edited_at not NULL
+    if (data.edited_at) {
         // Oppdatere editor og edited_at
         // Force edited tab til block.
-    }
+        comment_editor.style.display = "block";
+        var edited_text = 'Edited: ' + data.editor_id + ', ' + moment(data.edited_at).fromNow(refresh=true);
+        comment_editor_text.innerText = edited_text;
+
+      }
   }
 
 
@@ -190,7 +207,7 @@
       data = await json_response.json();
     }
     catch (error) {
-      alert('Error')
+      alert('Error: getting data.')
     }
     return data;
   }
@@ -209,9 +226,9 @@ async function post_comment(comment_id) {
     response = await json_response.json();
   }
   catch (error) {
-    alert('Error');
+    alert('Error: posting data.');
   }
-  toggleEditComment(comment_id);
+  toggle_edit_comment(comment_id);
 }
 
 </script>

@@ -401,6 +401,16 @@
   resize: none;
 }
 
+.comment-container textarea {
+  width: 100%;
+}
+
+.comment-content pre {
+  max-width: 70%;
+  white-space: pre-wrap; 
+  word-wrap: break-word;
+}
+
   
 }
 

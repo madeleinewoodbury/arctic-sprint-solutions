@@ -175,8 +175,8 @@ def get_comment(comment_id):
     if comment_data:
         return jsonify({
             'text': comment_data.comment_text,
-            'edited_at': comment_data.edited_at,
-            'editor_id': comment_data.editor.username
+            'edited_at': comment_data.edited_at if comment_data.edited_at else None,
+            'editor_id': comment_data.editor.username if comment_data.editor else None
             })
 
 # API POST comment
