@@ -117,7 +117,7 @@ const filterAttractionsGridContent = () => {
             const newUrl = `${baseUrl}?${urlParams.toString()}`;
             window.location.href = newUrl;
 
-            ///// UNUSED UNDER /////
+            ///// CODE FOR AJAX UPDATES BELOW BYPASSED CURRENTLY /////
             history.pushState(null, '', newUrl);
 
             // Fetch filtered attractions

@@ -114,15 +114,19 @@
             <!-- Pagination controls -->
             {% if total_pages > 0 %}
             <div class="pagination">
-                <span>{{ _("Page") }} {{ current_page }} {{ _("of") }} {{ total_pages }}</span>
                 {% if current_page > 1 %}
-                <a href="?page=1{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">First</a>
-                <a href="?page={{ current_page - 1 }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">Previous</a>
-            {% endif %}
-            {% if current_page < total_pages %}
-                <a href="?page={{ current_page + 1 }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">Next</a>
-                <a href="?page={{ total_pages }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">Last</a>
-            {% endif %}
+                    <a href="?page={{ current_page - 1 }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">&#10094;</a>
+                {% else %}
+                    <div class="arrow-placeholder">&#10094;</div> <!-- Reserve space for the arrow -->
+                {% endif %}
+                {% for page_num in range(1, total_pages + 1) %}
+                    <a href="?page={{ page_num }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}" {% if current_page == page_num %}class='active'{% endif %}>{{ page_num }}</a>
+                {% endfor %}
+                {% if current_page < total_pages %}
+                    <a href="?page={{ current_page + 1 }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">&#10095;</a>
+                {% else %}
+                    <div class="arrow-placeholder">&#10095;</div> <!-- Reserve space for the arrow -->
+                {% endif %}
             </div>
             {% endif %}
         </div>
