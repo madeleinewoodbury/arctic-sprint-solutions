@@ -38,58 +38,50 @@ const attractionFilters = () => {
     }
 }
 
-//document.addEventListener('DOMContentLoaded', function() {
-    // Add event listener to checkboxes
-//    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-//    checkboxes.forEach(function(checkbox) {
-//        checkbox.addEventListener('change', function() {
-            // Submit the form when any checkbox is checked or unchecked
-//            document.querySelector('.filter').submit();
-//        })
-//    })
-//})
-
-
-
-document.addEventListener('DOMContentLoaded', function() {
+// Get updated attractions content based on changes made to filtering checkboxes
+const filterAttractionsGridContent = () => {
     // Add event listener to checkboxes
     const checkboxes = document.querySelectorAll('.filter input[type="checkbox"]')
     if (!checkboxes) return
-    let selectedCategories = []
-    let selectedAgeGroups = []
-    let selectedTags = []
 
+    // Parse URL parameters
     const urlParams = new URLSearchParams(window.location.search);
-
-    let filterPriority = urlParams.get('filterPriority');
-    if (filterPriority === null) {
-        filterPriority = []; // Set default value as an empty array
-    } else {
-        filterPriority = filterPriority.split(','); // Convert comma-separated string to an array
-    }
-
     let search_text = urlParams.get('q');
+    let filterPriority = urlParams.get('filterPriority') ? urlParams.get('filterPriority').split(',') : [];
+    let selectedCategories = urlParams.get('categories') ? urlParams.get('categories').split(',') : [];
+    let selectedAgeGroups = urlParams.get('age_groups') ? urlParams.get('age_groups').split(',') : [];
+    let selectedTags = urlParams.get('tags') ? urlParams.get('tags').split(',') : [];
 
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
-            checkboxes.forEach(cb => {
-                if (cb.checked && cb.name === 'categories') {
-                    selectedCategories.push(cb.value)
-                    if (!filterPriority.includes(cb.name)) {
-                        filterPriority.push(cb.name)
+            if (checkbox.checked) {
+                // Add the value to the respective list if the checkbox is checked
+                if (checkbox.name === 'categories') {
+                    selectedCategories.push(checkbox.value);
+                    if (!filterPriority.includes(checkbox.name)) {
+                        filterPriority.push(checkbox.name);
                     }
-                } else if (cb.checked && cb.name === 'age_groups') {
-                    selectedAgeGroups.push(cb.value)
-                    if (!filterPriority.includes(cb.name)) {
-                        filterPriority.push(cb.name)
+                } else if (checkbox.name === 'age_groups') {
+                    selectedAgeGroups.push(checkbox.value);
+                    if (!filterPriority.includes(checkbox.name)) {
+                        filterPriority.push(checkbox.name);
                     }
-                } else if (cb.checked && cb.name === 'tags') {
-                    selectedTags.push(cb.value)
-                    if (!filterPriority.includes(cb.name)) {
-                        filterPriority.push(cb.name)
+                } else if (checkbox.name === 'tags') {
+                    selectedTags.push(checkbox.value);
+                    if (!filterPriority.includes(checkbox.name)) {
+                        filterPriority.push(checkbox.name);
                     }
                 }
-            })
+            } else {
+                // Remove the value from the respective list if the checkbox is unchecked
+                if (checkbox.name === 'categories') {
+                    selectedCategories = selectedCategories.filter(category => category !== checkbox.value);
+                } else if (checkbox.name === 'age_groups') {
+                    selectedAgeGroups = selectedAgeGroups.filter(ageGroup => ageGroup !== checkbox.value);
+                } else if (checkbox.name === 'tags') {
+                    selectedTags = selectedTags.filter(tag => tag !== checkbox.value);
+                }
+            }
 
             // Updates the filterPriority if any filter groups have been reset.
             if (selectedCategories.length === 0 && filterPriority.includes('categories')) {
@@ -101,21 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedTags.length === 0 && filterPriority.includes('tags')) {
                 filterPriority.splice(filterPriority.indexOf('tags'), 1)
             }
-            
-        // Construct the URL with separate arguments for each filter type
-        let url = '/attractions?';
-        if (selectedCategories.length > 0) {
-            url += 'categories=' + selectedCategories.join(',') + '&'
-        }
-        if (selectedAgeGroups.length > 0) {
-            url += 'age_groups=' + selectedAgeGroups.join(',') + '&'
-        }
-        if (selectedTags.length > 0) {
-            url += 'tags=' + selectedTags.join(',') + '&'
-        }
-        if (filterPriority.length > 0) {
-            url += 'filterPriority=' + filterPriority.join(',')
-        }
 
             // Construct the URL with separate arguments for each filter type
             const urlParams = new URLSearchParams();
@@ -135,129 +112,67 @@ document.addEventListener('DOMContentLoaded', function() {
                 urlParams.append('filterPriority', filterPriority.join(','));
             }
 
-            // Redirect to the new URL
+            // Update the URL
             const baseUrl = window.location.href.split('?')[0];
             const newUrl = `${baseUrl}?${urlParams.toString()}`;
-            window.location.href = newUrl;
-        })
-    })
-})
+            history.pushState(null, '', newUrl);
 
-// Function to update checkboxes based on the number of available attractions
-const disableCheckboxes = () => {
-    const attractionsContainer = document.getElementById('filtered-results')
-    if (!attractionsContainer) return
-    const numAttractions = attractionsContainer.querySelectorAll('.attraction').length
-    const checkboxes = document.querySelectorAll('.filter input[type="checkbox"]')
-    if (numAttractions === 1) {
-        checkboxes.forEach(checkbox => {
-            if (!checkbox.checked) {
-                checkbox.disabled = true
-            }
-        })
-    }
-}
-
-// Function to filter attractions based on categories
-const filterAttractions = () => {
-    const checkboxes = document.querySelectorAll('.filter input[type="checkbox"]')
-    if (!checkboxes) return
-
-    const searchInput = document.getElementById('search_text')
-    const searchText = searchInput ? searchInput.value.trim() : '';
-    let filterPriority = []
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            const selectedCategories = []
-            const selectedAgeGroups = []
-            const selectedTags = []
-            checkboxes.forEach(cb => {
-                if (cb.checked && cb.name === 'categories') {
-                    selectedCategories.push(cb.value)
-                    if (!filterPriority.includes(cb.name)) {
-                        filterPriority.push(cb.name)
-                    }
-                } else if (cb.checked && cb.name === 'age_groups') {
-                    selectedAgeGroups.push(cb.value)
-                    if (!filterPriority.includes(cb.name)) {
-                        filterPriority.push(cb.name)
-                    }
-                } else if (cb.checked && cb.name === 'tags') {
-                    selectedTags.push(cb.value)
-                    if (!filterPriority.includes(cb.name)) {
-                        filterPriority.push(cb.name)
-                    }
+            // Fetch filtered attractions
+            fetch(newUrl, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-
-            // Updates the filterPriority if any filter groups have been reset.
-            if (selectedCategories.length === 0 && filterPriority.includes('categories')) {
-                filterPriority.splice(filterPriority.indexOf('categories'), 1)
-            }
-            if (selectedAgeGroups.length === 0 && filterPriority.includes('age_groups')) {
-                filterPriority.splice(filterPriority.indexOf('age_groups'), 1)
-            }
-            if (selectedTags.length === 0 && filterPriority.includes('tags')) {
-                filterPriority.splice(filterPriority.indexOf('tags'), 1)
-            }
-
-            // Send AJAX request to the server
-            const xhr = new XMLHttpRequest()
-            xhr.open('POST', '/attractions/filter', true)
-            xhr.setRequestHeader('Content-Type', 'application/json')
-            xhr.onreadystatechange = function () {
-
-                // Receive AJAX response from the server
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText)
-                    const attractions = response.attractions
-                    const categoryIDs = response.categoryIDs
-                    const ageGroupIDs = response.ageGroupIDs
-                    const tagIDs = response.tagIDs
-
-                    // Update the filtered attractions content
-                    document.getElementById('filtered-results').innerHTML = ''
-                    attractions.forEach(function (attractionHTML) {
-                        document.getElementById('filtered-results').innerHTML += attractionHTML
-                    })
-
-                    // Update the category filter checkboxes
-                    const categoryCheckbox = document.getElementById('category-checkbox')
-                    if (categoryCheckbox) {
-                        const checkboxInputs = categoryCheckbox.querySelectorAll('input[type="checkbox"]')
-                        updateCheckboxes(checkboxInputs, categoryIDs)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
-                    // Update the age group filter checkboxes
-                    const ageGroupCheckbox = document.getElementById('age-group-checkbox')
-                    if (ageGroupCheckbox) {
-                        const checkboxInputs = ageGroupCheckbox.querySelectorAll('input[type="checkbox"]')
-                        updateCheckboxes(checkboxInputs, ageGroupIDs)
+                    return response.text();
+                })
+                .then(data => {
+                    const jsonData = JSON.parse(data);
+                    if (Array.isArray(jsonData.attractions)) {
+                        const container = document.getElementById('filtered-results')
+                        container.innerHTML = ''
+                        jsonData.attractions.forEach(attractionHTML => {
+                            container.innerHTML += attractionHTML
+                        })
+                        // Update the category filter checkboxes
+                        const categoryCheckbox = document.getElementById('category-checkbox')
+                        if (categoryCheckbox) {
+                            const checkboxInputs = categoryCheckbox.querySelectorAll('input[type="checkbox"]')
+                            updateCheckboxes(checkboxInputs, jsonData.categoryIDs, selectedCategories)
+                        }
+                        // Update the age group filter checkboxes
+                        const ageGroupCheckbox = document.getElementById('age-group-checkbox')
+                        if (ageGroupCheckbox) {
+                            const checkboxInputs = ageGroupCheckbox.querySelectorAll('input[type="checkbox"]')
+                            updateCheckboxes(checkboxInputs, jsonData.ageGroupIDs, selectedAgeGroups)
+                        }
+                        // Update the tag filter checkboxes
+                        const tagCheckbox = document.getElementById('tag-checkbox')
+                        if (tagCheckbox) {
+                            const checkboxInputs = tagCheckbox.querySelectorAll('input[type="checkbox"]')
+                            updateCheckboxes(checkboxInputs, jsonData.tagIDs, selectedTags)
+                        }
+
+                    } else {
+                        console.error('Invalid data format:', jsonData)
                     }
-                    // Update the tag filter checkboxes
-                    const tagCheckbox = document.getElementById('tag-checkbox')
-                    if (tagCheckbox) {
-                        const checkboxInputs = tagCheckbox.querySelectorAll('input[type="checkbox"]')
-                        updateCheckboxes(checkboxInputs, tagIDs)
-                    }
-                }
-            }
-            xhr.send(JSON.stringify({
-                selectedCategories: selectedCategories,
-                selectedAgeGroups: selectedAgeGroups,
-                selectedTags: selectedTags,
-                searchText: searchText,
-                filterPriority: filterPriority
-            }))
+                })
+                .catch(error => {
+                    console.error('Error fetching attractions:', error)
+                })
         })
     })
 }
 
 // Displays the profile tabs and select active tab
-function profileTabs(tabs, activeTab=0) {    
+function profileTabs(tabs, activeTab = 0) {
     return {
         tabs,
         activeTab: tabs[activeTab],
-        
+
         setActiveTab(tab) {
             this.activeTab = tab;
             const tabIndex = this.tabs.findIndex(t => t === tab)
@@ -266,7 +181,7 @@ function profileTabs(tabs, activeTab=0) {
     }
 }
 
-// Function to update URL parameters
+// Updates URL parameters
 function updateUrlParams(params) {
     const urlParams = new URLSearchParams(window.location.search)
     for (const key in params) {
@@ -282,22 +197,18 @@ function updateUrlParams(params) {
     history.pushState({}, '', newUrl)
 }
 
-// Function to update the availability and count labels of given checkboxes
-function updateCheckboxes(checkboxes, activeIDs) {
+// Updates the visibility and selection status of checkboxes, based on given IDs
+function updateCheckboxes(checkboxes, activeIDs, checkedIDs) {
     checkboxes.forEach(checkbox => {
-        if (activeIDs.includes(checkbox.value)) {
-            checkbox.removeAttribute('disabled')
-        } else {
-            checkbox.setAttribute('disabled', 'disabled')
-            checkbox.checked = false
-        }
+        checkbox.checked = checkedIDs.includes(checkbox.value)
+        checkbox.parentNode.style.display = activeIDs.includes(checkbox.value) ? '' : 'none'
     })
 }
 
 const citySelectMobile = () => {
     const citySelect = document.getElementById('citySelectMobile');
     const form = document.getElementById('cityFormMobile');
-    if(!citySelect && !form) return
+    if (!citySelect && !form) return
 
     selectCity(citySelect, form)
 }
@@ -305,7 +216,7 @@ const citySelectMobile = () => {
 const citySelectAnonymous = () => {
     const citySelect = document.getElementById('citySelectAnonymous');
     const form = document.getElementById('cityFormAnonymous');
-    if(!citySelect && !form) return
+    if (!citySelect && !form) return
 
     selectCity(citySelect, form)
 }
@@ -313,7 +224,7 @@ const citySelectAnonymous = () => {
 const citySelectDesktop = () => {
     const citySelect = document.getElementById('citySelectDesktop');
     const form = document.getElementById('cityFormDesktop');
-    if(!citySelect && !form) return
+    if (!citySelect && !form) return
 
     selectCity(citySelect, form)
 }
@@ -329,26 +240,26 @@ const selectCity = (citySelect, form) => {
     citySelect.addEventListener('change', (e) => {
         sessionStorage.setItem('selectedCity', e.target.value);
         const formData = new FormData(form);
-        
+
         fetch(form.action, {
             method: form.method,
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.errors) console.log(data.errors);
-            if(location.pathname === '/attractions') {
-                location.reload();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.errors) console.log(data.errors);
+                if (location.pathname === '/attractions') {
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     })
 }
 
 
-
+// Redirects back to the previous visited URL
 function goBack() {
     // Check if there's a history to go back to
     if (window.history.length > 1) {
@@ -361,23 +272,23 @@ function goBack() {
 
 
 function markAsVisited(attractionId, checked) {
-  fetch(`/attractions/${attractionId}/mark_as_visited`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ visited: checked }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data)
-        // Update level element
-        const levelElement = document.getElementById('level')
-        if (levelElement) {
-            levelElement.innerHTML = `<strong>${data.current_level}</strong>`
-        }
+    fetch(`/attractions/${attractionId}/mark_as_visited`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ visited: checked }),
     })
-    .catch((error) => console.error("Error:", error))
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data)
+            // Update level element
+            const levelElement = document.getElementById('level')
+            if (levelElement) {
+                levelElement.innerHTML = `<strong>${data.current_level}</strong>`
+            }
+        })
+        .catch((error) => console.error("Error:", error))
 }
 
 const visitedAttraction = (attractionId, visited) => {
@@ -396,7 +307,7 @@ const visitedAttraction = (attractionId, visited) => {
 }
 
 const wishlist = (attractionId, groups) => {
-    
+
     return {
         groups: groups,
         inAllGroups: groups.every(group => group.visited),
@@ -413,18 +324,18 @@ const wishlist = (attractionId, groups) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ attractionId: attractionId})
+                body: JSON.stringify({ attractionId: attractionId })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if(data.status === 'success') location.reload()
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') location.reload()
+                })
+                .catch(error => console.error('Error:', error));
         },
 
 
@@ -434,32 +345,32 @@ const wishlist = (attractionId, groups) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ groupId: groupId , attractionId: attractionId})
+                body: JSON.stringify({ groupId: groupId, attractionId: attractionId })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                this.groups = this.groups.map(group => {
-                    if (group.id === groupId) {
-                        group.visited = true
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
-                    return group
+                    this.groups = this.groups.map(group => {
+                        if (group.id === groupId) {
+                            group.visited = true
+                        }
+                        return group
+                    })
+                    this.inAllGroups = this.groups.every(group => group.visited)
+                    return response.json();
                 })
-                this.inAllGroups = this.groups.every(group => group.visited)
-                return response.json();
-            })
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
         },
-        
+
         removeFromGroup(groupId) {
             fetch(`/attractions/remove_from_group`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ groupId: groupId , attractionId: attractionId})
+                body: JSON.stringify({ groupId: groupId, attractionId: attractionId })
             }).then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -473,7 +384,7 @@ const wishlist = (attractionId, groups) => {
                 this.inAllGroups = this.groups.every(group => group.visited)
                 return response.json();
             }).then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
+                .catch(error => console.error('Error:', error));
         }
     }
 }
@@ -538,7 +449,7 @@ const userGroups = (groups) => {
                     option.selected = true
                 }
             })
-            
+
             fetch(`/auth/group-attractions/${groupId}`, {
                 method: 'GET',
                 headers: {
@@ -573,6 +484,7 @@ const userGroups = (groups) => {
 
 document.addEventListener('DOMContentLoaded', () => {
     truncateAttractionDescription()
+    filterAttractionsGridContent()
     citySelectDesktop()
     citySelectMobile()
     citySelectAnonymous()
