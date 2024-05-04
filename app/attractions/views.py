@@ -163,7 +163,7 @@ def get_attraction(attraction_id):
         "attraction.html", attraction=attraction, visited=visited, groups=groups, 
         comments=comment_list, pagination=pagination, comment_form=comment_form
     )
-
+    
 
 # API GET comment
 @attractions.route("/attractions/comment/<comment_id>", methods=["GET"])
@@ -198,7 +198,7 @@ def post_comment(comment_id):
             return jsonify({'success': False})
     except:
         return jsonify({'success': False})
-    
+
 
 # API POST comment
 @attractions.route("/attractions/comment/delete", methods=["POST"])
@@ -226,30 +226,37 @@ def post_delete_comment():
 def mark_as_visited(attraction_id):
     data = request.get_json()
     visited = data.get("visited", False)
-
-    if visited:
-        # Mark attraction as visited
-        existing_record = VisitedAttraction.query.filter_by(
-            user_id=current_user.id, attraction_id=attraction_id
+    existing_record = VisitedAttraction.query.filter_by(
+        user_id=current_user.id, attraction_id=attraction_id
         ).first()
-        if not existing_record:
-            visited_attraction = VisitedAttraction(
-                user_id=current_user.id, attraction_id=attraction_id
-            )
-            db.session.add(visited_attraction)
-            db.session.commit()
-            return jsonify(
-                {"status": "success", "message": "Attraction marked as visited."}
-            )
-
-    else:
-        existing_record = VisitedAttraction.query.filter_by(
-            user_id=current_user.id, attraction_id=attraction_id
-        ).first()
-        if existing_record:
-            db.session.delete(existing_record)
-            db.session.commit()
-            return jsonify({"status": "success", "message": "Attraction mark removed."})
+    
+    # Mark attraction as visited
+    if visited and not existing_record:
+        visited_attraction = VisitedAttraction(
+            user_id=current_user.id, attraction_id=attraction_id)
+        db.session.add(visited_attraction)
+        db.session.commit()
+        level = current_user.level
+        return jsonify({"status": "success", 
+                        "message": "Attraction mark removed.",
+                        "current_level": level['current_level'],
+                        "points_required": level['points_required'],
+                        "points_missing": level['points_missing'],
+                        "progress": level['progress']
+                        })
+    
+    # Unmark attraction as visited
+    elif not visited and existing_record:
+        db.session.delete(existing_record)
+        db.session.commit()
+        level = current_user.level
+        return jsonify({"status": "success", 
+                        "message": "Attraction mark removed.",
+                        "current_level": level['current_level'],
+                        "points_required": level['points_required'],
+                        "points_missing": level['points_missing'],
+                        "progress": level['progress']
+                        })
 
     return jsonify({"status": "error", "message": "An error occurred."})
 

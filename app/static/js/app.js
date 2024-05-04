@@ -149,15 +149,35 @@ const filterAttractions = () => {
 
 // Displays the profile tabs and select active tab
 function profileTabs(tabs, activeTab=0) {   
-    console.log(tabs, activeTab); 
     return {
         tabs,
         activeTab: tabs[activeTab],
         
         setActiveTab(tab) {
-            this.activeTab = tab
-        },
+            this.activeTab = tab;
+            const tabIndex = this.tabs.findIndex(t => t === tab)
+            updateUrlParams({ 
+                current_tab: tabIndex,
+                groupId: undefined
+             })
+        }
     }
+}
+
+// Function to update URL parameters
+function updateUrlParams(params) {
+    const urlParams = new URLSearchParams(window.location.search)
+    for (const key in params) {
+        if (params.hasOwnProperty(key)) {
+            if (params[key] !== null && params[key] !== undefined) {
+                urlParams.set(key, params[key])
+            } else {
+                urlParams.delete(key)
+            }
+        }
+    }
+    const newUrl = window.location.pathname + '?' + urlParams.toString()
+    history.pushState({}, '', newUrl)
 }
 
 // Function to update the availability and count labels of given checkboxes
@@ -225,6 +245,32 @@ const selectCity = (citySelect, form) => {
     })
 }
 
+// Appends the current URL to the previousURLs stack
+function storePreviousUrl() {
+    var previousUrls = localStorage.getItem('previousUrls')
+    previousUrls = previousUrls ? JSON.parse(previousUrls) : []
+    previousUrls.push(window.location.href)
+    localStorage.setItem('previousUrls', JSON.stringify(previousUrls))
+}
+
+// Pops and redirects to the top-most URL in the previousUrls stack
+function goBack() {
+    var previousUrls = localStorage.getItem('previousUrls')
+
+    if (previousUrls) {
+        previousUrls = JSON.parse(previousUrls)
+
+        if (previousUrls.length > 0) {
+            var previousUrl = previousUrls.pop()
+            localStorage.setItem('previousUrls', JSON.stringify(previousUrls))
+            window.location.href = previousUrl
+            return
+        }
+    }
+    // Handle the case when there are no previous URLs or local storage is empty
+    alert("No previous page available.")
+}
+
 function markAsVisited(attractionId, checked) {
   fetch(`/attractions/${attractionId}/mark_as_visited`, {
     method: "POST",
@@ -235,9 +281,14 @@ function markAsVisited(attractionId, checked) {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data); // Handle server response here
+      console.log(data)
+        // Update level element
+        const levelElement = document.getElementById('level')
+        if (levelElement) {
+            levelElement.innerHTML = `<strong>${data.current_level}</strong>`
+        }
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => console.error("Error:", error))
 }
 
 const visitedAttraction = (attractionId, visited) => {
@@ -388,6 +439,7 @@ const userGroups = (groups) => {
         },
 
         getGroupAttractions(groupId) {
+            updateUrlParams({ groupId: groupId })
             this.currentGroup = this.groups.find(group => group.id === groupId)
             const form = document.querySelector('#editListForm')
             form.querySelector('#group_id').value = groupId
@@ -419,6 +471,7 @@ const userGroups = (groups) => {
         },
 
         backToGroups() {
+            updateUrlParams({ groupId: undefined })
             this.showAttractions = false
             this.groupedAttractions = []
             this.currentGroup = null
@@ -426,13 +479,12 @@ const userGroups = (groups) => {
 
         goToAttraction(attractionId) {
             window.location.href = `/attractions/${attractionId}`
+            storePreviousUrl()
         }
-
     }
 }
 
 const friendGroups = (groups) => {
-
     return {
         groups: groups.map(group => {
             return {
@@ -447,6 +499,7 @@ const friendGroups = (groups) => {
         currentGroup: null,
 
         getGroupAttractions(groupId) {
+            updateUrlParams({ groupId: groupId })
             this.currentGroup = this.groups.find(group => group.id === groupId)
             
             fetch(`/auth/group-attractions/${groupId}`, {
@@ -469,6 +522,7 @@ const friendGroups = (groups) => {
         },
 
         backToGroups() {
+            updateUrlParams({ groupId: undefined })
             this.showAttractions = false
             this.groupedAttractions = []
             this.currentGroup = null
@@ -476,8 +530,8 @@ const friendGroups = (groups) => {
 
         goToAttraction(attractionId) {
             window.location.href = `/attractions/${attractionId}`
+            storePreviousUrl()
         }
-
     }
 }
 

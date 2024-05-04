@@ -4,7 +4,6 @@ from flask_babel import _, refresh
 import os
 
 
-
 @main.route('/')
 @main.route('/index')
 def index():

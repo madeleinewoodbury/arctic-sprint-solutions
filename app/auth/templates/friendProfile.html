@@ -21,22 +21,27 @@
             <strong>{{number_of_visited_attractions}}</strong></span>
           <span>{{ _("Points:") }}
             <strong>{{points}}</strong></span>
-          <span>{{ _("Level:") }}
-            <strong>{{level.current_level}}</strong></span>
+          <span>{{ _("Level:") }} 
+            <strong>{{friend.level.current_level}}</strong></span>
         </div>
         <div class="progress-container">
-          <progress class="progress-bar" value="{{ level.progress }}"
-            max="{{ level.points_required }}"></progress>
+          <progress class="progress-bar" value="{{ friend.level.progress }}" max="{{ friend.level.points_required }}"></progress>
           <span class="progress-text">
-            <strong>{{ level.points_missing }}</strong> {{ _("points until level
-            ") }}
-            <strong>{{level.current_level + 1}}</strong></span>
-        </div>
+            <strong>{{ friend.level.points_missing }}</strong> {{ _("points until level ") }}
+            <strong>{{ friend.level.current_level + 1 }}</strong></span>
+      </div>
       </div>
     </div>
   </div>
 
   <ul class="profile-tabs">
+    <li class="" onclick="goBack()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" 
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left">
+      <path d="M6 8L2 12L6 16"/>
+      <path d="M2 12H22"/>
+    </svg>{{ _("Return") }}</li>
+    <li class="spacer"></li> <!-- Spacer -->
     <template x-for="tab in tabs" :key="tab">
       <li :class="activeTab === tab ? 'active' : ''" @click="setActiveTab(tab)" x-text="tab"></li>
     </template>
@@ -47,15 +52,16 @@
       <div class="content-info">
         <div class="visited-attractions">
           {% if visited_attractions %}
-          <h2>Visited Attractions</h2>
+          <h2>{{ _("Visited Attractions") }}</h2>
           <div class="card-container">
             {% for visited in visited_attractions %}
             <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}"
+            onclick="storePreviousUrl()"
               class="attraction-card">
               <img src="{{ visited.attraction.image }}" alt="Attraction Image">
               <div>
                 <h3>{{ visited.attraction.name }}</h3>
-                <p>Visited on {{ visited.time_visited }}</p>
+                <p>{{ _("Visited on") }} {{ visited.time_visited }}</p>
                 <div class="points">
                   <span>🏆</span> {{ visited.attraction.points }} {{ _("points")
                   }}
@@ -66,8 +72,7 @@
           </div>
   
           {% else %}
-          <p class="text-white">{{friend.username}} has not visited any
-            attractions yet.</p>
+          <p class="text-white">{{friend.username}} {{ _("has not visited anyattractions yet.") }}</p>
           {% endif %}
         </div>
       </div>
@@ -76,7 +81,7 @@
     <template x-if="activeTab === tabs[1]">
       <div class="badge-content-info">
         <div class="visited-attractions">
-          <h2>Unlocked Badges</h2>
+          <h2>{{ _("Unlocked Badges") }}</h2>
         </div>
         <div class="badge-card-container">
           {% if unlocked_progress %}
@@ -87,7 +92,7 @@
           </div>
           {% endfor %}
           {% else %}
-          <p class="text-white">No badges unlocked yet.</p>
+          <p class="text-white">{{ _("No badges unlocked yet.") }}</p>
           {% endif %}
         </div>
       </div>
@@ -95,9 +100,10 @@
 
     <template x-if="activeTab === tabs[2]">
       {% if groups %}
-      <div class="friend-groups" x-data="friendGroups({{groups}})">
+      <div class="friend-groups" x-data="friendGroups({{ groups }})">
         <div x-show="showAttractions">
-          <div class="title-container">
+          <div class="title-container"
+          {% if request.args.get('groupId') %} x-init="getGroupAttractions({{ request.args.get('groupId') }})" {% endif %}>
             <button @click="backToGroups()"><svg
                 xmlns="http://www.w3.org/2000/svg" width="32" height="32"
                 fill="#000000" viewBox="0 0 256 256">
@@ -118,7 +124,7 @@
                     <h3 x-text="attraction.name"></h3>
                     <div class="points">
                       <span>🏆</span> <span x-text="attraction.points"></span>
-                      points
+                      {{ _("points") }}
                     </div>
                   </div>
                 </a>
@@ -139,11 +145,11 @@
                 </div>
                 <div class="text-container">
                   <h3 x-text="group.title"></h3>
-                  <p>Attractions: <span x-text="group.attractions.length"></span>
+                  <p>{{ _("Attractions:") }} <span x-text="group.attractions.length"></span>
                   </p>
                   <div class="btn-container">
                     <button @click="getGroupAttractions(group.id)"
-                      class="btn btn-primary btn-small">View</button>
+                      class="btn btn-primary btn-small">{{ _("View") }}</button>
                   </div>
                 </div>
               </div>
@@ -151,7 +157,7 @@
           </div>
         </div>
         <div x-show="groups.length === 0">
-          <p class="text-white">No attraction lists available.</p>
+          <p class="text-white">{{ _("No attraction lists available.") }}</p>
         </div>
       </div>
       {% endif %}
