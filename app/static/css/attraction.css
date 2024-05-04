@@ -187,6 +187,201 @@
   gap: .5rem;
 }
 
+/* Comment section */
+.new-comment-container {
+  background-color: var(--dark-blue);
+  width: 100%;
+  border-radius: 1rem;
+  color: var(--dark-blue);
+  color: var(--white);
+  padding: 1rem;
+  margin-top: 2rem;
+  box-shadow: 4px 2px 16px -25px rgba(0,0,0,0.75);
+}
+
+.new-comment-container p {
+  font-size: 1.5rem;
+  line-height: 1.3;
+  font-weight: bold;
+  padding-bottom: 1rem;
+  color: var(--white);
+
+}
+
+.attraction-info .form-control {
+  position: relative;
+}
+
+.attraction-info .form-control label {
+  position: absolute;
+  left: calc(1rem - 3px);
+  top: 0;
+  transform: translateY(-50%);
+  background-color: var(--dark-blue);
+  padding: 0 3px;
+  font-size: .8rem;
+  font-family: var(--secondary-font);
+  color: var(--white);
+}
+
+.new-comment-container textarea {
+  width: 100%;
+  height: 75px;
+  padding: 1rem;
+  background-color: var(--dark-blue);
+  color: var(--white);
+  border-color: var(--white);
+  border-radius: .5rem;
+  max-width: 100%;
+}
+
+.new-comment-container .btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  padding-top: 1rem;
+}
+
+
+.attraction-info .text-comment-container {
+  padding: 1rem 0;
+}
+
+.attraction-info .pagination-info {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 1rem;
+  padding: 1rem .5rem 0;
+}
+
+.attraction-info .pagination-page-info {
+  padding-bottom: 5px;
+}
+
+.attraction-info .pagination-page-info b{
+  background-color: var(--bg-light);
+  color: var(--dark-blue);
+  padding: 2px 5px;
+}
+
+.attraction-info .ui.pagination.menu {
+  padding-bottom: 5px;
+}
+
+.attraction-info .bottom-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.attraction-info .pagination a.active {
+  background-color: var(--darken-primary);
+}
+
+.attraction-info .pagination a {
+  cursor: pointer;
+  text-decoration: none;
+  color: #fff;
+  padding: 5px 10px;
+  margin: 0 2px;
+  background-color: transparent;
+  transition: all .2s ease-in-out;
+}
+
+.attraction-info .pagination a:hover {
+  background-color: var(--darken-primary);
+}
+
+.attraction-info .comments-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.attraction-info .comment-container {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid var(--primary);
+  border-radius: 1rem;
+}
+
+.attraction-info .comment-user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.attraction-info .comment-image img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.attraction-info .comment-user-info .comment-text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0;
+  color: var(--bg-light);
+}
+
+.attraction-info .comment-user-info .comment-username {
+  padding: 0;
+  font-weight: bold;
+  font-family: var(--secondary-font);
+  font-size: 1rem;
+}
+
+.attraction-info .comment-user-info .comment-created {
+  font-style: italic;
+  font-size: .8rem;
+  padding: 0;
+}
+
+.attraction-info .comment-content {
+  padding: .5rem 0;
+  font-family: monospace;
+}
+
+.attraction-info .comment-content pre {
+  white-space: pre-wrap; 
+  word-wrap: break-word;
+}
+
+.attraction-info .edited-on {
+  font-style: italic;
+  font-size: .9rem;
+  padding: .5rem 0;
+}
+
+.attraction-info .btn-container-comment {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  gap: 1rem;
+  padding-top: .5rem;
+}
+
+.attraction-info .btn-container-comment .btn {
+  width: fit-content;
+}
+
+.attraction-info .edit-content {
+  width: 100%;
+  padding: .75rem 0;
+}
+
+.attraction-info .edit-content textarea{
+  width: 100%;
+  height: 125px;
+  padding: 1rem;
+  border-radius: .5rem;
+  margin-bottom: .5rem;
+}
+
 @media (min-width: 500px) {
   .attraction-info {
     padding: 0 2rem;
@@ -212,6 +407,10 @@
     font-size: 1.1rem;
     line-height: 1.4;
   }
+
+  .attraction-info .comments-wrapper {
+    padding: 1rem 0;
+  }
 }
 
 @media (min-width: 768px) {
@@ -221,6 +420,15 @@
 
   .attraction-info p.lead {
     max-width: 650px;
+  }
+
+  .new-comment-container {
+    padding: 1.5rem;
+  }
+
+  .attraction-info .pagination-info {
+    flex-direction: row;
+    justify-content: space-between;
   }
 }
 
@@ -293,6 +501,23 @@
   .attraction-info .wishlist  .list-info-panel {
     width: 350px;
   }
+
+  .attraction-info .comment-container {
+    position: relative;
+  }
+
+  .attraction-info .btn-container-comment {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1rem;
+    justify-content: end;
+  }
+
+  .new-comment-container {
+    padding: 2rem;
+  }
+
 }
 
 @media (min-width: 1200px) {
@@ -307,136 +532,6 @@
 
   .attraction-info .image-container {
     margin-top: 0;
-  }
-
-  .attraction-info .comment-container {
-    background-color: var(--bg-light);
-    display: flex;
-    width: 100%;
-    margin-top: 10px;
-    border-radius: 10px;
-    color: black;
-  }
-
-  .attraction-info .comment-image {
-    
-  }
-
-  .attraction-info .comment-user-info {
-    padding: 5px;
-    align-items: center;
-    text-align: center;
-    width: 10%;
-  }
-
-  .attraction-info .comment-content {
-    width: 90%;
-  }
-
-  .attraction-info .comment-edit-info {
-    
-  }
-
-  .attraction-info .comment-username {
-    font-weight: bold;
-    padding: 0px;
-  }
-
-  .attraction-info .comment-created {
-    font-style: italic;
-  }
-  .pagination-page-info {
-    padding: .6em;
-    padding-left: 0;
-    width: 40em;
-    margin: .5em;
-    margin-left: 0;
-    font-size: 12px;
-}
-.pagination-page-info b {
-    color: black;
-    background: #6aa6ed;
-    padding-left: 2px;
-    padding: .1em .25em;
-    font-size: 150%;
-}
-.pagination {
-  display: inline-block;
-}
-
-.pagination a {
-  color: black;
-  float: left;
-  padding: 8px 16px;
-  text-decoration: none;
-  transition: background-color .3s;
-}
-
-.pagination a.active {
-  background-color: #4CAF50;
-  color: white;
-}
-
-.pagination a:hover:not(.active) {
-  background-color: #ddd;
-}
-.pagination a {
-  text-decoration: none;
-  color: black;
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  margin: 0 2px;
-  background-color: #f0f0f0; /* Legg til bakgrunnsfarge */
-}
-
-.new-comment-container {
-  display: block;
-  background-color: var(--bg-light);
-  width: 100%;
-  margin-top: 10px;
-  border-radius: 10px;
-  color: black;
-  padding: 5px;
-  /* display: block;
-  width: 100%;
-  background-color: var(--medium-grey);
-  padding: 5px; */
-}
-
-.new-comment-container textarea {
-  width: 100%;
-}
-
-.new-comment-container button {
-  float: right;
-}
-
-.new-comment-container textarea {
-  width: 100%;
-  height: 100%;
-  resize: none;
-}
-
-.text-comment-container textarea {
-  width: 100%;
-  height: 70%;
-  resize: none;
-}
-
-.comment-container textarea {
-  width: 100%;
-}
-
-.comment-content pre {
-  max-width: 70%;
-  white-space: pre-wrap; 
-  word-wrap: break-word;
-}
-
-.btn-container-comment {
-  display: block;
-  height: 100%;
-}
-  
+  } 
 }
 

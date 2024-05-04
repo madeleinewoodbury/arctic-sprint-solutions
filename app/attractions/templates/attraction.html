@@ -127,53 +127,63 @@
         <p>{{ _("Leave a comment") }}</p>
         <form action="" method="post">
           {{ comment_form.hidden_tag() }}
-          {{ comment_form.comment.label }}
-          {{ comment_form.comment }}
-          {{ comment_form.submit() }}
+          <div class="form-control">
+            {{ comment_form.comment.label }}
+            {{ comment_form.comment }}
+          </div>
+          <div class="btn-container">
+            {{ comment_form.submit() }}
+          </div>
         </form>
       </div>
     {% endif %}
 
   <div class="text-comment-container">
     {% if comments %}
-        {{ pagination.info }}
-        {{ pagination.links }}
-        {% for comment in comments %}
-          <div class="comment-container" id="comment-{{ comment.id }}">
-            <div class="comment-user-info">
-              <div class="comment-image">
-                <img src="{{ comment.user.gravatar() }}" alt="">
-              </div>
-              <p class="comment-username">{{ comment.user.username }}</p>
-              <div>
-                <p class="comment-created" style="font-size: 60%;">{{ moment(comment.created_at).fromNow(refresh=True) }}</p>
-            </div>
-            </div>
-            <div class="comment-content" id="comment-id-{{ comment.id }}" style="display: block;">
-              <pre>{{ comment.comment_text }}</pre>
-            </div>
-            <div class="comment-content" id="comment-id-edit-{{ comment.id }}" style="display: none;">
-              <textarea name="" id="comment-id-edit-textarea-{{ comment.id }}" cols="30" rows="10">{{ comment.comment_text }}</textarea>
-              <button class="btn btn-primary" type="button" onclick="post_comment('{{ comment.id }}')">{{ _("Post") }}</button>
-            </div>
-            
-            <div id="comment-edit-info-{{ comment.id }}" style="display: {% if not comment.edited_at %} none {% endif %};">
-              <p id="comment-edit-info-text-{{ comment.id }}">Edited: {{ comment.editor.username }}, {{ moment(comment.edited_at).fromNow(refresh=True) }}</p>
-            </div>
-            
-            
-            {% if current_user.is_authenticated %}
-              {% if (current_user.id == comment.user.id) or (current_user.role_rel.title == 'Moderator') or (current_user.role_rel.title == 'Administrator') %}
-              <div class="btn-container-comment">
-                <button class="btn btn-primary" type="button" onclick="toggle_edit_comment('{{ comment.id }}')">{{ _("Edit Comment") }}</button>
-                <button class="btn btn-danger" type="button" onclick="post_delete_comment('{{ comment.id }}')">{{ _("Delete Comment") }}</button>
-              </div>
-              {% endif %}
-            {% endif %}
-          </div>
-        {% endfor %}
-      </div>
+    <div class="pagination-info">
+      {{ pagination.info }}
       {{ pagination.links }}
+    </div>
+        <div class="comments-wrapper">
+          {% for comment in comments %}
+            <div class="comment-container" id="comment-{{ comment.id }}">
+              <div class="comment-user-info">
+                <div class="comment-image">
+                  <img src="{{ comment.user.gravatar() }}" alt="">
+                </div>
+                <div class="comment-text-container">
+                  <p class="comment-username">{{ comment.user.username }}</p>
+                  <p class="comment-created">{{ moment(comment.created_at).fromNow(refresh=True) }}</p>
+                </div>
+              </div>
+              <div class="comment-content" id="comment-id-{{ comment.id }}" style="display: block;">
+                <pre>{{ comment.comment_text }}</pre>
+              </div>
+              <div class="comment-content edit-content" id="comment-id-edit-{{ comment.id }}" style="display: none;">
+                <textarea name="" id="comment-id-edit-textarea-{{ comment.id }}" cols="30" rows="10">{{ comment.comment_text }}</textarea>
+                <button class="btn btn-primary" type="button" onclick="post_comment('{{ comment.id }}')">{{ _("Post") }}</button>
+              </div>
+              
+              <div id="comment-edit-info-{{ comment.id }}" style="display: {% if not comment.edited_at %} none {% endif %};">
+                <p class="edited-on" id="comment-edit-info-text-{{ comment.id }}">Edited: {{ comment.editor.username }}, {{ moment(comment.edited_at).fromNow(refresh=True) }}</p>
+              </div>
+              
+              
+              {% if current_user.is_authenticated %}
+                {% if (current_user.id == comment.user.id) or (current_user.role_rel.title == 'Moderator') or (current_user.role_rel.title == 'Administrator') %}
+                <div class="btn-container-comment">
+                  <button class="btn btn-primary btn-small" type="button" onclick="toggle_edit_comment('{{ comment.id }}')">{{ _("Edit") }}</button>
+                  <button class="btn btn-danger btn-small" type="button" onclick="post_delete_comment('{{ comment.id }}')">{{ _("Delete") }}</button>
+                </div>
+                {% endif %}
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="bottom-pagination">
+          {{ pagination.links }}
+        </div>
+      </div>
     {% endif %}
 </section>
 
@@ -183,7 +193,7 @@
     var comment_edit_string = "comment-id-edit-" + id;
 
     var comment = document.getElementById(comment_string)
-    var comment_edit = document.getElementById(comment_edit_string)
+    var comment_edit = document.getElementById(comment_edit_string)  
 
     if (comment.style.display == "block") {
       comment.style.display = "none";
