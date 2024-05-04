@@ -1,6 +1,7 @@
 <div class="attraction">
     <a
-        href="{{ url_for('attractions.get_attraction', attraction_id=attraction.id) }}">
+        href="{{ url_for('attractions.get_attraction', attraction_id=attraction.id) }}"
+        onclick="storePreviousUrl()">
         <div class="points">
             <span>🏆</span> {{ attraction.points }} {{ _("points") }}
         </div>

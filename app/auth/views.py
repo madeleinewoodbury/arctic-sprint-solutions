@@ -226,7 +226,7 @@ def get_friendships(user):
             }
         friend['points'] = sum(
             item['attraction'].points for item in friend['visited'])
-        friend['level'] = get_user_level(friend['points']).get('current_level')
+        friend['level'] = friend['user'].level.get('current_level')
         friends_data.append(friend)
         
     friends_data = sorted(friends_data, key=lambda x: x['points'], reverse=True)
@@ -298,32 +298,6 @@ def get_user_badge_progress(user_id):
     return unlocked_progression, in_progress_badges
 
 
-def get_user_level(points):
-    BASE_POINTS = 42
-    GROWTH_RATE = 1.05
-
-    current_level = 1
-    points_required = BASE_POINTS
-    points_remaining = points
-
-    while points_remaining >= points_required:
-        points_remaining -= points_required
-        current_level += 1
-        points_required = int((points_required + BASE_POINTS)
-                              * GROWTH_RATE - points_required)
-
-    points_missing = points_required - points_remaining
-
-    level = {
-        "current_level": current_level,
-        "points_required": points_required,
-        "points_missing": points_missing,
-        "progress": points_remaining
-    }
-
-    return level
-
-
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -333,7 +307,6 @@ def profile():
     # Visited Attractions Tab
     visited_attractions = get_visited_attractions(current_user.id)
     points = sum(item['attraction'].points for item in visited_attractions)
-    level = get_user_level(points)
 
     # Profile Tab
     profile_form = UpdateProfileForm()
@@ -414,8 +387,7 @@ def profile():
         friendships=friendships,
         unlocked_progress = unlocked_progression, 
         in_progress_badges = in_progress_badges,
-        activeTab=activeTab,
-        level=level
+        activeTab=activeTab
     )
 
 
@@ -495,8 +467,10 @@ def remove_friend(user_id):
 @auth.route('/friend/profile/<int:user_id>', methods=['GET'])
 @login_required
 def friend_profile(user_id):
+    current_tab = request.args.get('current_tab')
+    activeTab = current_tab if current_tab else 0
     friend = User.query.get(user_id)
-
+    
     if friend is None:
         abort(404)
 
@@ -504,11 +478,9 @@ def friend_profile(user_id):
     groups = json.dumps([group.to_dict() for group in AttractionGroup.query.filter_by(owner=user_id, visibility='public').all()])
     visited_attractions = get_visited_attractions(user_id)
     points = sum(item['attraction'].points for item in visited_attractions)
-    level = get_user_level(points)
     unlocked_progression, in_progress_badges = get_user_badge_progress(user_id)
 
     tabs = ['Visited Attractions', 'Badges', 'Lists']
-    activeTab = 0
 
     return render_template(
         'friendProfile.html',
@@ -517,7 +489,6 @@ def friend_profile(user_id):
         visited_attractions=visited_attractions,
         number_of_visited_attractions=len(visited_attractions),
         points=points,
-        level=level,
         tabs=tabs,
         activeTab=activeTab,
         unlocked_progress = unlocked_progression

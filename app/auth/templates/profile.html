@@ -19,14 +19,15 @@
             <div class="title">
                 <h2>{{ _("Hello") }} {{ current_user.username }}</h2>
                 <div class="stats">
-                    <span>{{ _("Visited:") }} <strong>{{number_of_visited_attractions}}</strong></span>
-                    <span>{{ _("Wishlist:") }}<strong>{{number_of_wishlist_attractions}}</strong></span>
-                    <span>{{ _("Points:") }} <strong>{{points}}</span></strong>
-                    <span>{{ _("Level:") }} <strong>{{level.current_level}}</span></strong>
+                    <span>{{ _("Visited:") }} <strong>{{ number_of_visited_attractions }}</strong></span>
+                    <span>{{ _("Wishlist:") }}<strong>{{ number_of_wishlist_attractions }}</strong></span>
+                    <span>{{ _("Points:") }} <strong>{{ points }}</span></strong>
+                    <span>{{ _("Level:") }} <strong>{{ current_user.level.current_level }}</span></strong>
                 </div>
                 <div class="progress-container">
-                    <progress class="progress-bar" value="{{ level.progress }}" max="{{ level.points_required }}"></progress>
-                    <span class="progress-text"> <strong>{{ level.points_missing }}</strong> {{ _("points until level ") }}<strong>{{level.current_level + 1}}</strong></span>
+                    <progress class="progress-bar" value="{{ current_user.level.progress }}" max="{{ current_user.level.points_required }}"></progress>
+                    <span class="progress-text"><strong>{{ current_user.level.points_missing }}</strong> {{ _("points until level ") }}
+                        <strong>{{ current_user.level.current_level + 1 }}</strong></span>
                 </div>
             </div>
         </div>
@@ -47,7 +48,8 @@
                     {% if visited_attractions %}
                     <div class="card-container">
                         {% for visited in visited_attractions %}
-                        <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}" class="attraction-card">
+                        <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}" class="attraction-card"
+                        onclick="storePreviousUrl()">
                             <img src="{{ visited.attraction.image }}" alt="Attraction Image">
                             <div>
                                 <h3>{{ visited.attraction.name }}</h3>
