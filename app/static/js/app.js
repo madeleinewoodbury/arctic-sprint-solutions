@@ -204,10 +204,11 @@ const selectCity = (citySelect, form) => {
         })
             .then(response => response.json())
             .then(data => {
+                console.log(data);
                 if (data.errors) console.log(data.errors);
-                if (location.pathname === '/attractions') {
-                    location.reload();
-                }
+                if (window.location.href.includes('attractions') && !window.location.href.includes('attractions/')) {
+                    window.location.href = '/attractions';
+                } 
             })
             .catch(error => {
                 console.error('Error:', error);
