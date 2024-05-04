@@ -368,7 +368,7 @@ def profile():
     user_groups = json.dumps([group.to_dict() for group in AttractionGroup.query.filter_by(owner=current_user.id).all()])
 
     # Tabs for profile page sections, only one section should be active
-    tabs = ['Visited Attractions', 'Profile', 'Wishlist', 'Friends', 'Badges']
+    tabs = ['Visited Attractions', 'Profile', 'Lists', 'Friends', 'Badges']
 
     return render_template(
         'profile.html',
@@ -467,21 +467,30 @@ def remove_friend(user_id):
 @auth.route('/friend/profile/<int:user_id>', methods=['GET'])
 @login_required
 def friend_profile(user_id):
+    current_tab = request.args.get('current_tab')
+    activeTab = current_tab if current_tab else 0
     friend = User.query.get(user_id)
-
+    
     if friend is None:
         abort(404)
 
+    # groups = AttractionGroup.query.filter_by(owner=user_id, visibility='public').all()
+    groups = json.dumps([group.to_dict() for group in AttractionGroup.query.filter_by(owner=user_id, visibility='public').all()])
     visited_attractions = get_visited_attractions(user_id)
     points = sum(item['attraction'].points for item in visited_attractions)
     unlocked_progression, in_progress_badges = get_user_badge_progress(user_id)
 
+    tabs = ['Visited Attractions', 'Badges', 'Lists']
+
     return render_template(
         'friendProfile.html',
         friend=friend,
+        groups=groups,
         visited_attractions=visited_attractions,
         number_of_visited_attractions=len(visited_attractions),
         points=points,
+        tabs=tabs,
+        activeTab=activeTab,
         unlocked_progress = unlocked_progression
     )
 
@@ -577,9 +586,7 @@ def edit_group():
 @login_required
 def get_group_attractions(group_id):
     group = AttractionGroup.query.get(group_id)
-    if group.owner != current_user.id:
-        abort(403)
+    if group is None:
+        abort(404)
 
-    attractions = []
-    attractions = group.grouped_attractions
-    return jsonify([attraction.to_dict() for attraction in attractions])
+    return jsonify([attraction.to_dict() for attraction in group.grouped_attractions])

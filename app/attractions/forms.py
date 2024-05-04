@@ -1,6 +1,5 @@
 from flask_wtf import FlaskForm as Form
-from wtforms import StringField, SelectField, SubmitField, SelectMultipleField, SubmitField, widgets
-from wtforms.validators import DataRequired
+from wtforms import StringField, SelectField, SubmitField, SelectMultipleField, SubmitField, widgets, TextAreaField
 from app.models import City
 from flask_babel import lazy_gettext as _
 
@@ -23,3 +22,7 @@ class SelectCityForm(Form):
     def __init__(self, *args, **kwargs):
         super(SelectCityForm, self).__init__(*args, **kwargs)
         self.city.choices = [(city.id, city.name) for city in City.query.all()]
+
+class CommentForm(Form):
+    comment = TextAreaField()
+    submit = SubmitField(_('Post'), render_kw={'class': 'btn btn-primary'})

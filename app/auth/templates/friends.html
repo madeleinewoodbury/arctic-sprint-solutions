@@ -95,7 +95,8 @@
                 {% for friend in friendships['friends'] %}
                 <tr>
                     <td class="friend-info">
-                        <a href="{{ url_for('auth.friend_profile', user_id=friend.user.id) }}">
+                        <a href="{{ url_for('auth.friend_profile', user_id=friend.user.id) }}"
+                        onclick="storePreviousUrl()">
                             <div class="image-container">
                                 <img src="{{ friend.user.gravatar() }}" alt="Gravatar" class="gravatar-img">
                             </div>
