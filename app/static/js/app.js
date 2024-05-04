@@ -116,57 +116,15 @@ const filterAttractionsGridContent = () => {
             const baseUrl = window.location.href.split('?')[0];
             const newUrl = `${baseUrl}?${urlParams.toString()}`;
             window.location.href = newUrl;
-
-            ///// CODE FOR AJAX UPDATES BELOW BYPASSED CURRENTLY /////
-            history.pushState(null, '', newUrl);
-
-            // Fetch filtered attractions
-            fetch(newUrl, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(data => {
-                    const jsonData = JSON.parse(data);
-                    if (Array.isArray(jsonData.attractions)) {
-                        const container = document.getElementById('filtered-results')
-                        container.innerHTML = ''
-                        jsonData.attractions.forEach(attractionHTML => {
-                            container.innerHTML += attractionHTML
-                        })
-                        // Update the category filter checkboxes
-                        const categoryCheckbox = document.getElementById('category-checkbox')
-                        if (categoryCheckbox) {
-                            const checkboxInputs = categoryCheckbox.querySelectorAll('input[type="checkbox"]')
-                            updateCheckboxes(checkboxInputs, jsonData.categoryIDs, selectedCategories)
-                        }
-                        // Update the age group filter checkboxes
-                        const ageGroupCheckbox = document.getElementById('age-group-checkbox')
-                        if (ageGroupCheckbox) {
-                            const checkboxInputs = ageGroupCheckbox.querySelectorAll('input[type="checkbox"]')
-                            updateCheckboxes(checkboxInputs, jsonData.ageGroupIDs, selectedAgeGroups)
-                        }
-                        // Update the tag filter checkboxes
-                        const tagCheckbox = document.getElementById('tag-checkbox')
-                        if (tagCheckbox) {
-                            const checkboxInputs = tagCheckbox.querySelectorAll('input[type="checkbox"]')
-                            updateCheckboxes(checkboxInputs, jsonData.tagIDs, selectedTags)
-                        }
-
-                    } else {
-                        console.error('Invalid data format:', jsonData)
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching attractions:', error)
-                })
         })
+    })
+}
+
+// Updates the visibility and selection status of checkboxes, based on given IDs
+function updateCheckboxes(checkboxes, activeIDs, checkedIDs) {
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = checkedIDs.includes(checkbox.value)
+        checkbox.parentNode.style.display = activeIDs.includes(checkbox.value) ? '' : 'none'
     })
 }
 
@@ -203,13 +161,6 @@ function updateUrlParams(params) {
     history.pushState({}, '', newUrl)
 }
 
-// Updates the visibility and selection status of checkboxes, based on given IDs
-function updateCheckboxes(checkboxes, activeIDs, checkedIDs) {
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = checkedIDs.includes(checkbox.value)
-        checkbox.parentNode.style.display = activeIDs.includes(checkbox.value) ? '' : 'none'
-    })
-}
 
 const citySelectMobile = () => {
     const citySelect = document.getElementById('citySelectMobile');

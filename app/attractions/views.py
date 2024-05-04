@@ -238,25 +238,6 @@ def get_attractions():
     cat_ids, age_ids, tag_ids = get_filter_ids(filter_priority_list, category, age_group, tag, base_attraction_ids)
     update_filter_form_choices(filter_form, cat_ids, age_ids, tag_ids)
 
-    # Perform AJAX response if requested
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        attractions_html = [
-        render_template("attractions_items.html", attraction=attraction.to_dict(), suggested_ids=suggested_ids)
-        for attraction in attractions
-        ]
-        category_json = [str(category_id) for category_id in cat_ids]
-        age_group_json = [str(age_group_id) for age_group_id in age_ids]
-        tag_json = [str(tag_id) for tag_id in tag_ids]
-
-        return jsonify(
-            {
-            "attractions": attractions_html,
-            "categoryIDs": category_json,
-            "ageGroupIDs": age_group_json,
-            "tagIDs": tag_json,
-            }
-        )
-    
     # Render HTML template with attractions and pagination information
     return render_template(
         "attractions_main.html",
@@ -335,25 +316,6 @@ def suggested_attractions():
     filter_form.tags.data = tag
     cat_ids, age_ids, tag_ids = get_filter_ids(filter_priority_list, category, age_group, tag, base_attraction_ids)
     update_filter_form_choices(filter_form, cat_ids, age_ids, tag_ids)
-    
-    # Perform AJAX response if requested
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        attractions_html = [
-        render_template("attractions_items.html", attraction=attraction.to_dict())
-        for attraction in attractions
-        ]
-        category_json = [str(category_id) for category_id in cat_ids]
-        age_group_json = [str(age_group_id) for age_group_id in age_ids]
-        tag_json = [str(tag_id) for tag_id in tag_ids]
-
-        return jsonify(
-            {
-            "attractions": attractions_html,
-            "categoryIDs": category_json,
-            "ageGroupIDs": age_group_json,
-            "tagIDs": tag_json,
-            }
-        )
     
     return render_template(
         "attractions_main.html",
