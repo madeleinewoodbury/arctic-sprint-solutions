@@ -1,7 +1,8 @@
 <div class="list-content">
     <div class="user-lists" x-data="userGroups({{ user_groups}})">
         <div x-show="showAttractions">
-            <div class="title-container" x-init="getGroupAttractions( {{request.args.get('groupId')}} )">
+            <div class="title-container"
+            {% if request.args.get('groupId') %} x-init="getGroupAttractions({{ request.args.get('groupId') }})" {% endif %}>
                 <button @click="backToGroups()"><svg
                         xmlns="http://www.w3.org/2000/svg" width="32"
                         height="32" fill="#000000" viewBox="0 0 256 256">
