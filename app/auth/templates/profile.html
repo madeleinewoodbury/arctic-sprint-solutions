@@ -17,10 +17,9 @@
             <img src="{{ current_user.gravatar() }}" alt="Gravatar"
                 class="gravatar-img">
             <div class="title">
-                <h2>{{ _("Hello") }} {{ current_user.username }}</h2>
+                <h2><span class="hide-sm">{{ _("Hello ") }}</span>{{ current_user.username }}</h2>
                 <div class="stats">
-                    <span>{{ _("Visited:") }} <strong>{{ number_of_visited_attractions }}</strong></span>
-                    <span>{{ _("Wishlist:") }}<strong>{{ number_of_wishlist_attractions }}</strong></span>
+                    <span class="hide-sm">{{ _("Visited:") }} <strong>{{ number_of_visited_attractions }}</strong></span>
                     <span>{{ _("Points:") }} <strong>{{ points }}</span></strong>
                     <span>{{ _("Level:") }} <strong>{{ current_user.level.current_level }}</span></strong>
                 </div>
