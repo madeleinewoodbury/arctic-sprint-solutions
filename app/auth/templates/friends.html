@@ -50,7 +50,7 @@
             <div class="request-actions">
                 <form class="request-accept-form" method="POST"
                     action="{{ url_for('auth.accept_friend_request', user_id=user.id) }}">
-                    <button class="btn btn-small btn-success" type="submit">{{ _("Accept") }}</button>
+                    <button class="btn btn-small btn-primary" type="submit">{{ _("Accept") }}</button>
                 </form>
                 <form class="request-decline-form" method="POST"
                     action="{{ url_for('auth.remove_friend_request', user_id=user.id) }}">
