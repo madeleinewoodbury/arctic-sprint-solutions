@@ -99,9 +99,13 @@
     
         <div class="attractions-container">
             {% if attractions == [] %}
-            <br>
-            <h2>{{ _("Sorry, we couldn't find any attractions based on the given criteria.") }}</h2>
-            <h3>{{ _("Please try again with different search terms or filters, or you can always") }} <a href="{{ url_for('attractions.get_attractions') }}">{{ _("go back to the main attractions page") }}</a>.</h3>
+            <div class="no-attractions-found">
+                <h2>{{ _("Sorry, we couldn't find any attractions based on the given
+                    criteria.") }}</h2>
+                <p>{{ _("Please try again with different search terms or filters, or you can
+                    always") }} <a href="{{ url_for('attractions.get_attractions') }}">{{
+                        _("clear the search") }}</a>.</p>
+            </div>
             {% endif %}
     
             <div class="attractions-grid" id="filtered-results">

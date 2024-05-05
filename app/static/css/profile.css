@@ -52,7 +52,7 @@
 .profile .top .title .stats {
   display: flex;
   gap: 1rem;
-  font-size: .8rem;
+  font-size: 1rem;
   font-family: var(--secondary-font);
   padding-bottom: .25rem;
 }
@@ -120,7 +120,7 @@
 .profile-tabs{
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: .5rem 1rem;
   color: var(--white);
   font-family: var(--secondary-font);
   padding: 1rem 1rem 0;
@@ -641,7 +641,7 @@
     width: calc(50% - .5rem);
   }
   
-  .profile .user-details .btn-container .btn:last-of-type {
+  .profile .user-details .btn-container .btn-danger {
     width: 100%;
   }
 
@@ -774,5 +774,28 @@
     width: 50%;
   }
   
+
+}
+
+@media (min-width: 1200px) {
+  .profile .top .title {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0 2rem;
+  }
+
+  .profile .top .title h2 {
+    width: 100%;
+  }
+
+  .profile .top .title .stats {
+    width: fit-content;
+    padding-bottom: 0;
+    align-items: end;
+  }
+
+  .profile .top .title .progress-container {
+    width: fit-content;
+  }
 
 }
