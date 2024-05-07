@@ -44,11 +44,11 @@ class UserView(AdminModelView):
         "username",
         "first_name",
         "last_name",
-        # "list_of_achievements", - Ikke i bruk
-        "list_of_visited_attractions",
         "email",
-        "created_at",
         "country",
+        "created_at",
+        "list_of_badges",
+        "list_of_visited_attractions",
         )
     # Oppdaterer CSV export funksjonen.
     # https://blog.est.im/2022/stdout-05
@@ -62,10 +62,11 @@ class UserView(AdminModelView):
         "username",
         "first_name",
         "last_name",
-        "list_of_achievements",
-        "list_of_visited_attractions",
         "email",
+        "country",
         "created_at",
+        "list_of_badges",
+        "list_of_visited_attractions",
     ]
     form_columns = [
         "username",
