@@ -260,11 +260,11 @@ class User(UserMixin, db.Model):
     achievements = db.relationship(
         "Achievement", secondary="userAchievement", back_populates="users"
     )
-
+    badges = db.relationship(
+        "Badge", secondary="userBadge", back_populates="users"
+    )
     role_rel = db.relationship(
         "UserRole", backref=db.backref("user", lazy=True))
-    tag_preferences = db.relationship(
-        "UserTagPreference", back_populates="user")
     visited_attractions = db.relationship(
         "VisitedAttraction", back_populates="user")
     initiated_friendships = db.relationship(
@@ -280,6 +280,8 @@ class User(UserMixin, db.Model):
     country = db.relationship("Country", backref=db.backref("user", lazy=True))
     category_preferences = db.relationship(
         "UserCategoryPreference", back_populates="user")
+    tag_preferences = db.relationship(
+        "UserTagPreference", back_populates="user")
     age_group_preferences = db.relationship(
         "UserAgeGroupPreference", back_populates="user")
 
@@ -287,12 +289,20 @@ class User(UserMixin, db.Model):
         super(User, self).__init__(**kwargs)
 
     @property
-    def list_of_achievements(self):
-        return [a.title for a in self.achievements]
+    def list_of_badges(self):
+        return [b.name for b in self.badges]
+    
+    @property
+    def badges_count(self):
+        return len(self.list_of_badges)
 
     @property
     def list_of_visited_attractions(self):
         return [a.attraction.name for a in self.visited_attractions]
+    
+    @property
+    def visited_count(self):
+        return len(self.list_of_visited_attractions)
 
     def __repr__(self):
         return "<User {}>".format(self.username)
@@ -438,6 +448,9 @@ class Badge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(255), nullable=False)
+    users = db.relationship(
+        "User", secondary="userBadge", back_populates="badges"
+    )
 
     def __repr__(self):
         return f"<Badge {self.name}>"
@@ -458,8 +471,8 @@ class UserBadge(db.Model):
         "badge.id"), primary_key=True)
     date_earned = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user = db.relationship("User", backref=db.backref("user_badges"))
-    badge = db.relationship("Badge", backref=db.backref("badge_users"))
+    #user = db.relationship("User", backref=db.backref("user_badges"))
+    #badge = db.relationship("Badge", backref=db.backref("badge_users"))
 
     def __repr__(self):
         return f"<UserBadge {self.user_id} {self.badge_id}>"

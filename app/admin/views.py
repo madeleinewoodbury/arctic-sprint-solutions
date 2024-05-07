@@ -79,8 +79,8 @@ class UserView(AdminModelView):
         "username",
         "email",
         "role_rel",
-        "number_of_achievements",
-        # "#attractions"
+        "visited_count",
+        "badges_count",
     ]
     
     @staticmethod
