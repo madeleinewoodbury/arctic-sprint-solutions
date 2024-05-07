@@ -134,6 +134,7 @@ class TagView(AdminModelView):
     can_export = True
     column_export_list = (
         "name",
+        "attraction_count",
     )
     # Oppdaterer CSV export funksjonen.
     # https://blog.est.im/2022/stdout-05
@@ -142,7 +143,7 @@ class TagView(AdminModelView):
           r.response = chain((b'\xef\xbb\xbf',), r.response)
           return r
     form_columns = ["name"]
-    column_list = ["name"]
+    column_list = ["name", "attraction_count"]
 
 
 class AgeGroupView(AdminModelView):
