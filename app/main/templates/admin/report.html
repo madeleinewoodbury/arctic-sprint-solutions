@@ -16,23 +16,23 @@
     </div>
 </form>
 
-<h3>Achievements Overview</h3>
+<h3>Badges Overview</h3>
 <table class="table">
     <thead>
         <tr>
-            <th>Title</th>
+            <th>Name</th>
             <th>Acquired in {{ month_name }}, {{ selected_year }}</th>
             <th>Acquired in all of {{ selected_year }}</th>
             <th>Total Acquired</th>
         </tr>
     </thead>
     <tbody>
-        {% for achievement in achievements_data %}
+        {% for badge in badges_data %}
         <tr>
-            <td>{{ achievement.title }}</td>
-            <td>{{ achievement.monthly_acquired }}</td>
-            <td>{{ achievement.yearly_acquired }}</td>
-            <td>{{ achievement.total_acquired }}</td>
+            <td>{{ badge.name }}</td>
+            <td>{{ badge.monthly_acquired }}</td>
+            <td>{{ badge.yearly_acquired }}</td>
+            <td>{{ badge.total_acquired }}</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -43,7 +43,7 @@
     <thead>
         <tr>
             <th>Name</th>
-            <th>Visited in {{ month_name }}</th>
+            <th>Visited in {{ month_name }}, {{ selected_year }}</th>
             <th>Visited in {{ selected_year }}</th>
             <th>Total Visits</th>
         </tr>

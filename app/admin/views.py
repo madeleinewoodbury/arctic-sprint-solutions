@@ -17,6 +17,8 @@ from app.models import (
     Tag,
     AgeGroup,
     City,
+    Badge,
+    UserBadge
 )
 from flask_admin.contrib.sqla import ModelView
 from app.admin import db
@@ -262,16 +264,16 @@ class ReportView(BaseView):
         month_name = calendar.month_name[selected_month]
 
         # Monthly Achievements
-        achievements_data = (
+        badges_data = (
             db.session.query(
-                Achievement.title,
+                Badge.name,
                 db.func.count(
                     db.case(
                         (
                             db.and_(
-                                db.extract("year", UserAchievement.time_achieved)
+                                db.extract("year", UserBadge.date_earned)
                                 == selected_year,
-                                db.extract("month", UserAchievement.time_achieved)
+                                db.extract("month", UserBadge.date_earned)
                                 == selected_month,
                             ),
                             1,
@@ -281,17 +283,17 @@ class ReportView(BaseView):
                 db.func.sum(
                     db.case(
                         (
-                            db.extract("year", UserAchievement.time_achieved)
+                            db.extract("year", UserBadge.date_earned)
                             == selected_year,
                             1,
                         ),
                         else_=0,
                     )
                 ).label("yearly_acquired"),
-                db.func.count(UserAchievement.achievement_id).label("total_acquired"),
+                db.func.count(UserBadge.badge_id).label("total_acquired"),
             )
-            .join(UserAchievement)
-            .group_by(Achievement.title)
+            .join(UserBadge)
+            .group_by(Badge.name)
             .all()
         )
 
@@ -334,7 +336,7 @@ class ReportView(BaseView):
             form=form,
             month_name=month_name,
             selected_year=selected_year,
-            achievements_data=achievements_data,
+            badges_data=badges_data,
             attractions_data=attractions_data,
         )
     
