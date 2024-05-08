@@ -10,6 +10,14 @@ from app.models import (
     Achievement,
     Attraction,
     VisitedAttraction,
+    AttractionCategory,
+    AttractionTag,
+    UserTagPreference, 
+    UserCategoryPreference,
+    BadgeRequirement,
+    AttractionAgeGroup,
+    UserAgeGroupPreference,
+    GroupedAttraction,
     Country,
     db,
     User,
@@ -127,6 +135,14 @@ class CategoryView(AdminModelView):
     form_columns = ["name"]
     column_list = ["name", "attraction_count"]
 
+    def on_model_delete(self, model):
+        """Handle cascading delete"""
+        self.session.flush()
+        AttractionCategory.query.filter_by(category_id=model.id).delete()
+        UserCategoryPreference.query.filter_by(category_id=model.id).delete()
+        db.session.commit()
+        super(CategoryView, self).on_model_delete(model)
+
 
 class TagView(AdminModelView):
     can_export = True
@@ -141,6 +157,15 @@ class TagView(AdminModelView):
           return r
     form_columns = ["name"]
     column_list = ["name"]
+
+    def on_model_delete(self, model):
+        """Handle cascading delete"""
+        self.session.flush()
+        AttractionTag.query.filter_by(tag_id=model.id).delete()
+        UserTagPreference.query.filter_by(tag_id=model.id).delete()
+        BadgeRequirement.query.filter_by(tag_id=model.id).delete()
+        db.session.commit()
+        super(TagView, self).on_model_delete(model)
 
 
 class AgeGroupView(AdminModelView):
@@ -157,6 +182,14 @@ class AgeGroupView(AdminModelView):
           return r
     form_columns = ["name"]
     column_list = ["name", "attraction_count"]
+
+    def on_model_delete(self, model):
+        """Handle cascading delete"""
+        self.session.flush()
+        AttractionAgeGroup.query.filter_by(age_group_id=model.id).delete()
+        UserAgeGroupPreference.query.filter_by(age_group_id=model.id).delete()
+        db.session.commit()
+        super(AgeGroupView, self).on_model_delete(model)
 
 
 class AttractionView(AdminModelView):
@@ -194,8 +227,6 @@ class AttractionView(AdminModelView):
         "name",
         "city_rel",
         "location",
-        "description",
-        "image",
         "tags",
         "points",
         "age_groups",
@@ -203,6 +234,17 @@ class AttractionView(AdminModelView):
     ]
 
     column_filters = ["tags", "age_groups", "visit_count"]
+
+    def on_model_delete(self, model):
+        """Handle cascading delete"""
+        self.session.flush()
+        AttractionAgeGroup.query.filter_by(attraction_id=model.id).delete()
+        AttractionCategory.query.filter_by(attraction_id=model.id).delete()
+        AttractionTag.query.filter_by(attraction_id=model.id).delete()
+        GroupedAttraction.query.filter_by(attraction_id=model.id).delete()
+        VisitedAttraction.query.filter_by(attraction_id=model.id).delete()
+        db.session.commit()
+        super(AttractionView, self).on_model_delete(model)
 
 
 class CitiesView(AdminModelView):
@@ -230,8 +272,6 @@ class CitiesView(AdminModelView):
     column_list = [
         "name",
         "country",
-        "image",
-        "description",
         "attractions_count",
     ]
 
