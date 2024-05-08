@@ -4,6 +4,13 @@ from flask import flash, redirect, url_for, request
 from flask_login import current_user
 from flask_admin import BaseView, expose
 from flask_admin.contrib.sqla import filters
+from flask_admin.contrib.sqla import ModelView
+from app.admin import db
+from sqlalchemy import func
+from itertools import chain
+from wtforms.validators import DataRequired, Email
+from wtforms.widgets import PasswordInput
+from ..email import send_email
 from app.admin.forms import ReportForm
 from app.models import (
     UserAchievement,
@@ -20,11 +27,6 @@ from app.models import (
     Badge,
     UserBadge
 )
-from flask_admin.contrib.sqla import ModelView
-from app.admin import db
-from sqlalchemy import func
-from itertools import chain
-from ..email import send_email
 
 
 class AdminModelView(ModelView):
@@ -56,7 +58,7 @@ class UserView(AdminModelView):
           r = super(UserView, self)._export_csv(return_url)
           r.response = chain((b'\xef\xbb\xbf',), r.response)
           return r
-
+    
     can_view_details = True
     column_details_list = [
         "username",
@@ -68,14 +70,7 @@ class UserView(AdminModelView):
         "list_of_badges",
         "list_of_visited_attractions",
     ]
-    form_columns = [
-        "username",
-        "email",
-        "role_rel",
-        "country",
-    ]
-    column_searchable_list = ["username", "email"]
-    column_filters = ["created_at", "email"]
+    
     column_list = [
         "username",
         "email",
@@ -83,19 +78,45 @@ class UserView(AdminModelView):
         "visited_count",
         "badges_count",
     ]
+    column_searchable_list = ["username", "email"]
+    column_filters = ["created_at", "email"]
     
+    form_create_rules = [
+        "username", "email", "password", "first_name", "last_name", "country", "role_rel"
+    ]
+    form_edit_rules = [
+        "username", "first_name", "last_name", "email", "country", "role_rel"
+    ]
+    form_args = {
+        "username": {
+            "validators": [DataRequired()]
+        },
+        "email": {
+            "validators": [DataRequired(), Email()]
+        },
+        "password": {
+            "validators": [DataRequired()],
+            "widget": PasswordInput(hide_value=True)
+        }
+    }
+
     @staticmethod
     def on_form_prefill(form, id):
         UserView.changed_user = User.query.get(id)
         
     def on_model_change(self, form, model, is_created):
+        if 'password' in form and form.password.data:
+            model.set_password(form.password.data)
         if not is_created:
             changed_user = UserView.changed_user
             if model.username != changed_user.username or model.email != changed_user.email:
                 send_email(changed_user.email, 'Urgent: Admin made changes to your profile.', 'email/profile_updated',
                     user=changed_user, email_change=changed_user.email, username_change=changed_user.username,
                     new_email=model.email, new_username=model.username)
-
+    
+    def _show_missing_fields_warning(self, text):
+        pass
+    
 
 class AchievementsView(AdminModelView):
     can_export = True
