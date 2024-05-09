@@ -350,9 +350,10 @@ INSERT INTO `category` (`id`, `name`) VALUES
 --
 INSERT INTO `city` (`id`, `name`, `description`, `image`, `country_id`) VALUES
 (1, 'Tromsø', 'Tromsø, a vibrant city surrounded by majestic mountains and the Arctic landscape, is known as the \'Gateway to the Arctic Sea.\' The city offers a unique blend of culture, history, and nature, with attractions such as the Arctic Cathedral, Polaria, and opportunities for Northern Lights safaris and outdoor activities', 'https://images.unsplash.com/photo-1609538205185-40f2701cf7d6?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 165),
-(2, 'Oslo','Oslo of Norway is known as a hub for every explorers dream - Attractions. And lots of them, too. We have cherry picked the best locations for our users, and believe we have the perfect recipe for any time spent in the capitol. What are you waiting for? Go explore Oslo!' , 'https://lp-cms-production.imgix.net/2023-03/shutterstock_1879262575.jpg', 165),
-(3, 'Kristiansand','Some locations are just hidden gems - Kristiansand is one of them. Within Norway, Kristiansund is known for its great attractions and in particular, the Kristiansand Animal Park, a fun and interesting spot for the entire family for a chillout day at the zoo. Let`s go!' , 'https://lp-cms-production.imgix.net/2023-03/shutterstock_1879262575.jpg', 165);
-
+(2, 'Oslo','Oslo of Norway is known as a hub for every explorers dream - Attractions. And lots of them, too. We have cherry picked the best locations for our users, and believe we have the perfect recipe for any time spent in the capital. What are you waiting for? Go explore Oslo!' , 'https://lp-cms-production.imgix.net/2023-03/shutterstock_1879262575.jpg', 165),
+(3, 'Kristiansand','Some locations are just hidden gems - Kristiansand is one of them. Within Norway, Kristiansund is known for its great attractions and in particular, the Kristiansand Animal Park, a fun and interesting spot for the entire family for a chillout day at the zoo. Let`s go!' , 'https://lp-cms-production.imgix.net/2023-03/shutterstock_1879262575.jpg', 165),
+(4, 'Bergen','The city that had 192 days of rain in 2022 is known for the many treassured attractions scattered in and around the city. If your not scared of a little rain, Bergen might be the next bucketlist item for you travels through Norway. As we say in Norway; There is no such thing as bad weather, just bad clothes!' , 'https://res.cloudinary.com/simpleview/image/upload/v1574085889/clients/norway/bryggen_wharf_bergen_hordaland_fjord_norway_photo_florian_olbrechts_34ad36ea-f7bc-4150-b48b-af2c2c14628f.jpg', 165);
+ 
 
 
 --
@@ -376,7 +377,9 @@ INSERT INTO `attraction` (`id`, `name`, `city`, `location`, `description`, `imag
 (15, 'The Fram Museum', 2, 'Bygdøynesveien 39, 0286 Oslo', 'Frammuseet, located on the Bygdøy peninsula, is dedicated to showcasing the historical Norwegian polar expeditions. It features the polar ship Fram, which is renowned for its extensive voyages into the Arctic and Antarctic. The museum is interactive, making it engaging for both children and adults, and includes exhibits on various explorers and expeditions alongside multimedia presentations and historical artifacts.', 'https://www.nyebilder.no/wp-content/uploads/2019/03/Flyfoto-Bygd%C3%B8y-Fram-museet.jpg', 15),
 (16, 'Kristiansand Animal Park', 3, 'Dyreparkveien, 4609 Kristiansand', 'Norway’s most frequently visited attraction, Kristiansand Animal Park is a vibrant blend of a zoo and amusement park. Spanning 150 acres, it hosts a myriad of animals and themed areas like Cardamom Town and Captain Sabertooth’s World. It’s an enchanting place for family fun, offering close encounters with both Nordic and exotic animals.', 'https://www.dyreparken.no/content/uploads/2021/06/SC_Felles_013-1920x1230-1.jpg', 20),
 (17, 'Kristiansand Cannon Museum', 3, 'Movik Fort, 4520 Kristiansand', 'Home to one of the world’s largest land-based cannons, the Kristiansand Cannon Museum offers a historical glimpse into World War II defenses. The museum features detailed exhibits on the fort’s strategic importance and the daily life of soldiers stationed here.', 'https://assets.simpleviewcms.com/simpleview/image/fetch/c_limit,h_1200,q_75,w_1200/https://media.newmindmedia.com/TellUs/image/%3Ffile%3DKristiansand_Kanonmuseum_-_Foto_Steinar_Furu_3__1091314706.jpg%26dh%3D493%26dw%3D800%26t%3D4', 10),
-(18, 'Agder Natural History Museum and Botanical Garden', 3, 'Gimleveien 23, 4686 Kristiansand', 'This museum and botanical garden offers extensive displays of the natural history of southern Norway. The botanical garden features a variety of plant species both native and from around the world, while the museum houses significant geological and zoological collections.', 'https://assets.simpleviewcms.com/simpleview/image/fetch/c_fill,h_1080,w_1920/f_jpg/q_65/https://media.newmindmedia.com/TellUs/image/%3Ffile%3D0CA4563281ADB452F7E7EAAB97D34C12890EF618.jpg&dh%3D600&dw%3D800&t%3D4', 15);
+(18, 'Agder Natural History Museum', 3, 'Gimleveien 23, 4686 Kristiansand', 'This museum and botanical garden offers extensive displays of the natural history of southern Norway. The botanical garden features a variety of plant species both native and from around the world, while the museum houses significant geological and zoological collections.', 'https://assets.simpleviewcms.com/simpleview/image/fetch/c_fill,h_1080,w_1920/f_jpg/q_65/https://media.newmindmedia.com/TellUs/image/%3Ffile%3D0CA4563281ADB452F7E7EAAB97D34C12890EF618.jpg&dh%3D600&dw%3D800&t%3D4', 15),
+(19, 'Bergen Aquarium', 4, 'Nordnesbakken 4, 5005 Bergen', 'Bergen Aquarium, located on the Nordnes peninsula, is Norway’s largest aquarium and a prominent Bergen attraction. It showcases over 300 species in more than 60 tanks and three outdoor ponds, featuring diverse marine and tropical fauna, including sea lions, penguins, and crocodiles. Engaging and educational, the aquarium offers daily feedings and film screenings, providing insights into both local and exotic marine ecosystems.', 'https://i.ytimg.com/vi/bj0L9PjX2Cw/maxresdefault.jpg', 15),
+(20, 'Edvard Grieg Museum', 4, 'Troldhaugvegen 65, 5232 Bergen', 'Troldhaugen, the home of composer Edvard Grieg, is a museum located in Bergen. This historic site offers a glimpse into the life of Norway’s most famous composer, with his well-preserved villa, composer’s cabin, and gravesite. The museum not only celebrates Grieg’s musical achievements but also his inspirations drawn from the scenic surroundings. Visitors can explore the house, enjoy concerts, and view exhibitions dedicated to his life and work.', 'https://upload.wikimedia.org/wikipedia/commons/6/64/1885_bis_1907_lebte_hier_der_Komponist_Edvard_Grieg._02.jpg', 10);
 
 
 --
@@ -424,7 +427,12 @@ INSERT INTO `attractionAgeGroup` (`attraction_id`, `age_group_id`) VALUES
 (17, 2), 
 (17, 3),
 (18, 2), 
-(18, 3);
+(18, 3),
+(19, 1), 
+(19, 2), 
+(19, 3),
+(20, 2), 
+(20, 3);
 
 
 
@@ -460,7 +468,9 @@ INSERT INTO `attractionCategory` (`category_id`, `attraction_id`) VALUES
 (8, 15),
 (7, 16),
 (1, 17),
-(2, 18);
+(2, 18),
+(8, 19),
+(2, 20);
 
 
 --
@@ -521,7 +531,15 @@ INSERT INTO `attractionTag` (`tag_id`, `attraction_id`) VALUES
 (17, 16),
 (2, 17), 
 (17, 17),
-(14, 18);
+(14, 18),
+(3, 19), 
+(6, 19), 
+(7, 19), 
+(9, 19), 
+(17, 19),
+(2, 20), 
+(5, 20), 
+(17, 20);
 
 
 --
