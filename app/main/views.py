@@ -4,7 +4,6 @@ from flask_babel import _, refresh
 from werkzeug.exceptions import ServiceUnavailable
 
 
-
 @main.route('/')
 @main.route('/index')
 def index():

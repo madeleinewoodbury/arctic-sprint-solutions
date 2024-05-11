@@ -1,17 +1,36 @@
 {% extends "base.html" %}
 
+{% block styles %}
+<link rel="stylesheet" type="text/css"
+    href="{{ url_for('static', filename='css/about.css') }}">
+{% endblock %}
+
+
 {% block content %}
-<section class="landing">
-    <div class="content">
-        <div class="text-image-container">
-            <div class="text-content">
-                <h1 class="text-primary text-center">About</h1>
-                <p class="lead">
-                    “{{ _("In the beginning this app was created. This has made a lot of people very angry and has been widely regarded as a bad move. - Anonymous Developer") }}”
-                </p>
+<section class="about wrapper">
+    <div class="about-card">
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='img/God2.webp') }}" alt="Image Description">
+        </div>
+        <div class="content">
+            <div class="title">
+                <h1>About</h1>
+                <h2>“In the beginning this app was created. This has made a lot of people very angry and has been widely regarded as a bad move.”</h2>
             </div>
-            <div class="image-content">
-                <img src="{{ url_for('static', filename='img/God2.webp') }}" alt="Image Description">
+            <div class="about-app-info">
+
+                <h1>Share The Experience</h1>
+                <p>
+                    Life can be lonely when traveling, unless you’re travelling with someone. “The Hitchhikers Guide to Earth” gives you the opportunity to meet fellow travelers.
+                    See beautiful and historic attractions. Add them to your wishlist and mark them as visited. Follow and compete with other travelers. Meet new friends or compete with existing ones. 
+                    The application has something for everyone.  
+
+                </p>
+                
+                <h1>Meet the Team</h1>
+                <p>
+                    Arctic Sprint Solutions AS is a fictional Norwegian Company created by students at UiT Norges Arktiske Universitet during the spring of 2024. The company develops software solutions for small to medium sized clients in the tourist industry. Being big fans of Douglas Adams book series “The Hitchhikers Guide to the Galaxy” and passionate about travelling, the group came together when a client contacted them in search for a new platform. The company has its headquarters in Tromso, Norway, but also has branches in northern and western Norway, as well as an international branch in New York City, USA. 
+                </p>
             </div>
         </div>
     </div>
