@@ -90,6 +90,12 @@ class Attraction(db.Model):
             .where(VisitedAttraction.attraction_id == cls.id)
             .label("visit_count")
         )
+    
+    @property
+    def list_of_visitors(self):
+        visitors = User.query.join(VisitedAttraction).filter(VisitedAttraction.attraction_id == self.id).all()
+        list_of_visitors = [visitor.username for visitor in visitors]
+        return list_of_visitors
 
     def to_dict(self):
         data = {

@@ -1,5 +1,6 @@
 import calendar
 from datetime import datetime
+from markupsafe import Markup
 from flask import flash, redirect, url_for, request
 from flask_login import current_user
 from flask_admin import BaseView, expose
@@ -40,6 +41,11 @@ class AdminModelView(ModelView):
     def inaccessible_callback(self, name, **kwargs):
         """Redirects to login page if user is not admin"""
         return redirect(url_for("auth.login", next=request.url))
+    
+    def url_formatter(view, context, model, name):
+        url = model.image
+        return Markup(f"<a href='{url}'>{url}</a>")
+    
 
 
 class UserView(AdminModelView):
@@ -169,6 +175,11 @@ class AgeGroupView(AdminModelView):
 
 
 class AttractionView(AdminModelView):
+    column_labels = {
+        "city_rel": "City",
+        "city_rel.name": "City",
+    }
+    
     can_export = True
     column_export_list = (
         "name",
@@ -176,10 +187,12 @@ class AttractionView(AdminModelView):
         "location",
         "description",
         "image",
+        "category",
+        "age_groups",
         "tags",
         "points",
-        "age_groups",
         "visit_count",
+        "list_of_visitors"
     )
     # Oppdaterer CSV export funksjonen.
     # https://blog.est.im/2022/stdout-05
@@ -195,23 +208,49 @@ class AttractionView(AdminModelView):
         "description",
         "image",
         "category",
+        "age_groups",
         "tags",
         "points",
-        "age_groups",
     ]
     column_list = [
         "name",
         "city_rel",
         "location",
-        "description",
-        "image",
+        "category",
+        "age_groups",
         "tags",
         "points",
-        "age_groups",
         "visit_count",
     ]
 
-    column_filters = ["tags", "age_groups", "visit_count"]
+    can_view_details = True
+    column_details_list = [
+        "name",
+        "city_rel",
+        "location",
+        "description",
+        "image",
+        "category",
+        "age_groups",
+        "tags",
+        "points",
+        "visit_count",
+        "list_of_visitors"
+    ]
+
+    column_filters = [
+        "name",
+        "city_rel.name",
+        "category",
+        "age_groups",
+        "tags",
+        "points",
+        "visit_count"
+        ]
+    
+    column_formatters = {
+        "image": AdminModelView.url_formatter
+    }
 
 
 class CitiesView(AdminModelView):
