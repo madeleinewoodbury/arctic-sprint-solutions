@@ -5,11 +5,12 @@ from flask_login import current_user
 from flask_admin import BaseView, expose
 from flask_admin.contrib.sqla import filters
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.model.form import InlineFormAdmin
 from app.admin import db
 from sqlalchemy import func
 from itertools import chain
 from wtforms.validators import DataRequired, Email
-from wtforms.widgets import PasswordInput
+from wtforms.widgets import PasswordInput, HiddenInput
 from ..email import send_email
 from app.admin.forms import ReportForm
 from app.models import (
@@ -25,7 +26,8 @@ from app.models import (
     AgeGroup,
     City,
     Badge,
-    UserBadge
+    UserBadge,
+    BadgeRequirement,
 )
 
 
@@ -260,6 +262,85 @@ class CitiesView(AdminModelView):
         "attractions_count",
     ]
 
+
+class BadgeView(AdminModelView):
+    inline_models = [(BadgeRequirement, {
+        'form_label': 'Requirements',
+        'form_columns': ('id', 'tag', 'quantity_required')
+    })]
+    can_export = True
+    column_export_list = (
+        "name",
+        "description",
+        "requirements",
+        "achieved_count"
+    )
+    # Oppdaterer CSV export funksjonen.
+    # https://blog.est.im/2022/stdout-05
+    def _export_csv(self, return_url):
+          r = super(AttractionView, self)._export_csv(return_url)
+          r.response = chain((b'\xef\xbb\xbf',), r.response)
+          return r
+
+    form_columns = [
+        "name",
+        "description",
+    ]
+    column_list = [
+        "name",
+        "description",
+        "requirements",
+        "achieved_count"
+    ]
+    column_filters = [
+        "name",
+        "description",
+        "achieved_count"
+    ]
+    
+
+class BadgeRequirementInlineModelForm(InlineFormAdmin):
+    form_columns = ('id', 'tag', 'quantity_required')
+    form_args = {
+        'id': {
+            'widget': HiddenInput()
+        },
+        'tag': {
+            'query_factory': lambda: Tag.query.all(),
+            'allow_blank': False
+        }
+    }
+
+
+class BadgeRequirementView(AdminModelView):
+    can_export = True
+    column_export_list = (
+        "badge",
+        "tag",
+        "quantity_required",
+    )
+    # Oppdaterer CSV export funksjonen.
+    # https://blog.est.im/2022/stdout-05
+    def _export_csv(self, return_url):
+          r = super(AttractionView, self)._export_csv(return_url)
+          r.response = chain((b'\xef\xbb\xbf',), r.response)
+          return r
+
+    form_columns = [
+        "badge",
+        "tag",
+        "quantity_required",
+    ]
+    column_list = [
+        "badge",
+        "tag",
+        "quantity_required",
+    ]
+    column_filters = [
+        "badge",
+        "tag",
+    ]
+    
 
 class ReportView(BaseView):
     def is_accessible(self):

@@ -448,12 +448,37 @@ class Badge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(255), nullable=False)
+    
     users = db.relationship(
         "User", secondary="userBadge", back_populates="badges"
     )
+    #requirements = db.relationship(
+    #    "BadgeRequirement",
+    #    backref="badge",
+    #    #cascade="all, delete-orphan",  # Ensure related requirements are deleted when the badge is deleted
+    #)
+    #tags = db.relationship("Tag", secondary="badgeRequirement", backref=db.backref("badge", lazy=True))
+    #requirements = db.relationship("BadgeRequirement", back_populates="badge")
+    #quantity_required = db.relationship("BadgeRequirement", back_populates="badge")
+    
+    #tags = db.relationship("Tag", secondary="badgeRequirement", backref=db.backref("badge", lazy=True))
+    requirements = db.relationship("BadgeRequirement", back_populates="badge", cascade="all, delete-orphan")
+    #quantity_required = db.relationship("BadgeRequirement", back_populates="badge")
+    
+    @hybrid_property
+    def achieved_count(self):
+        return len(self.users)
 
+    @achieved_count.expression
+    def achieved_count(cls):
+        return (
+            select(func.count(UserBadge.user_id))
+            .where(UserBadge.badge_id == cls.id)
+            .label("achieved_count")
+        )
+    
     def __repr__(self):
-        return f"<Badge {self.name}>"
+        return self.name
 
 
 class BadgeRequirement(db.Model):
@@ -462,7 +487,13 @@ class BadgeRequirement(db.Model):
     badge_id = db.Column(db.Integer, db.ForeignKey("badge.id"), nullable=False)
     tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"), nullable=False)
     quantity_required = db.Column(db.Integer, nullable=False)
-
+    
+    badge = db.relationship("Badge", back_populates="requirements")
+    tag = db.relationship("Tag", backref="requirements")
+    
+    def __repr__(self):
+        return f"{self.quantity_required}x {self.tag.name} tags"
+    
 
 class UserBadge(db.Model):
     __tablename__ = "userBadge"

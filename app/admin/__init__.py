@@ -13,6 +13,10 @@ from app.admin.views import (
     Attraction,
     AchievementsView,
     Achievement,
+    BadgeView,
+    Badge,
+    BadgeRequirementView,
+    BadgeRequirement,
     ReportView,
     CitiesView,
     City,
@@ -33,8 +37,13 @@ def add_admin_views():
     admin_manager.add_view(
         AchievementsView(Achievement, db.session, category="Edit Database")
     )
+    admin_manager.add_view(
+        BadgeView(Badge, db.session, category="Edit Database")
+    )
+    admin_manager.add_view(
+        BadgeRequirementView(BadgeRequirement, db.session, category="Edit Database")
+    )
     admin_manager.add_view(ReportView(name="Reports", endpoint="reports"))
-
 
 
 add_admin_views()
