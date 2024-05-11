@@ -11,7 +11,7 @@
 
 .profile .flag-container {
   position: absolute;
-  top: 0;
+  bottom: 0;
   right: 0;
 }
 
@@ -51,10 +51,10 @@
 
 .profile .top .title .stats {
   display: flex;
-  flex-direction: column;
-  gap: .25rem;
+  gap: 1rem;
   font-size: 1rem;
   font-family: var(--secondary-font);
+  padding-bottom: .25rem;
 }
 
 .profile .top .title .stats span strong {
@@ -106,24 +106,32 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 1rem;
   padding: 1rem;
 }
+
+.profile a {
+  text-decoration: none;
+  color: inherit;
+}
+
 
 /* Tabs */
 .profile-tabs{
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
   color: var(--white);
   font-family: var(--secondary-font);
-  padding: 0 1rem;
+  padding: 1rem 1rem 0;
 }
 
 .profile-tabs li {
   cursor: pointer;
   padding-bottom: 2px;
   border-bottom: 2px solid transparent;
-  font-weight: .9rem;
+  font-size: 1rem;
+  width: fit-content;
 }
 
 .profile-tabs li.active {
@@ -135,6 +143,13 @@
   border-color: var(--primary);
 }
 
+.profile-tabs svg {
+  vertical-align: middle;
+  transform: translateY(-2px); 
+  margin-right: 5px;
+  margin-top: -1rem;
+  margin-bottom: -1rem;
+}
 
 .profile .content-info {
   display: flex;
@@ -297,8 +312,14 @@
 .profile .form-wrapper .btn-container {
   justify-content: center;
   display: flex;
-  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: 1rem;
   padding-top: 2.5rem;
+}
+
+.profile .form-wrapper .btn-container .btn {
+  width: 100%;
+  padding: 1rem 2rem;
 }
 
 /* Visited Attractions and wishlist*/
@@ -425,14 +446,16 @@
   height: 60px;
 }
 
-.profile .user-lists .title-container {
+.profile .user-lists .title-container,
+.profile .friend-groups .title-container{
   display: flex;
   align-items: center;
   gap: 1rem;
   width: fit-content;
 }
 
-.profile .user-lists .title-container button {
+.profile .user-lists .title-container button ,
+.profile .friend-groups .title-container button{
   background-color: transparent;
   border: none;
   outline: none;
@@ -440,12 +463,14 @@
   padding-bottom: 1rem;
 }
 
-.profile .user-lists .title-container button svg {
+.profile .user-lists .title-container button svg,
+.profile .friend-groups .title-container button svg{
   fill: var(--white);
 }
 
 
-.profile .user-lists .title-container button:hover svg{
+.profile .user-lists .title-container button:hover svg,
+.profile .friend-groups .title-container button:hover svg{
   fill: var(--primary);
 }
 
@@ -457,7 +482,8 @@
 }
 
 .profile .visited-attractions h2,
-.profile .user-lists h2 {
+.profile .user-lists h2,
+.profile .friend-groups h2 {
   color: var(--white);
   font-size: 1.75rem;
   font-weight: normal;
@@ -567,6 +593,10 @@
   font-size: 1.1rem;
 }
 
+.profile .user-details .btn-container {
+  padding: 1rem 0;
+}
+
 
 /* User Preferences */
 .profile .user-preferences {
@@ -599,8 +629,24 @@
 
 
 @media (min-width: 550px) {
+  .profile .flag-container {
+    top: 0;
+  }
+
   .profile .list-card-container {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile .form-wrapper .btn-container .btn {
+    width: calc(50% - .5rem);
+  }
+  
+  .profile .user-details .btn-container .btn-danger {
+    width: 100%;
+  }
+
+  .profile #delete-user-confirmation .btn-container .btn {
+    width: calc(50% - .5rem);
   }
 }
 
@@ -635,8 +681,8 @@
 
   .profile .top .title .progress-container {
     flex-direction: row;
-    gap: 2rem;
-    font-size: 1.1rem;
+    gap: 1rem;
+    font-size: 1rem;
   }
 
   .profile .attraction-card .points {
@@ -728,5 +774,28 @@
     width: 50%;
   }
   
+
+}
+
+@media (min-width: 1200px) {
+  .profile .top .title {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0 2rem;
+  }
+
+  .profile .top .title h2 {
+    width: 100%;
+  }
+
+  .profile .top .title .stats {
+    width: fit-content;
+    padding-bottom: 0;
+    align-items: end;
+  }
+
+  .profile .top .title .progress-container {
+    width: fit-content;
+  }
 
 }

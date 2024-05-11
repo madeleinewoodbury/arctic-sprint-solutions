@@ -17,12 +17,16 @@
     </div>
     <div class="content">
         <div class="form-wrapper" id="search-attractions-form" x-data="attractionFilters()" x-init="initFilters">
-            {% if current_user.is_authenticated %}
-            <form action="{{ url_for('attractions.suggested_attractions') }}" method="get" class="full-width-btn-form">
-                <button type="submit" class="full-width-btn quick-search-btn">Suggest for me!</button>
+            {% if request.path == url_for('attractions.suggested_attractions') %}
+            <form action="{{ url_for('attractions.get_attractions') }}" method="POST" class="full-width-btn-form">
+                <button type="submit" class="full-width-btn quick-search-btn">{{ _("See all attractions!") }}</button>
+            </form>
+            {% elif current_user.is_authenticated %}
+            <form action="{{ url_for('attractions.suggested_attractions') }}" method="POST" class="full-width-btn-form">
+                <button type="submit" class="full-width-btn quick-search-btn">{{ _("Suggest for me!") }}</button>
             </form>
             {% endif %}
-            <form class="search" method="POST" action="{{ url_for('attractions.get_attractions') }}">
+            <form class="search" method="POST" action="{{ url_for('attractions.get_attractions', search=search_form.search_text.data) }}">
                 {{ search_form.hidden_tag() }}
                 <div class="search-text form-control">
                     {{ search_form.search_text }}
@@ -42,8 +46,7 @@
             </div>
             {% if categories_visible or age_groups_visible or tags_visible %}
             <div class="filter-wrapper" id="filter-attractions-form" x-show="showFilters">
-                <form class="filter">
-                    {{ filter_form.hidden_tag() }}
+                <form class="filter" action="/attractions" method="POST">
                     <p><a href="{{ url_for('attractions.get_attractions') }}">{{ _("Clear all filters") }}</a></p>
                     <div class="filters-container">
                         <div class="form-control">
@@ -52,7 +55,7 @@
                                 <ul id="category-checkbox">
                                     {% for choice in filter_form.categories %}
                                         <li>
-                                            <input id="{{ choice.id }}" name="{{ filter_form.categories.name }}" type="checkbox" value="{{ choice.data }}">
+                                            <input id="{{ choice.id }}" name="{{ filter_form.categories.name }}" type="checkbox" value="{{ choice.data }}" {% if choice.data in filter_form.categories.data %} checked {% endif %}>
                                             <label for="{{ choice.id }}">{{ choice.label.text|translate }}</label>
                                         </li>
                                     {% endfor %}
@@ -66,7 +69,7 @@
                             <ul id="age-group-checkbox">
                                 {% for choice in filter_form.age_groups %}
                                 <li>
-                                    <input id="{{ choice.id }}" name="{{ filter_form.age_groups.name }}" type="checkbox" value="{{ choice.data }}">
+                                    <input id="{{ choice.id }}" name="{{ filter_form.age_groups.name }}" type="checkbox" value="{{ choice.data }}" {% if choice.data in filter_form.age_groups.data %} checked {% endif %}>
                                     <label for="{{ choice.id }}">{{ choice.label.text|translate }}</label>
                                 </li>
                                 {% endfor %}
@@ -79,7 +82,7 @@
                             <ul id="tag-checkbox">
                                 {% for choice in filter_form.tags %}
                                 <li>
-                                    <input id="{{ choice.id }}" name="{{ filter_form.tags.name }}" type="checkbox" value="{{ choice.data }}">
+                                    <input id="{{ choice.id }}" name="{{ filter_form.tags.name }}" type="checkbox" value="{{ choice.data }}" {% if choice.data in filter_form.tags.data %} checked {% endif %}>
                                     <label for="{{ choice.id }}">{{ choice.label.text|translate }}</label>
                                 </li>
                                 {% endfor %}
@@ -96,9 +99,13 @@
     
         <div class="attractions-container">
             {% if attractions == [] %}
-            <br>
-            <h2>Sorry, we couldn't find any attractions based on «{{ search_form.search_text.data }}».</h2>
-            <h3>Please try again or <a href="{{ url_for('attractions.get_attractions') }}">go back</a>.</h3>
+            <div class="no-attractions-found">
+                <h2>{{ _("Sorry, we couldn't find any attractions based on the given
+                    criteria.") }}</h2>
+                <p>{{ _("Please try again with different search terms or filters, or you can
+                    always") }} <a href="{{ url_for('attractions.get_attractions') }}">{{
+                        _("clear the search") }}</a>.</p>
+            </div>
             {% endif %}
     
             <div class="attractions-grid" id="filtered-results">
@@ -107,7 +114,38 @@
                 {% include 'attractions_items.html' %}
                 {% endfor %}
             </div>
+            
+            <!-- Pagination controls -->
+            {% if total_pages > 0 %}
+            <div class="pagination">
+                {% if current_page > 1 %}
+                    <a href="?page={{ current_page - 1 }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">&#10094;</a>
+                {% else %}
+                    <div class="arrow-placeholder">&#10094;</div> <!-- Reserve space for the arrow -->
+                {% endif %}
+                {% for page_num in range(1, total_pages + 1) %}
+                    <a href="?page={{ page_num }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}" {% if current_page == page_num %}class='active'{% endif %}>{{ page_num }}</a>
+                {% endfor %}
+                {% if current_page < total_pages %}
+                    <a href="?page={{ current_page + 1 }}{% for arg in request.args %}{% if arg != 'page' %}&{{ arg }}={{ request.args[arg] }}{% endif %}{% endfor %}">&#10095;</a>
+                {% else %}
+                    <div class="arrow-placeholder">&#10095;</div> <!-- Reserve space for the arrow -->
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
+<script>
+    document.querySelector('.search').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var searchText = document.getElementById('search_text').value.trim()
+        if (searchText === '') {
+            window.location.href = "{{ url_for('attractions.get_attractions') }}"
+        } else {
+            var url = "{{ url_for('attractions.get_attractions') }}" + "?search=" + encodeURIComponent(searchText)
+            window.location.href = url
+        }
+    })
+</script>
 {% endblock %}

@@ -1,7 +1,8 @@
 <div class="list-content">
     <div class="user-lists" x-data="userGroups({{ user_groups}})">
         <div x-show="showAttractions">
-            <div class="title-container">
+            <div class="title-container"
+            {% if request.args.get('groupId') %} x-init="getGroupAttractions({{ request.args.get('groupId') }})" {% endif %}>
                 <button @click="backToGroups()"><svg
                         xmlns="http://www.w3.org/2000/svg" width="32"
                         height="32" fill="#000000" viewBox="0 0 256 256">
@@ -66,7 +67,6 @@
             </div>
         </div>
         <div x-show="!showAttractions">
-
             <h2>Your lists</h2>
             <div class="list-card-container">
                 <div class="list-card add-card">
@@ -118,8 +118,7 @@
                         <span class="visibility"
                             x-text="group.visibility"></span>
                         <div class="image-container">
-                            <img :src="group.image ? group.image : '../../static/img/aurora-bg.png'"
-                                alt="group.title">
+                            <img :src="group.image ? group.image : '{{ url_for('static', filename='img/aurora-bg.png') }}'" :alt="group.title">
                         </div>
                         <div class="text-container">
                             <h3 x-text="group.title"></h3>

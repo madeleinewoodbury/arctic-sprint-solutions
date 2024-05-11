@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 
 {% block styles %}
-<link rel="stylesheet" type="text/css"
-    href="{{ url_for('static', filename='css/attraction.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/attraction.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -11,12 +10,12 @@
     <h1 class="text-primary">{{ attraction.name }}</h1>
     <p class="lead">
       {% for cat in attraction.category %}
-        <span>{{ cat.name | translate }} {% if not loop.last %}, {% endif %}</span>
+      <span>{{ cat.name | translate }}{% if not loop.last %}, {% endif %}</span>
       {% endfor %}
     </p>
     <ul class="tags">
       {% for tag in attraction.tags %}
-        <li>{{ tag.name | translate }} {% if not loop.last %}<span>&#xB7;</span> {% endif %}</li>
+      <li>{{ tag.name | translate }} {% if not loop.last %}<span>&#xB7;</span> {% endif %}</li>
       {% endfor %}
     </ul>
     {% if current_user.is_authenticated %}
@@ -25,7 +24,11 @@
         <template x-if="!visited">
           <div class="visited-info">
             <button @click="addToVisited()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H208V208Z"></path></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256">
+                <path
+                  d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H208V208Z">
+                </path>
+              </svg>
             </button>
             <span>{{_('Mark as visited')}}</span>
           </div>
@@ -33,12 +36,17 @@
         <template x-if="visited">
           <div class="visited-info">
             <button @click="removeFromVisited()">
-              <svg class="primary-fill" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,48V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM208,208V48H48V208H208Z"></path></svg>
+              <svg class="primary-fill" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000"
+                viewBox="0 0 256 256">
+                <path
+                  d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,48V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM208,208V48H48V208H208Z">
+                </path>
+              </svg>
             </button>
             <span>{{_('Visited')}}</span>
           </div>
         </template>
-    </div>
+      </div>
 
       <div x-data="wishlist({{ attraction.id}}, {{groups}})" class="wishlist">
         <template x-if="groups.length == 0">
@@ -80,9 +88,9 @@
           </div>
       </div>
     </div>
-  {% endif %}
+    {% endif %}
   </div>
-  
+
 
   <div class="content">
     <div class="image-container">
@@ -90,16 +98,192 @@
       <img src="{{ attraction.image }}" alt="{{ attraction.name }}">
     </div>
     <div class="text-container">
-      <h3>{{ _("About") }}</h3>
-      <p>{{ attraction.description | translate }}</p>
-      <p><strong>{{ _("Location") }}:</strong> {{ attraction.location }}</p>
-      {% if attraction.age_groups %}
+      <div class="top">
+        <h3>{{ _("About") }}</h3>
+        <p>{{ attraction.description | translate }}</p>
+        <p><strong>{{ _("Location") }}:</strong> {{ attraction.location }}</p>
+        {% if attraction.age_groups %}
         <p><strong>{{ _("Suitable for") }}:</strong>
           {% for age_group in attraction.age_groups %}
-          <span>{{ age_group.name | translate }} {% if not loop.last %}, {% endif %}</span>
+          <span>{{ age_group.name | translate }}{% if not loop.last %}, {% endif %}</span>
           {% endfor %}
-      {% endif %}
+          {% endif %}
+      </div>
+      <a id="lastPageLink" class="link-text" href="javascript:goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-move-left">
+          <path d="M6 8L2 12L6 16" />
+          <path d="M2 12H22" />
+        </svg>
+        {{ _("Go Back") }}
+      </a>
     </div>
+    
   </div>
+
+    {% if current_user.is_authenticated %}
+      <div class="new-comment-container">
+        <p>{{ _("Leave a comment") }}</p>
+        <form action="" method="post">
+          {{ comment_form.hidden_tag() }}
+          <div class="form-control">
+            {{ comment_form.comment.label }}
+            {{ comment_form.comment }}
+          </div>
+          <div class="btn-container">
+            {{ comment_form.submit() }}
+          </div>
+        </form>
+      </div>
+    {% endif %}
+
+  <div class="text-comment-container">
+    {% if comments %}
+    <div class="pagination-info">
+      {{ pagination.info }}
+      {{ pagination.links }}
+    </div>
+        <div class="comments-wrapper">
+          {% for comment in comments %}
+            <div class="comment-container" id="comment-{{ comment.id }}">
+              <div class="comment-user-info">
+                <div class="comment-image">
+                  <img src="{{ comment.user.gravatar() }}" alt="">
+                </div>
+                <div class="comment-text-container">
+                  <p class="comment-username">{{ comment.user.username }}</p>
+                  <p class="comment-created">{{ moment(comment.created_at).fromNow(refresh=True) }}</p>
+                </div>
+              </div>
+              <div class="comment-content" id="comment-id-{{ comment.id }}" style="display: block;">
+                <pre>{{ comment.comment_text }}</pre>
+              </div>
+              <div class="comment-content edit-content" id="comment-id-edit-{{ comment.id }}" style="display: none;">
+                <textarea name="" id="comment-id-edit-textarea-{{ comment.id }}" cols="30" rows="10">{{ comment.comment_text }}</textarea>
+                <button class="btn btn-primary" type="button" onclick="post_comment('{{ comment.id }}')">{{ _("Post") }}</button>
+              </div>
+              
+              <div id="comment-edit-info-{{ comment.id }}" style="display: {% if not comment.edited_at %} none {% endif %};">
+                <p class="edited-on" id="comment-edit-info-text-{{ comment.id }}">Edited: {{ comment.editor.username }}, {{ moment(comment.edited_at).fromNow(refresh=True) }}</p>
+              </div>
+              
+              
+              {% if current_user.is_authenticated %}
+                {% if (current_user.id == comment.user.id) or (current_user.role_rel.title == 'Moderator') or (current_user.role_rel.title == 'Administrator') %}
+                <div class="btn-container-comment">
+                  <button class="btn btn-primary btn-small" type="button" onclick="toggle_edit_comment('{{ comment.id }}')">{{ _("Edit") }}</button>
+                  <button class="btn btn-danger btn-small" type="button" onclick="post_delete_comment('{{ comment.id }}')">{{ _("Delete") }}</button>
+                </div>
+                {% endif %}
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="bottom-pagination">
+          {{ pagination.links }}
+        </div>
+      </div>
+    {% endif %}
 </section>
+
+<script>
+  async function toggle_edit_comment(id) {
+    var comment_string = "comment-id-" + id;
+    var comment_edit_string = "comment-id-edit-" + id;
+
+    var comment = document.getElementById(comment_string)
+    var comment_edit = document.getElementById(comment_edit_string)  
+
+    if (comment.style.display == "block") {
+      comment.style.display = "none";
+      comment_edit.style.display = "block";
+    }
+    else {
+      var data = await get_comment(id);
+      comment.innerText = data.text;
+      comment.style.display = "block";
+      comment_edit.style.display = "none";
+      if (data.edited_at) {
+        show_edited(data, id);
+      }
+    }
+    
+  }
+
+  async function show_edited(data, id) {
+    // Legge til en streng for editor
+    var comment_editor_string = "comment-edit-info-" + id;
+    var comment_editor_text_string = "comment-edit-info-text-" + id;
+
+    var comment_editor = document.getElementById(comment_editor_string)
+    var comment_editor_text = document.getElementById(comment_editor_text_string)
+
+    // dersom editor og edited_at not NULL
+    if (data.edited_at) {
+        // Oppdatere editor og edited_at
+        // Force edited tab til block.
+        comment_editor.style.display = "block";
+        var edited_text = 'Edited: ' + data.editor_id + ', ' + moment(data.edited_at).fromNow(refresh=true);
+        comment_editor_text.innerText = edited_text;
+
+      }
+  }
+
+
+  async function get_comment(comment_id) {
+    try {
+      json_response = await fetch("/attractions/comment/" + comment_id);
+      data = await json_response.json();
+    }
+    catch (error) {
+      alert('Error: getting data.')
+    }
+    return data;
+  }
+
+  async function post_comment(comment_id) {
+  comment_edit_string = "comment-id-edit-textarea-" + comment_id;
+  var edit_text = document.getElementById(comment_edit_string).value;
+  try {
+    json_response = await fetch(('/attractions/comment/' + comment_id), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({edit_text: edit_text})
+    });
+    response = await json_response.json();
+  }
+  catch (error) {
+    alert('Error: posting data.');
+  }
+  toggle_edit_comment(comment_id);
+}
+
+async function post_delete_comment(comment_id) {
+  try {
+    json_response = await fetch(('/attractions/comment/delete'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({comment_id: comment_id})
+    });
+    response = await json_response.json();
+
+    if (response.success == true) {
+      comment_string = "comment-" + comment_id;
+      document.getElementById(comment_string).remove();
+    }
+  }
+  catch (error) {
+    alert('Error: Deleting Comment.');
+  }
+}
+
+</script>
+
 {% endblock %}
+
+

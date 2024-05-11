@@ -17,16 +17,16 @@
             <img src="{{ current_user.gravatar() }}" alt="Gravatar"
                 class="gravatar-img">
             <div class="title">
-                <h2>{{ _("Hello") }} {{ current_user.username }}</h2>
+                <h2><span class="hide-sm">{{ _("Hello ") }}</span>{{ current_user.username }}</h2>
                 <div class="stats">
-                    <span>{{ _("Visited:") }} <strong>{{number_of_visited_attractions}}</strong></span>
-                    <span>{{ _("Wishlist:") }}<strong>{{number_of_wishlist_attractions}}</strong></span>
-                    <span>{{ _("Points:") }} <strong>{{points}}</span></strong>
-                    <span>{{ _("Level:") }} <strong>{{level.current_level}}</span></strong>
+                    <span class="hide-sm">{{ _("Visited:") }} <strong>{{ number_of_visited_attractions }}</strong></span>
+                    <span>{{ _("Points:") }} <strong>{{ points }}</span></strong>
+                    <span>{{ _("Level:") }} <strong>{{ current_user.level.current_level }}</span></strong>
                 </div>
                 <div class="progress-container">
-                    <progress class="progress-bar" value="{{ level.progress }}" max="{{ level.points_required }}"></progress>
-                    <span class="progress-text"> <strong>{{ level.points_missing }}</strong> {{ _("points until level ") }}<strong>{{level.current_level + 1}}</strong></span>
+                    <progress class="progress-bar" value="{{ current_user.level.progress }}" max="{{ current_user.level.points_required }}"></progress>
+                    <span class="progress-text"><strong>{{ current_user.level.points_missing }}</strong> {{ _("points until level ") }}
+                        <strong>{{ current_user.level.current_level + 1 }}</strong></span>
                 </div>
             </div>
         </div>
@@ -39,6 +39,7 @@
     </ul>
 
     <div class="content">
+        <!-- Visited Attractons Tab -->
         <template x-if="activeTab === tabs[0]">
             <div class="content-info">
                 <div class="visited-attractions">
@@ -46,7 +47,8 @@
                     {% if visited_attractions %}
                     <div class="card-container">
                         {% for visited in visited_attractions %}
-                        <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}" class="attraction-card">
+                        <a href="{{ url_for('attractions.get_attraction', attraction_id=visited.attraction.id) }}" class="attraction-card"
+                        onclick="storePreviousUrl()">
                             <img src="{{ visited.attraction.image }}" alt="Attraction Image">
                             <div>
                                 <h3>{{ visited.attraction.name }}</h3>
@@ -65,6 +67,7 @@
             </div>
         </template>
 
+        <!-- Edit Profile Tab -->
         <template x-if="activeTab === tabs[1]">
             <div class="content-info">
                 
@@ -84,19 +87,23 @@
                             <span>{{ _("Account Type:") }}</span>
                             <p>{{ current_user.role_rel | translate }}</p>
                             <div class="btn-container">
-                                <button class="btn btn-primary" type="button" onclick="toggleEditUser()">{{ _("Edit Profile") }}</button>
-                                <button class="btn btn-primary" type="button" onclick="toggleEditPreferences()">{{ _("Set Preferences") }}</button> 
+                                <button class="btn btn-primary" type="button" onclick="toggleEditUser()">{{
+                                    _("Edit Profile") }}</button>
+                                <button class="btn btn-primary" type="button"
+                                    onclick="toggleEditPreferences()">{{ _("Set Preferences") }}</button>
+                                {% if not current_user.is_admin %}
+                                <button id="delete-user-button" class="btn btn-danger" type="button"
+                                    onclick="toggleDeleteUser()">{{ _("Delete User") }}</button>
+                                {% endif %}
                             </div>
-                            {% if not current_user.is_admin %}
-                                <div class="btn-container">
-                                    <button id="delete-user-button" class="btn btn-danger" type="button" onclick="toggleDeleteUser()">{{ _("Delete User") }}</button>
-                                </div>
-                            {% endif %}
                             <!-- Denne vises når man trykker på "Delete User" -->
                             <div id="delete-user-confirmation" style="display: none;">
                                 <p>{{ _("Are you sure you want to delete your account?") }}</p>
-                                <label class="custom-label" for="delete_user_password" >{{ _("Password") }}:</label>
-                                <input type="password" id="delete_user_password" placeholder="Enter your password">
+                                <div class="form-control">
+                                    <label for="delete_user_password" >{{ _("Password") }}:</label>
+                                    <input type="password" id="delete_user_password" placeholder="Enter your password">
+
+                                </div>
                                 <div class="btn-container">
                                     <button type="button" class="btn btn-danger" onclick="confirm_delete()">{{ _("Confirm") }}</button>
                                     <button type="button" class="btn btn-warning" onclick="cancel_delete()">{{ _("Cancel") }}</button>
