@@ -120,24 +120,6 @@ class UserView(AdminModelView):
         pass
     
 
-class AchievementsView(AdminModelView):
-    can_export = True
-    column_export_list = (
-        "title",
-        "description",
-        "user_count",
-    )
-    # Oppdaterer CSV export funksjonen.
-    # https://blog.est.im/2022/stdout-05
-    def _export_csv(self, return_url):
-          r = super(AchievementsView, self)._export_csv(return_url)
-          r.response = chain((b'\xef\xbb\xbf',), r.response)
-          return r
-
-    form_columns = ["title", "description"]
-    column_list = ["title", "description", "user_count"]
-
-
 class CategoryView(AdminModelView):
     can_export = True
     column_export_list = (
@@ -311,36 +293,6 @@ class BadgeRequirementInlineModelForm(InlineFormAdmin):
         }
     }
 
-
-class BadgeRequirementView(AdminModelView):
-    can_export = True
-    column_export_list = (
-        "badge",
-        "tag",
-        "quantity_required",
-    )
-    # Oppdaterer CSV export funksjonen.
-    # https://blog.est.im/2022/stdout-05
-    def _export_csv(self, return_url):
-          r = super(AttractionView, self)._export_csv(return_url)
-          r.response = chain((b'\xef\xbb\xbf',), r.response)
-          return r
-
-    form_columns = [
-        "badge",
-        "tag",
-        "quantity_required",
-    ]
-    column_list = [
-        "badge",
-        "tag",
-        "quantity_required",
-    ]
-    column_filters = [
-        "badge",
-        "tag",
-    ]
-    
 
 class ReportView(BaseView):
     def is_accessible(self):
