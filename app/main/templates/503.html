@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="landing">
+    <div class="content">
+        <h1 class="text-primary text-center">503 Service Unavailable
+        </h1>
+        <p class="lead">
+            “{{ _("For a moment, nothing happened. Then, after a second or so, nothing continued to happen.") }}”
+        </p>
+        <div class="btn-container">
+            <a id="lastPageLink" class="btn btn-primary-outline not-found-back" href="javascript:goBack()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-move-left">
+                  <path d="M6 8L2 12L6 16" />
+                  <path d="M2 12H22" />
+                </svg>
+                {{ _("Go Back") }}
+              </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

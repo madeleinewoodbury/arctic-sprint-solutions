@@ -1,7 +1,7 @@
 import calendar
 from datetime import datetime
 from markupsafe import Markup
-from flask import flash, redirect, url_for, request
+from flask import flash, redirect, url_for, request, abort
 from flask_login import current_user
 from flask_admin import BaseView, expose
 from flask_admin.contrib.sqla import filters
@@ -19,6 +19,18 @@ from app.models import (
     Achievement,
     Attraction,
     VisitedAttraction,
+    AttractionCategory,
+    AttractionTag,
+    UserTagPreference, 
+    UserCategoryPreference,
+    BadgeRequirement,
+    AttractionAgeGroup,
+    UserAgeGroupPreference,
+    GroupedAttraction,
+    Friendship,
+    AttractionGroup,
+    UserBadge,
+    Comment,
     Country,
     db,
     User,
@@ -126,6 +138,27 @@ class UserView(AdminModelView):
                 send_email(changed_user.email, 'Urgent: Admin made changes to your profile.', 'email/profile_updated',
                     user=changed_user, email_change=changed_user.email, username_change=changed_user.username,
                     new_email=model.email, new_username=model.username)
+                
+    def on_model_delete(self, model):
+        """Handle cascading delete"""
+        if model.id == current_user.id:
+            flash("Cannot delete currently logged in user.", "error")
+            abort(403)
+        self.session.flush()
+        attraction_groups = AttractionGroup.query.filter_by(owner=model.id).all()
+        for group in attraction_groups:
+            GroupedAttraction.query.filter_by(group_id=group.id).delete()
+        AttractionGroup.query.filter_by(owner=model.id).delete()
+        Friendship.query.filter((Friendship.user_1 == model.id) | (Friendship.user_2 == model.id)).delete()
+        UserAchievement.query.filter_by(user_id=model.id).delete()
+        UserTagPreference.query.filter_by(user_id=model.id).delete()
+        UserBadge.query.filter_by(user_id=model.id).delete()
+        UserCategoryPreference.query.filter_by(user_id=model.id).delete()
+        UserAgeGroupPreference.query.filter_by(user_id=model.id).delete()
+        VisitedAttraction.query.filter_by(user_id=model.id).delete()
+        Comment.query.filter_by(user_id=model.id).delete()
+        db.session.commit()
+        super(UserView, self).on_model_delete(model)
     
     def _show_missing_fields_warning(self, text):
         pass
@@ -146,6 +179,14 @@ class CategoryView(AdminModelView):
     form_columns = ["name"]
     column_list = ["name", "attraction_count"]
 
+    def on_model_delete(self, model):
+        """Handle cascading delete"""
+        self.session.flush()
+        AttractionCategory.query.filter_by(category_id=model.id).delete()
+        UserCategoryPreference.query.filter_by(category_id=model.id).delete()
+        db.session.commit()
+        super(CategoryView, self).on_model_delete(model)
+
 
 class TagView(AdminModelView):
     can_export = True
@@ -162,6 +203,15 @@ class TagView(AdminModelView):
     form_columns = ["name"]
     column_list = ["name", "attraction_count"]
 
+    def on_model_delete(self, model):
+        """Handle cascading delete"""
+        self.session.flush()
+        AttractionTag.query.filter_by(tag_id=model.id).delete()
+        UserTagPreference.query.filter_by(tag_id=model.id).delete()
+        BadgeRequirement.query.filter_by(tag_id=model.id).delete()
+        db.session.commit()
+        super(TagView, self).on_model_delete(model)
+
 
 class AgeGroupView(AdminModelView):
     can_export = True
@@ -177,6 +227,14 @@ class AgeGroupView(AdminModelView):
           return r
     form_columns = ["name"]
     column_list = ["name", "attraction_count"]
+
+    def on_model_delete(self, model):
+        """Handle cascading delete"""
+        self.session.flush()
+        AttractionAgeGroup.query.filter_by(age_group_id=model.id).delete()
+        UserAgeGroupPreference.query.filter_by(age_group_id=model.id).delete()
+        db.session.commit()
+        super(AgeGroupView, self).on_model_delete(model)
 
 
 class AttractionView(AdminModelView):
@@ -257,6 +315,17 @@ class AttractionView(AdminModelView):
         "image": AdminModelView.url_formatter
     }
 
+    def on_model_delete(self, model):
+        """Handle cascading delete"""
+        self.session.flush()
+        AttractionAgeGroup.query.filter_by(attraction_id=model.id).delete()
+        AttractionCategory.query.filter_by(attraction_id=model.id).delete()
+        AttractionTag.query.filter_by(attraction_id=model.id).delete()
+        GroupedAttraction.query.filter_by(attraction_id=model.id).delete()
+        VisitedAttraction.query.filter_by(attraction_id=model.id).delete()
+        db.session.commit()
+        super(AttractionView, self).on_model_delete(model)
+
 
 class CitiesView(AdminModelView):
     can_export = True
@@ -283,8 +352,6 @@ class CitiesView(AdminModelView):
     column_list = [
         "name",
         "country",
-        "image",
-        "description",
         "attractions_count",
     ]
 

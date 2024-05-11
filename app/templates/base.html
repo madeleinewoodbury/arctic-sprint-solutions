@@ -61,31 +61,32 @@
                     </li>
                     {% if current_user.is_anonymous %}
                     <li>
-                        <a class="cta" href="{{ url_for('auth.login') }}">{{ _("Sign
-                            In") }}</a>
+                        <a class="cta" href="{{ url_for('auth.login') }}">{{ _("Sign In") }}</a>
                     </li>
                     <li>
-                        <a href="{{ url_for('main.language') }}">{{ _("Babel Fish")
-                            }}</a>
+                        <a href="{{ url_for('main.language') }}">{{ _("Babel Fish")}}</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.about') }}">{{_("About") }}</a>
                     </li>
                     {% else %}
                     <li>
-                        <a href="{{ url_for('auth.profile')}}">{{ _("View Profile")
-                            }}</a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('main.language') }}">{{ _("Babel Fish")
-                            }}</a>
+                        <a href="{{ url_for('auth.profile')}}">{{ _("View Profile")}}</a>
                     </li>
                     {% if current_user.is_admin %}
                     <li>
                         <a href="{{ url_for('admin.index') }}">{{ _("Admin") }}</a>
+                    </li>
+                    {% endif %}
                     <li>
-                        {% endif %}
+                        <a href="{{ url_for('main.language') }}">{{ _("Babel Fish")}}</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.about') }}">{{_("About") }}</a>
+                    </li>
                     <li>
                         <a href="{{ url_for('auth.logout') }}">{{ _("Logout") }}</a>
                     </li>
-    
                     {% endif %}
                 </ul>
                 <div class="brand">
@@ -111,12 +112,19 @@
             </svg>
             <a href="{{ url_for('main.index') }}">The Hitchhiker's<br> Guide to Earth</a>
         </div>
+
+
         <ul class="nav-links">
             <li>
                 <a href="{{ url_for('attractions.get_attractions') }}">{{_("Attractions") }}</a>
             </li>
-    
             {% if current_user.is_anonymous %}
+            <li>
+                <a href="{{ url_for('main.about') }}">{{_("About") }}</a>
+            </li>
+            <li>
+                <a href="{{ url_for('main.language') }}">{{ _("Babel Fish")}}</a>
+            </li>
             <li class="city-select anonymous-nav">
                 <form action="{{ url_for('attractions.select_city') }}"
                     method="POST" id="cityFormAnonymous">
@@ -175,6 +183,9 @@
                     {% endif %}
                     <li>
                         <a href="{{ url_for('main.language') }}">{{ _("Babel Fish") }}</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.about') }}">{{_("About") }}</a>
                     </li>
                     <li>
                         <a href="{{ url_for('auth.logout') }}">{{ _("Logout") }}</a>
