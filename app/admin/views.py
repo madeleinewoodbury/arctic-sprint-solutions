@@ -109,7 +109,6 @@ class UserView(AdminModelView):
         "visited_count",
         "list_of_visited_attractions",
     ]
-    
     column_list = [
         "username",
         "email",
@@ -362,10 +361,10 @@ class CitiesView(AdminModelView):
     can_export = True
     column_export_list = (
         "name",
-        "country",
-        "image",
         "description",
-        "attractions_count",
+        "image",
+        "country",
+        "attractions_count"
     )
     # Oppdaterer CSV export funksjonen.
     # https://blog.est.im/2022/stdout-05
@@ -376,15 +375,26 @@ class CitiesView(AdminModelView):
     
     form_columns = [
         "name",
-        "country",
-        "image",
         "description",
+        "image",
+        "country"
     ]
     column_list = [
         "name",
         "country",
-        "attractions_count",
+        "attractions_count"
     ]
+    can_view_details = True
+    column_details_list = [
+        "name",
+        "description",
+        "image",
+        "country",
+        "attractions_count"
+    ]
+    column_formatters = {
+        "image": AdminModelView.url_formatter
+    }
 
 
 class BadgeView(AdminModelView):
