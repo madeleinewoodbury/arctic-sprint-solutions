@@ -547,13 +547,6 @@ nav {
 
 
 @media (min-width: 768px) {
-  .mobile-nav {
-    display: none;
-  }
-
-  .desktop-nav {
-    display: flex;
-  }
 
   .hide-md {
     display: unset;
@@ -573,5 +566,15 @@ nav {
     font-size: 1.3rem;
     padding: 4rem 0;
 
+  }
+}
+
+@media (min-width: 890px) {
+  .mobile-nav {
+    display: none;
+  }
+
+  .desktop-nav {
+    display: flex;
   }
 }
