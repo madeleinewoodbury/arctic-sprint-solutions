@@ -465,6 +465,10 @@ class Badge(db.Model):
     requirements = db.relationship("BadgeRequirement", back_populates="badge", cascade="all, delete-orphan")
     #quantity_required = db.relationship("BadgeRequirement", back_populates="badge")
     
+    @property
+    def list_of_achievers(self):
+        return [user.username for user in self.users]
+    
     @hybrid_property
     def achieved_count(self):
         return len(self.users)

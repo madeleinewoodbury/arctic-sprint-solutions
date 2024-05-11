@@ -279,6 +279,14 @@ class BadgeView(AdminModelView):
         "description",
         "achieved_count"
     ]
+    can_view_details = True
+    column_details_list = [
+        "name",
+        "description",
+        "requirements",
+        "achieved_count",
+        "list_of_achievers"
+    ]
     
 
 class BadgeRequirementInlineModelForm(InlineFormAdmin):
