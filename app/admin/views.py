@@ -36,6 +36,10 @@ class AdminModelView(ModelView):
 
     def is_accessible(self):
         """Checks db to see if current user is admin"""
+        # Remove creation and deletion permissions if not true admin role.
+        if current_user.is_authenticated and current_user.role != 1:
+            self.can_delete = False
+            self.can_create = False
         return current_user.is_authenticated and current_user.is_admin
 
     def inaccessible_callback(self, name, **kwargs):
@@ -46,7 +50,6 @@ class AdminModelView(ModelView):
         url = model.image
         return Markup(f"<a href='{url}'>{url}</a>")
     
-
 
 class UserView(AdminModelView):
     can_export = True
@@ -75,7 +78,9 @@ class UserView(AdminModelView):
         "email",
         "country",
         "created_at",
+        "badges_count",
         "list_of_badges",
+        "visited_count",
         "list_of_visited_attractions",
     ]
     
