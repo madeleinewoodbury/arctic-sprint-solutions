@@ -412,7 +412,7 @@ class BadgeView(AdminModelView):
     # Oppdaterer CSV export funksjonen.
     # https://blog.est.im/2022/stdout-05
     def _export_csv(self, return_url):
-          r = super(AttractionView, self)._export_csv(return_url)
+          r = super(BadgeView, self)._export_csv(return_url)
           r.response = chain((b'\xef\xbb\xbf',), r.response)
           return r
 
