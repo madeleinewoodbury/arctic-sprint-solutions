@@ -177,7 +177,7 @@
 .attraction-info .link-text {
   font-size: 1.1rem;
   text-align: left;
-  color: var(--primary);
+  color: var(--bg-light);
   text-transform: uppercase;
   font-family: var(--secondary-font);
   font-weight: bold;
@@ -185,6 +185,16 @@
   align-items: center;
   justify-content: left;
   gap: .5rem;
+  background-color: var(--dark-blue);
+  padding: .5rem 1rem;
+  border-radius: .5rem;
+  width: fit-content;
+  margin-top: .5rem;
+  transition: color .2s ease-in-out;
+}
+
+.attraction-info .link-text:hover {
+  color: var(--primary);
 }
 
 /* Comment section */
