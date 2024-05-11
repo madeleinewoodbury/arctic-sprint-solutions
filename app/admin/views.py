@@ -41,6 +41,7 @@ from app.models import (
     Badge,
     UserBadge,
     BadgeRequirement,
+    UserRole
 )
 
 
@@ -48,16 +49,29 @@ class AdminModelView(ModelView):
 
     def is_accessible(self):
         """Checks db to see if current user is admin"""
-        # Remove creation and deletion permissions if not true admin role.
-        if current_user.is_authenticated and current_user.role != 1:
-            self.can_delete = False
-            self.can_create = False
         return current_user.is_authenticated and current_user.is_admin
 
     def inaccessible_callback(self, name, **kwargs):
         """Redirects to login page if user is not admin"""
         return redirect(url_for("auth.login", next=request.url))
     
+    def has_role(self, role):
+        """Check current user's role against the given role parameter"""
+        query = UserRole.query.filter(UserRole.title == role).first()
+        if query and query.id == current_user.role:
+            return True
+        return False
+    
+    def _run_view(self, fn, *args, **kwargs):
+        """Remove create and delete permissions if user doesnt have the Administrator role"""
+        if self.has_role("Administrator"):
+            self.can_delete = True
+            self.can_create = True
+        else:
+            self.can_delete = False
+            self.can_create = False
+        return fn(self, *args, **kwargs)
+
     def url_formatter(view, context, model, name):
         url = model.image
         return Markup(f"<a href='{url}'>{url}</a>")
@@ -107,10 +121,21 @@ class UserView(AdminModelView):
     column_filters = ["created_at", "email"]
     
     form_create_rules = [
-        "username", "email", "password", "first_name", "last_name", "country", "role_rel"
+        "username",
+        "email",
+        "password",
+        "first_name",
+        "last_name",
+        "country",
+        "role_rel"
     ]
     form_edit_rules = [
-        "username", "first_name", "last_name", "email", "country", "role_rel"
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+        "country",
+        "role_rel"
     ]
     form_args = {
         "username": {
@@ -124,7 +149,13 @@ class UserView(AdminModelView):
             "widget": PasswordInput(hide_value=True)
         }
     }
-
+    # Disable user role edit field when current user doesnt have Administrator role
+    def edit_form(self, obj=None):
+        form = super().edit_form(obj=obj)
+        if not self.has_role("Administrator"):
+            form.role_rel.render_kw = {'disabled': 'disabled'}
+        return form
+    
     @staticmethod
     def on_form_prefill(form, id):
         UserView.changed_user = User.query.get(id)
