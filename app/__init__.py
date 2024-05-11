@@ -7,7 +7,7 @@ Return: flask application (with right configuration)
 """
 
 
-from flask import Flask, request, session
+from flask import Flask, request, session, render_template
 from config import config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -70,5 +70,13 @@ def create_app(config_name):
 
     from .main import main as main_bp
     app.register_blueprint(main_bp)
+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return render_template('404.html'), 404
+
+    @app.errorhandler(503)
+    def service_unavailable(error):
+        return render_template('503.html'), 503
 
     return app

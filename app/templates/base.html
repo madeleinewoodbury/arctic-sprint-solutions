@@ -111,12 +111,16 @@
             </svg>
             <a href="{{ url_for('main.index') }}">The Hitchhiker's<br> Guide to Earth</a>
         </div>
+
+
         <ul class="nav-links">
             <li>
                 <a href="{{ url_for('attractions.get_attractions') }}">{{_("Attractions") }}</a>
             </li>
     
             {% if current_user.is_anonymous %}
+            <a href="{{ url_for('main.about') }}">{{
+                _("About") }}</a>
             <li class="city-select anonymous-nav">
                 <form action="{{ url_for('attractions.select_city') }}"
                     method="POST" id="cityFormAnonymous">
