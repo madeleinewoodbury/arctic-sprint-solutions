@@ -81,34 +81,10 @@
   font-size: .8rem;
 }
 
-.about-card .remember-me {
-  display: flex;
-  align-items: center;
-}
 
-.about-card .remember-me label {
-  position: initial;
-  transform: initial;
-}
 
-.about-card .form-control input {
-  width: 100%;
-  border: 1px solid var(--dark-blue);
-  border-radius: 5px;
-  padding: 1rem 0 1rem 1rem;
-  background-color: transparent;
-  font-size: 1.1rem;;
-  color: var(--dark-blue);
-}
-
-.about-card .form-select {
-  width: 100%;
-  border: 1px solid var(--dark-blue);
-  border-radius: .5rem;
-  padding: 1rem;
-  font-size: 1.1rem;
-  background-color: transparent;
-  color: var(--dark-blue);
+.about-card .spacer {
+    height: 20px;
 }
 
 
@@ -197,5 +173,7 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   } 
+
+  
 
 }
