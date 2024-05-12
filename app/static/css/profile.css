@@ -431,7 +431,7 @@
   background-color: transparent;
   cursor: pointer;
   border: none;
-  outline: none;
+  /* outline: none; */
   font-size: 1.25rem;
 }
 

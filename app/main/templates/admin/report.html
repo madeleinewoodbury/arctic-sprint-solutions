@@ -16,6 +16,7 @@
     </div>
 </form>
 
+{% if achievements_data %}
 <h3>Achievements Overview</h3>
 <table class="table">
     <thead>
@@ -37,6 +38,7 @@
         {% endfor %}
     </tbody>
 </table>
+{% endif %}
 
 <h3>Attractions Overview</h3>
 <table class="table">

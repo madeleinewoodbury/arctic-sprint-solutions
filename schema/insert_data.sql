@@ -648,7 +648,7 @@ INSERT INTO `badgeRequirement` (`id`, `badge_id`, `tag_id`, `quantity_required`)
 --
 INSERT INTO `userRole` (`id`, `title`, `is_admin`) VALUES
 (1, 'Administrator', 1),
-(2, 'Bruker', 0),
+(2, 'User', 0),
 (3, 'Moderator', 1);
 
 
