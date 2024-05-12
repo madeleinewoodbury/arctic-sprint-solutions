@@ -349,6 +349,19 @@ class User(UserMixin, db.Model):
         user = User.query.filter_by(id=data.get("delete_user")).first()
         if user is None:
             return False
+        
+        attraction_groups = AttractionGroup.query.filter_by(owner=user.id).all()
+        for group in attraction_groups:
+            GroupedAttraction.query.filter_by(group_id=group.id).delete()
+        AttractionGroup.query.filter_by(owner=user.id).delete()
+        Friendship.query.filter((Friendship.user_1 == user.id) | (Friendship.user_2 == user.id)).delete()
+        UserAchievement.query.filter_by(user_id=user.id).delete()
+        UserTagPreference.query.filter_by(user_id=user.id).delete()
+        UserBadge.query.filter_by(user_id=user.id).delete()
+        UserCategoryPreference.query.filter_by(user_id=user.id).delete()
+        UserAgeGroupPreference.query.filter_by(user_id=user.id).delete()
+        VisitedAttraction.query.filter_by(user_id=user.id).delete()
+        Comment.query.filter_by(user_id=user.id).delete()
         db.session.delete(user)
         return True
 
