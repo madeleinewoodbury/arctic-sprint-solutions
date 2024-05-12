@@ -57,7 +57,7 @@ img {
 }
 
 .btn {
-  outline: none;
+  /* outline: none; */
   border: none;
   border-radius: 5px;
   padding: 1rem 3rem;
@@ -124,7 +124,7 @@ img {
 .icon-btn {
   background-color: transparent;
   width: fit-content;
-  outline: none;
+  /* outline: none; */
   border: none;
   cursor: pointer;
 }
@@ -259,7 +259,7 @@ nav {
 
 .settings-nav button {
   background-color: transparent;
-  outline: none;
+  /* outline: none; */
   border: none;
   cursor: pointer;
 }
