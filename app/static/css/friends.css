@@ -138,7 +138,7 @@ form.request-form {
 .add-friend-container .form-wrapper .search-btn {
   background-color: var(--primary);
   color: var(--white);
-  outline: none;
+  /* outline: none; */
   font-weight: bold;
   font-size: 1rem;
   padding: .5rem .75rem;

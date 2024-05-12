@@ -57,7 +57,7 @@ img {
 }
 
 .btn {
-  outline: none;
+  /* outline: none; */
   border: none;
   border-radius: 5px;
   padding: 1rem 3rem;
@@ -124,7 +124,7 @@ img {
 .icon-btn {
   background-color: transparent;
   width: fit-content;
-  outline: none;
+  /* outline: none; */
   border: none;
   cursor: pointer;
 }
@@ -259,7 +259,7 @@ nav {
 
 .settings-nav button {
   background-color: transparent;
-  outline: none;
+  /* outline: none; */
   border: none;
   cursor: pointer;
 }
@@ -272,6 +272,17 @@ nav {
 
 .settings-nav svg:hover {
   fill: var(--primary)
+}
+
+.babel-fish-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.babel-fish-link img {
+  width: 20px;
+  height: auto;
 }
 
 .desktop-nav .settings-nav .settings-content {

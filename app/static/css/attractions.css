@@ -68,7 +68,7 @@
 .attractions .form-wrapper .search-btn {
   background-color: var(--primary);
   color: var(--white);
-  outline: none;
+  /* outline: none; */
   font-weight: bold;
   font-size: 1rem;
   padding: .5rem;
@@ -86,7 +86,7 @@
 
 .attractions .filters-btn {
   background-color: transparent;
-   outline: none;
+   /* outline: none; */
    border: none;
    display: flex;
    align-items: center;
