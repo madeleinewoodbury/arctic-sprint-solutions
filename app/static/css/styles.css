@@ -274,6 +274,17 @@ nav {
   fill: var(--primary)
 }
 
+.babel-fish-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.babel-fish-link img {
+  width: 20px;
+  height: auto;
+}
+
 .desktop-nav .settings-nav .settings-content {
   background-color: var(--dark-blue);
   position: absolute;
