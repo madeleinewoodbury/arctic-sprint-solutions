@@ -240,6 +240,52 @@
   gap: .5rem;
 }
 
+/* Pagination styles */
+.wrapper.attractions .pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  margin-bottom: -1rem;
+}
+
+.wrapper.attractions .pagination a {
+  color: var(--black);
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  transition: background-color .3s;
+}
+
+.wrapper.attractions .pagination a.active {
+  color: var(--white);
+  background-color: var(--primary);
+}
+
+.wrapper.attractions .pagination a:hover:not(.active) {
+  background-color: var(--white);
+}
+
+.wrapper.attractions .pagination .arrow-placeholder {
+  visibility: hidden;
+  padding: 0.5rem 1rem;
+}
+
+/* No attractions found message */
+.attractions .no-attractions-found {
+  padding-top: 2rem;
+  color: var(--bg-dark);
+}
+
+.attractions .no-attractions-found h2 {
+  font-size: 1.5rem;
+  padding-bottom: .5rem;
+}
+
+.attractions .no-attractions-found p {
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
 @media (min-width: 500px) {
   .attractions-container {
     padding: 3rem;
@@ -354,6 +400,9 @@
     height: 200px;
   }
 
+  .attractions .no-attractions-found {
+    padding: 1rem 2rem 3rem;
+  }
 }
 
 @media (min-width: 1400px) {
@@ -373,6 +422,10 @@
 
   .attraction .text-container {
     height: 250px;
+  }
+
+  .attractions .no-attractions-found {
+    padding-left: 4rem;
   }
 
 }

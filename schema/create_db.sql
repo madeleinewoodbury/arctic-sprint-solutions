@@ -49,13 +49,14 @@ DROP TABLE IF EXISTS badge;
 DROP TABLE IF EXISTS tag;
 DROP TABLE IF EXISTS category;
 DROP TABLE IF EXISTS ageGroup;
+DROP TABLE IF EXISTS language;
+DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS attraction;
-DROP TABLE IF EXISTS userProfile;
 DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS userProfile;
 DROP TABLE IF EXISTS userRole;
 DROP TABLE IF EXISTS city;
 DROP TABLE IF EXISTS country;
-DROP TABLE IF EXISTS language;
 
 --
 -- Table structure for table `achievement`
@@ -382,6 +383,23 @@ CREATE TABLE `city` (
 
 INSERT INTO `city` (`id`, `name`, `description`, `image`, `country_id`) VALUES
 (1, 'Tromsø', 'Tromsø, a vibrant city surrounded by majestic mountains and the Arctic landscape, is known as the \'Gateway to the Arctic Sea.\' The city offers a unique blend of culture, history, and nature, with attractions such as the Arctic Cathedral, Polaria, and opportunities for Northern Lights safaris and outdoor activities', 'https://images.unsplash.com/photo-1609538205185-40f2701cf7d6?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 165);
+
+-- --------------------------------------------------------
+
+--
+-- Dumping data for table `comment`
+--
+
+CREATE TABLE `comment` (
+  `id` int(11) NOT NULL,
+  `attraction_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `created_at` TIMESTAMP DEFAULT current_timestamp,
+  `edited_at` TIMESTAMP DEFAULT NULL,
+  `editor_id` INT DEFAULT NULL,
+  `comment_text` TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
 
 -- --------------------------------------------------------
 
@@ -976,6 +994,15 @@ ALTER TABLE `city`
   ADD KEY `fk_city_country` (`country_id`);
 
 --
+-- Indexes for table `comment`
+--
+ALTER TABLE `comment`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `attraction_id` (`attraction_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `editor_id` (`editor_id`);
+
+--
 -- Indexes for table `country`
 --
 ALTER TABLE `country`
@@ -1111,6 +1138,12 @@ ALTER TABLE `city`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `comment`
+--
+ALTER TABLE `comment`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `country`
 --
 ALTER TABLE `country`
@@ -1189,6 +1222,14 @@ ALTER TABLE `badgeRequirement`
 --
 ALTER TABLE `city`
   ADD CONSTRAINT `fk_city_country` FOREIGN KEY (`country_id`) REFERENCES `country` (`id`);
+
+--
+-- Constraints for table `comment`
+--
+ALTER TABLE `comment`
+  ADD CONSTRAINT `fk_comment_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_comment_edit_user` FOREIGN KEY (`editor_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_comment_attraction` FOREIGN KEY (`attraction_id`) REFERENCES `attraction` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `friendship`

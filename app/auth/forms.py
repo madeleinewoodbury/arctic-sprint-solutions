@@ -55,7 +55,7 @@ class UpdateProfileForm(RegistrationForm):
     gravatar_url = HiddenField(_('Gravatar URL'))
     current_password = PasswordField('Confirm Current Password', validators=[DataRequired()], render_kw={'autocomplete': 'off'})
     update_profile = SubmitField(_('Update profile'), render_kw={'class': 'btn btn-primary'})
-    cancel = SubmitField(_('Cancel'), render_kw={'class': 'btn btn-primary', 'formnovalidate': 'formnovalidate'})
+    cancel = SubmitField(_('Cancel'), render_kw={'class': 'btn btn-danger', 'formnovalidate': 'formnovalidate'})
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -87,7 +87,7 @@ class UpdatePreferencesForm(Form):
     age_group = MultiCheckboxField(_('Select Age Groups'), coerce=int)
     tag = MultiCheckboxField(_('Select Tags'), coerce=int)
     update_preferences = SubmitField(_('Update preferences'), render_kw={'class': 'btn btn-primary'})
-    cancel = SubmitField(_('Cancel'), render_kw={'class': 'btn btn-primary', 'formnovalidate': 'formnovalidate'})
+    cancel = SubmitField(_('Cancel'), render_kw={'class': 'btn btn-danger', 'formnovalidate': 'formnovalidate'})
 
 
 # Friends related forms:
@@ -95,4 +95,14 @@ class SearchUsersForm(Form):
     search_text = StringField(_('Search users'), validators=[DataRequired()], render_kw={'placeholder': _('Search users')})
     search = SubmitField(_('Search'), render_kw={'class': 'btn btn-primary search-btn'})
     
-    
+class AddListForm(Form):
+    name = StringField(_('List Name'), validators=[DataRequired(), Length(max=50)])
+    visibility = SelectField(_('Visibility'), choices=[('public', _('Public')), ('private', _('Private'))], default='private')
+    add_list = SubmitField(_('Save'), render_kw={'class': 'btn btn-primary'})
+
+
+class EditListForm(Form):
+    group_id = HiddenField()
+    name = StringField(_('List Name'), validators=[DataRequired(), Length(max=50)])
+    visibility = SelectField(_('Visibility'), choices=[('public', _('Public')), ('private', _('Private'))], default='private')
+    edit_list = SubmitField(_('Update'), render_kw={'class': 'btn btn-primary'})

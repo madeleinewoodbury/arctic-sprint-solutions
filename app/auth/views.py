@@ -1,6 +1,7 @@
 import math
+import json
 from . import auth
-from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePreferencesForm
+from .forms import LoginForm, RegistrationForm, SearchUsersForm, PasswordResetRequestForm, PasswordResetForm, UpdateProfileForm, UpdatePreferencesForm, AddListForm, EditListForm
 from .. import db
 from ..models import *
 from flask import render_template, request, redirect, url_for, session, flash, abort, jsonify
@@ -225,7 +226,7 @@ def get_friendships(user):
             }
         friend['points'] = sum(
             item['attraction'].points for item in friend['visited'])
-        friend['level'] = get_user_level(friend['points']).get('current_level')
+        friend['level'] = friend['user'].level.get('current_level')
         friends_data.append(friend)
         
     friends_data = sorted(friends_data, key=lambda x: x['points'], reverse=True)
@@ -297,32 +298,6 @@ def get_user_badge_progress(user_id):
     return unlocked_progression, in_progress_badges
 
 
-def get_user_level(points):
-    BASE_POINTS = 42
-    GROWTH_RATE = 1.05
-
-    current_level = 1
-    points_required = BASE_POINTS
-    points_remaining = points
-
-    while points_remaining >= points_required:
-        points_remaining -= points_required
-        current_level += 1
-        points_required = int((points_required + BASE_POINTS)
-                              * GROWTH_RATE - points_required)
-
-    points_missing = points_required - points_remaining
-
-    level = {
-        "current_level": current_level,
-        "points_required": points_required,
-        "points_missing": points_missing,
-        "progress": points_remaining
-    }
-
-    return level
-
-
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -332,7 +307,6 @@ def profile():
     # Visited Attractions Tab
     visited_attractions = get_visited_attractions(current_user.id)
     points = sum(item['attraction'].points for item in visited_attractions)
-    level = get_user_level(points)
 
     # Profile Tab
     profile_form = UpdateProfileForm()
@@ -388,21 +362,13 @@ def profile():
     # Calculating badge progress for all badges.
     unlocked_progression, in_progress_badges = get_user_badge_progress(current_user.id)
 
-    # Wishlist Tab
-    user_wishlist = AttractionGroup.query.filter_by(
-        owner=current_user.id).first()
-    wishlist_attractions = []
-
-    if user_wishlist:
-        wishlist_attractions = [
-            {
-                'attraction': Attraction.query.get(attraction.id)
-            }
-            for attraction in user_wishlist.grouped_attractions
-        ]
+    # List Tab
+    list_form = AddListForm()
+    edit_list_form = EditListForm()
+    user_groups = json.dumps([group.to_dict() for group in AttractionGroup.query.filter_by(owner=current_user.id).all()])
 
     # Tabs for profile page sections, only one section should be active
-    tabs = ['Visited Attractions', 'Profile', 'Wishlist', 'Friends', 'Badges']
+    tabs = ['Visited Attractions', 'Profile', 'Lists', 'Friends', 'Badges']
 
     return render_template(
         'profile.html',
@@ -410,18 +376,18 @@ def profile():
         preferences_form=preferences_form,
         user_preferences=user_preferences,
         visited_attractions=visited_attractions,
-        wishlist_attractions=wishlist_attractions,
         number_of_visited_attractions=len(visited_attractions),
-        number_of_wishlist_attractions=len(wishlist_attractions),
+        user_groups=user_groups,
         points=points,
         tabs=tabs,
         friends_form=friends_form,
+        list_form=list_form,
+        edit_list_form=edit_list_form,
         users=users,
         friendships=friendships,
         unlocked_progress = unlocked_progression, 
         in_progress_badges = in_progress_badges,
-        activeTab=activeTab,
-        level=level
+        activeTab=activeTab
     )
 
 
@@ -501,23 +467,30 @@ def remove_friend(user_id):
 @auth.route('/friend/profile/<int:user_id>', methods=['GET'])
 @login_required
 def friend_profile(user_id):
+    current_tab = request.args.get('current_tab')
+    activeTab = current_tab if current_tab else 0
     friend = User.query.get(user_id)
-
+    
     if friend is None:
         abort(404)
 
+    # groups = AttractionGroup.query.filter_by(owner=user_id, visibility='public').all()
+    groups = json.dumps([group.to_dict() for group in AttractionGroup.query.filter_by(owner=user_id, visibility='public').all()])
     visited_attractions = get_visited_attractions(user_id)
     points = sum(item['attraction'].points for item in visited_attractions)
-    level = get_user_level(points)
     unlocked_progression, in_progress_badges = get_user_badge_progress(user_id)
+
+    tabs = ['Visited Attractions', 'Badges', 'Lists']
 
     return render_template(
         'friendProfile.html',
         friend=friend,
+        groups=groups,
         visited_attractions=visited_attractions,
         number_of_visited_attractions=len(visited_attractions),
         points=points,
-        level=level,
+        tabs=tabs,
+        activeTab=activeTab,
         unlocked_progress = unlocked_progression
     )
 
@@ -554,3 +527,66 @@ def delete_user(token):
     else:
         flash('Your user has NOT been deleted.', 'error')
         return (redirect(url_for('auth.login')))
+
+
+@auth.route('/add-list', methods=['POST'])
+@login_required
+def add_list():
+    form = AddListForm()
+
+    if form.validate_on_submit():
+        new_list = AttractionGroup(
+            owner=current_user.id,
+            title=form.name.data,
+            visibility=form.visibility.data
+        )
+        db.session.add(new_list)
+        db.session.commit()
+        flash(_('The list has been created.'), 'success')
+    return redirect(url_for('auth.profile', current_tab=2))
+
+@auth.route('/delete-group', methods=['POST'])
+@login_required
+def delete_group():
+    data = request.get_json()
+    group_id = data['groupId']
+
+    group = AttractionGroup.query.get(group_id)
+    if group.owner != current_user.id:
+        abort(403)
+
+    db.session.delete(group)
+    db.session.commit()
+
+    # TODO: Fix the flash message
+    flash(_('The list has been deleted.'), 'success')
+    return redirect(url_for('auth.profile', current_tab=2))
+
+@auth.route('/edit-group', methods=['POST'])
+@login_required
+def edit_group():
+    form = EditListForm()
+
+    if form.validate_on_submit():
+        group_id = form.group_id.data
+        group = AttractionGroup.query.get(group_id)
+
+    
+    if (group.owner != current_user.id) or group is None:
+        abort(403)
+
+    group.title = form.name.data
+    group.visibility = form.visibility.data
+    db.session.commit()
+
+    flash(_('The list has been updated.'), 'success')
+    return redirect(url_for('auth.profile', current_tab=2))
+
+@auth.route('/group-attractions/<group_id>', methods=['GET'])
+@login_required
+def get_group_attractions(group_id):
+    group = AttractionGroup.query.get(group_id)
+    if group is None:
+        abort(404)
+
+    return jsonify([attraction.to_dict() for attraction in group.grouped_attractions])

@@ -8,9 +8,10 @@
   --darken-primary: #44b48b;
   --dark-blue: #273343;
   --medium-grey: #646464;
-  --danger: #F8D7DA;
-  --danger-hover: #f7929b;
-  --danger-text: #99575E;
+  --danger: #c32232;
+  --danger-hover: #a51f2d;
+  --error: #c32232;
+  --danger-text: #fff;
   --success: #D4EDDA;
   --success-text: #41753a;
   --black: #000;
@@ -96,8 +97,9 @@ img {
 }
 
 .btn-danger {
-  background-color: var(--danger);
-  color: var(--danger-text);
+  background-color: var(--error);
+  color: #fff;
+  /* color: var(--danger-text); */
 }
 
 .btn-danger:hover {
@@ -117,6 +119,7 @@ img {
   background-color: var(--success);
   color: var(--white);
 }
+
 
 .icon-btn {
   background-color: transparent;
@@ -279,7 +282,7 @@ nav {
   padding: 1rem;
   border-radius: .5rem;
   margin-top: 5px;
-  z-index: 100;
+  z-index: 150;
   -webkit-box-shadow: 0px 4px 17px -8px rgba(0,0,0,0.75);
   -moz-box-shadow: 0px 4px 17px -8px rgba(0,0,0,0.75);
   box-shadow: 0px 4px 17px -8px rgba(0,0,0,0.75);  
@@ -290,7 +293,7 @@ nav {
 }
 
 .mobile-nav .close-button {
- z-index: 101;
+ z-index: 151;
  position: absolute;
  right: 1rem;
  top: 1rem;
@@ -307,7 +310,7 @@ nav {
   overflow-y: scroll;
   background-color: var(--dark-blue);
   padding: 1rem;
-  z-index: 100;
+  z-index: 150;
 }
 
 .mobile-nav .settings-content ul{
@@ -415,7 +418,7 @@ nav {
   position: absolute;
   bottom: 0;
   margin: 2rem;
-  z-index: 10;
+  z-index: 151;
 }
 
 .flask-flash {
@@ -482,21 +485,73 @@ nav {
   gap: 2rem;
 }
 
+
+/* Babel Fish */
+.babel-fish {
+  max-width: 600px;
+  margin: 0 auto;
+  margin-top: 3rem;
+  padding: 1rem;
+}
+
+.babel-fish h1 {
+  color: var(--primary);
+  padding-bottom: 1.5rem;
+  font-size: 2.75rem;
+}
+
+.babel-fish .form-wrapper {
+  background-color: var(--bg-light);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border-radius: .5rem;
+}
+
+.babel-fish .form-wrapper fieldset {
+  padding: 1rem;
+  border-radius: .5rem;
+  margin-bottom: 1rem;
+}
+
+.babel-fish .form-wrapper fieldset .form-control {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .25rem 0;
+}
+
+.babel-fish .form-wrapper fieldset label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-family: var(--secondary-font);
+}
+
+.babel-fish .form-wrapper fieldset label img {
+  width: 20px;
+  height: auto;
+}
+
+.not-found-back {
+  display: flex;
+  gap: .5rem;
+}
+
 @media (min-width: 576px) {
   .hide-sm {
     display: unset;
+  }
+
+
+  .babel-fish .form-wrapper {
+    padding: 2rem;
   }
 }
 
 
 @media (min-width: 768px) {
-  .mobile-nav {
-    display: none;
-  }
-
-  .desktop-nav {
-    display: flex;
-  }
 
   .hide-md {
     display: unset;
@@ -516,5 +571,15 @@ nav {
     font-size: 1.3rem;
     padding: 4rem 0;
 
+  }
+}
+
+@media (min-width: 890px) {
+  .mobile-nav {
+    display: none;
+  }
+
+  .desktop-nav {
+    display: flex;
   }
 }
