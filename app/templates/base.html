@@ -71,10 +71,14 @@
                     <li>
                         <a href="{{ url_for('main.language') }}"
                             class="babel-fish-link">
-                            <img src="{{ url_for('static', filename='img/flags/%s.svg' % session.get('language') or 'en') }}"
-                                alt="">
-                            {{ _("Babel Fish")}}
-                        </a>
+                            {% if session.get('language')%}
+                            <img src="{{ url_for('static', filename='img/flags/%s.svg' % session.get('language')) }}"
+                                alt="flag">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='img/flags/%s.svg' % 'en') }}"
+                                alt="flag">
+                            {% endif %}
+                            {{ _("Babel Fish")}}</a>
                     </li>
                     <li>
                         <a href="{{ url_for('main.about') }}">{{_("About")
@@ -94,10 +98,14 @@
                     <li>
                         <a href="{{ url_for('main.language') }}"
                             class="babel-fish-link">
-                            <img src="{{ url_for('static', filename='img/flags/%s.svg' % session.get('language') or 'en') }}"
-                                alt="">
-                            {{ _("Babel Fish")}}
-                        </a>
+                            {% if session.get('language')%}
+                            <img src="{{ url_for('static', filename='img/flags/%s.svg' % session.get('language')) }}"
+                                alt="flag">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='img/flags/%s.svg' % 'en') }}"
+                                alt="flag">
+                            {% endif %}
+                            {{ _("Babel Fish")}}</a>
                     </li>
                     <li>
                         <a href="{{ url_for('main.about') }}">{{_("About")
@@ -148,8 +156,13 @@
             <li>
                 <a href="{{ url_for('main.language') }}"
                     class="babel-fish-link">
-                    <img src="{{ url_for('static', filename='img/flags/%s.svg' % session.get('language') or 'en') }}"
-                        alt="">
+                    {% if session.get('language')%}
+                    <img src="{{ url_for('static', filename='img/flags/%s.svg' % session.get('language')) }}"
+                        alt="flag">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='img/flags/%s.svg' % 'en') }}"
+                        alt="flag">
+                    {% endif %}
                     {{ _("Babel Fish")}}</a>
             </li>
             <li class="city-select anonymous-nav">
@@ -219,10 +232,14 @@
                     <li>
                         <a href="{{ url_for('main.language') }}"
                             class="babel-fish-link">
-                            <img src="{{ url_for('static', filename='img/flags/%s.svg' % session.get('language') or 'en') }}"
-                                alt="">
-                            {{ _("Babel Fish")}}
-                        </a>
+                            {% if session.get('language')%}
+                            <img src="{{ url_for('static', filename='img/flags/%s.svg' % session.get('language')) }}"
+                                alt="flag">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='img/flags/%s.svg' % 'en') }}"
+                                alt="flag">
+                            {% endif %}
+                            {{ _("Babel Fish")}}</a>
                     </li>
                     <li>
                         <a href="{{ url_for('main.about') }}">{{_("About")
