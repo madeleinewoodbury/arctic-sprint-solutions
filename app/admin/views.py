@@ -78,6 +78,11 @@ class AdminModelView(ModelView):
     
 
 class UserView(AdminModelView):
+    column_labels = {
+        "role_rel": "Role",
+        "role_rel.title": "Role"
+    }
+    
     can_export = True
     column_export_list = (
         "username",
@@ -113,11 +118,12 @@ class UserView(AdminModelView):
         "username",
         "email",
         "role_rel",
+        "created_at",
         "visited_count",
         "badges_count",
     ]
     column_searchable_list = ["username", "email"]
-    column_filters = ["created_at", "email"]
+    column_filters = ["email", "role_rel.title", "created_at"]
     
     form_create_rules = [
         "username",
@@ -270,7 +276,7 @@ class AgeGroupView(AdminModelView):
 class AttractionView(AdminModelView):
     column_labels = {
         "city_rel": "City",
-        "city_rel.name": "City",
+        "city_rel.name": "City"
     }
     
     can_export = True
