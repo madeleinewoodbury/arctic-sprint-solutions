@@ -399,7 +399,7 @@ class ReportView(BaseView):
             form=form,
             month_name=month_name,
             selected_year=selected_year,
-            achievements_data=achievements_data,
+            # achievements_data=achievements_data,
             attractions_data=attractions_data,
         )
     
