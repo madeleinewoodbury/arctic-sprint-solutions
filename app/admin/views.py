@@ -15,33 +15,29 @@ from wtforms.widgets import PasswordInput, HiddenInput
 from ..email import send_email
 from app.admin.forms import ReportForm
 from app.models import (
-    UserAchievement,
-    Achievement,
-    Attraction,
-    VisitedAttraction,
-    AttractionCategory,
-    AttractionTag,
-    UserTagPreference, 
-    UserCategoryPreference,
-    BadgeRequirement,
-    AttractionAgeGroup,
-    UserAgeGroupPreference,
-    GroupedAttraction,
-    Friendship,
-    AttractionGroup,
-    UserBadge,
-    Comment,
-    Country,
     db,
-    User,
-    Category,
-    Tag,
     AgeGroup,
-    City,
+    Attraction,
+    AttractionAgeGroup,
+    AttractionCategory,
+    AttractionGroup,
+    AttractionTag,
     Badge,
-    UserBadge,
     BadgeRequirement,
-    UserRole
+    Category,
+    City,
+    Comment,
+    Friendship,
+    GroupedAttraction,
+    Tag,
+    User,
+    UserAchievement,
+    UserAgeGroupPreference,
+    UserCategoryPreference,
+    UserTagPreference, 
+    UserBadge,
+    UserRole,
+    VisitedAttraction
 )
 
 
@@ -123,7 +119,10 @@ class UserView(AdminModelView):
         "badges_count",
     ]
     column_searchable_list = ["username", "email"]
-    column_filters = ["email", "role_rel.title", "created_at"]
+    column_filters = [
+        "email",
+        "role_rel.title",
+        "created_at"]
     
     form_create_rules = [
         "username",
@@ -299,7 +298,22 @@ class AttractionView(AdminModelView):
           r = super(AttractionView, self)._export_csv(return_url)
           r.response = chain((b'\xef\xbb\xbf',), r.response)
           return r
-
+    
+    can_view_details = True
+    column_details_list = [
+        "name",
+        "city_rel",
+        "location",
+        "description",
+        "image",
+        "category",
+        "age_groups",
+        "tags",
+        "points",
+        "visit_count",
+        "list_of_visitors"
+    ]
+    
     form_columns = [
         "name",
         "city_rel",
@@ -321,22 +335,6 @@ class AttractionView(AdminModelView):
         "points",
         "visit_count",
     ]
-
-    can_view_details = True
-    column_details_list = [
-        "name",
-        "city_rel",
-        "location",
-        "description",
-        "image",
-        "category",
-        "age_groups",
-        "tags",
-        "points",
-        "visit_count",
-        "list_of_visitors"
-    ]
-
     column_filters = [
         "name",
         "city_rel.name",
@@ -379,6 +377,15 @@ class CitiesView(AdminModelView):
           r.response = chain((b'\xef\xbb\xbf',), r.response)
           return r
     
+    can_view_details = True
+    column_details_list = [
+        "name",
+        "description",
+        "image",
+        "country",
+        "attractions_count"
+    ]
+    
     form_columns = [
         "name",
         "description",
@@ -390,24 +397,17 @@ class CitiesView(AdminModelView):
         "country",
         "attractions_count"
     ]
-    can_view_details = True
-    column_details_list = [
-        "name",
-        "description",
-        "image",
-        "country",
-        "attractions_count"
-    ]
     column_formatters = {
         "image": AdminModelView.url_formatter
     }
-
+    
 
 class BadgeView(AdminModelView):
     inline_models = [(BadgeRequirement, {
         'form_label': 'Requirements',
         'form_columns': ('id', 'tag', 'quantity_required')
     })]
+    
     can_export = True
     column_export_list = (
         "name",
@@ -421,7 +421,16 @@ class BadgeView(AdminModelView):
           r = super(BadgeView, self)._export_csv(return_url)
           r.response = chain((b'\xef\xbb\xbf',), r.response)
           return r
-
+    
+    can_view_details = True
+    column_details_list = [
+        "name",
+        "description",
+        "requirements",
+        "achieved_count",
+        "list_of_achievers"
+    ]
+    
     form_columns = [
         "name",
         "description",
@@ -436,14 +445,6 @@ class BadgeView(AdminModelView):
         "name",
         "description",
         "achieved_count"
-    ]
-    can_view_details = True
-    column_details_list = [
-        "name",
-        "description",
-        "requirements",
-        "achieved_count",
-        "list_of_achievers"
     ]
     
 
@@ -561,5 +562,4 @@ class ReportView(BaseView):
             badges_data=badges_data,
             attractions_data=attractions_data,
         )
-    
-
+        
