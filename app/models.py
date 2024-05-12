@@ -457,19 +457,10 @@ class Badge(db.Model):
     
     users = db.relationship(
         "User", secondary="userBadge", back_populates="badges"
-    )
-    #requirements = db.relationship(
-    #    "BadgeRequirement",
-    #    backref="badge",
-    #    #cascade="all, delete-orphan",  # Ensure related requirements are deleted when the badge is deleted
-    #)
-    #tags = db.relationship("Tag", secondary="badgeRequirement", backref=db.backref("badge", lazy=True))
-    #requirements = db.relationship("BadgeRequirement", back_populates="badge")
-    #quantity_required = db.relationship("BadgeRequirement", back_populates="badge")
-    
-    #tags = db.relationship("Tag", secondary="badgeRequirement", backref=db.backref("badge", lazy=True))
-    requirements = db.relationship("BadgeRequirement", back_populates="badge", cascade="all, delete-orphan")
-    #quantity_required = db.relationship("BadgeRequirement", back_populates="badge")
+        )
+    requirements = db.relationship(
+        "BadgeRequirement", back_populates="badge", cascade="all, delete-orphan"
+        )
     
     @property
     def list_of_achievers(self):
@@ -511,9 +502,6 @@ class UserBadge(db.Model):
     badge_id = db.Column(db.Integer, db.ForeignKey(
         "badge.id"), primary_key=True)
     date_earned = db.Column(db.DateTime, default=datetime.utcnow)
-
-    #user = db.relationship("User", backref=db.backref("user_badges"))
-    #badge = db.relationship("Badge", backref=db.backref("badge_users"))
 
     def __repr__(self):
         return f"<UserBadge {self.user_id} {self.badge_id}>"
