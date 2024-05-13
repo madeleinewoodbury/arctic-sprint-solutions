@@ -553,6 +553,12 @@ ALTER TABLE `attractionGroup`
 --
 -- AUTO_INCREMENT for table `badgeRequirement`
 --
+ALTER TABLE `badge`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `badgeRequirement`
+--
 ALTER TABLE `badgeRequirement`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 

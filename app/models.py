@@ -90,6 +90,12 @@ class Attraction(db.Model):
             .where(VisitedAttraction.attraction_id == cls.id)
             .label("visit_count")
         )
+    
+    @property
+    def list_of_visitors(self):
+        visitors = User.query.join(VisitedAttraction).filter(VisitedAttraction.attraction_id == self.id).all()
+        list_of_visitors = [visitor.username for visitor in visitors]
+        return list_of_visitors
 
     def to_dict(self):
         data = {
@@ -260,11 +266,11 @@ class User(UserMixin, db.Model):
     achievements = db.relationship(
         "Achievement", secondary="userAchievement", back_populates="users"
     )
-
+    badges = db.relationship(
+        "Badge", secondary="userBadge", back_populates="users"
+    )
     role_rel = db.relationship(
         "UserRole", backref=db.backref("user", lazy=True))
-    tag_preferences = db.relationship(
-        "UserTagPreference", back_populates="user")
     visited_attractions = db.relationship(
         "VisitedAttraction", back_populates="user")
     initiated_friendships = db.relationship(
@@ -280,6 +286,8 @@ class User(UserMixin, db.Model):
     country = db.relationship("Country", backref=db.backref("user", lazy=True))
     category_preferences = db.relationship(
         "UserCategoryPreference", back_populates="user")
+    tag_preferences = db.relationship(
+        "UserTagPreference", back_populates="user")
     age_group_preferences = db.relationship(
         "UserAgeGroupPreference", back_populates="user")
 
@@ -287,12 +295,20 @@ class User(UserMixin, db.Model):
         super(User, self).__init__(**kwargs)
 
     @property
-    def list_of_achievements(self):
-        return [a.title for a in self.achievements]
+    def list_of_badges(self):
+        return [b.name for b in self.badges]
+    
+    @property
+    def badges_count(self):
+        return len(self.list_of_badges)
 
     @property
     def list_of_visited_attractions(self):
         return [a.attraction.name for a in self.visited_attractions]
+    
+    @property
+    def visited_count(self):
+        return len(self.list_of_visited_attractions)
 
     def __repr__(self):
         return "<User {}>".format(self.username)
@@ -333,6 +349,19 @@ class User(UserMixin, db.Model):
         user = User.query.filter_by(id=data.get("delete_user")).first()
         if user is None:
             return False
+        
+        attraction_groups = AttractionGroup.query.filter_by(owner=user.id).all()
+        for group in attraction_groups:
+            GroupedAttraction.query.filter_by(group_id=group.id).delete()
+        AttractionGroup.query.filter_by(owner=user.id).delete()
+        Friendship.query.filter((Friendship.user_1 == user.id) | (Friendship.user_2 == user.id)).delete()
+        UserAchievement.query.filter_by(user_id=user.id).delete()
+        UserTagPreference.query.filter_by(user_id=user.id).delete()
+        UserBadge.query.filter_by(user_id=user.id).delete()
+        UserCategoryPreference.query.filter_by(user_id=user.id).delete()
+        UserAgeGroupPreference.query.filter_by(user_id=user.id).delete()
+        VisitedAttraction.query.filter_by(user_id=user.id).delete()
+        Comment.query.filter_by(user_id=user.id).delete()
         db.session.delete(user)
         return True
 
@@ -404,12 +433,12 @@ class UserAchievement(db.Model):
 class UserRole(db.Model):
     __tablename__ = "userRole"
 
-    def __repr__(self):
-        return self.title
-
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(30))
     is_admin = db.Column(db.Boolean, default=False)
+    
+    def __repr__(self):
+        return self.title
 
 
 class VisitedAttraction(db.Model):
@@ -438,9 +467,32 @@ class Badge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(255), nullable=False)
+    
+    users = db.relationship(
+        "User", secondary="userBadge", back_populates="badges"
+        )
+    requirements = db.relationship(
+        "BadgeRequirement", back_populates="badge", cascade="all, delete-orphan"
+        )
+    
+    @property
+    def list_of_achievers(self):
+        return [user.username for user in self.users]
+    
+    @hybrid_property
+    def achieved_count(self):
+        return len(self.users)
 
+    @achieved_count.expression
+    def achieved_count(cls):
+        return (
+            select(func.count(UserBadge.user_id))
+            .where(UserBadge.badge_id == cls.id)
+            .label("achieved_count")
+        )
+    
     def __repr__(self):
-        return f"<Badge {self.name}>"
+        return self.name
 
 
 class BadgeRequirement(db.Model):
@@ -449,7 +501,13 @@ class BadgeRequirement(db.Model):
     badge_id = db.Column(db.Integer, db.ForeignKey("badge.id"), nullable=False)
     tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"), nullable=False)
     quantity_required = db.Column(db.Integer, nullable=False)
-
+    
+    badge = db.relationship("Badge", back_populates="requirements")
+    tag = db.relationship("Tag", backref="requirements")
+    
+    def __repr__(self):
+        return f"{self.quantity_required}x {self.tag.name} tags"
+    
 
 class UserBadge(db.Model):
     __tablename__ = "userBadge"
@@ -457,9 +515,6 @@ class UserBadge(db.Model):
     badge_id = db.Column(db.Integer, db.ForeignKey(
         "badge.id"), primary_key=True)
     date_earned = db.Column(db.DateTime, default=datetime.utcnow)
-
-    user = db.relationship("User", backref=db.backref("user_badges"))
-    badge = db.relationship("Badge", backref=db.backref("badge_users"))
 
     def __repr__(self):
         return f"<UserBadge {self.user_id} {self.badge_id}>"

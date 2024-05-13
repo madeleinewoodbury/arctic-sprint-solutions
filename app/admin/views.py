@@ -1,40 +1,44 @@
 import calendar
 from datetime import datetime
+from markupsafe import Markup
 from flask import flash, redirect, url_for, request, abort
 from flask_login import current_user
 from flask_admin import BaseView, expose
 from flask_admin.contrib.sqla import filters
-from app.admin.forms import ReportForm
-from app.models import (
-    UserAchievement,
-    Achievement,
-    Attraction,
-    VisitedAttraction,
-    AttractionCategory,
-    AttractionTag,
-    UserTagPreference, 
-    UserCategoryPreference,
-    BadgeRequirement,
-    AttractionAgeGroup,
-    UserAgeGroupPreference,
-    GroupedAttraction,
-    Friendship,
-    AttractionGroup,
-    UserBadge,
-    Comment,
-    Country,
-    db,
-    User,
-    Category,
-    Tag,
-    AgeGroup,
-    City,
-)
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.model.form import InlineFormAdmin
 from app.admin import db
 from sqlalchemy import func
 from itertools import chain
+from wtforms.validators import DataRequired, Email
+from wtforms.widgets import PasswordInput, HiddenInput
 from ..email import send_email
+from app.admin.forms import ReportForm
+from app.models import (
+    db,
+    AgeGroup,
+    Attraction,
+    AttractionAgeGroup,
+    AttractionCategory,
+    AttractionGroup,
+    AttractionTag,
+    Badge,
+    BadgeRequirement,
+    Category,
+    City,
+    Comment,
+    Friendship,
+    GroupedAttraction,
+    Tag,
+    User,
+    UserAchievement,
+    UserAgeGroupPreference,
+    UserCategoryPreference,
+    UserTagPreference, 
+    UserBadge,
+    UserRole,
+    VisitedAttraction
+)
 
 
 class AdminModelView(ModelView):
@@ -46,19 +50,45 @@ class AdminModelView(ModelView):
     def inaccessible_callback(self, name, **kwargs):
         """Redirects to login page if user is not admin"""
         return redirect(url_for("auth.login", next=request.url))
+    
+    def has_role(self, role):
+        """Check current user's role against the given role parameter"""
+        query = UserRole.query.filter(UserRole.title == role).first()
+        if query and query.id == current_user.role:
+            return True
+        return False
+    
+    def _run_view(self, fn, *args, **kwargs):
+        """Remove create and delete permissions if user doesnt have the Administrator role"""
+        if self.has_role("Administrator"):
+            self.can_delete = True
+            self.can_create = True
+        else:
+            self.can_delete = False
+            self.can_create = False
+        return fn(self, *args, **kwargs)
 
+    def url_formatter(view, context, model, name):
+        url = model.image
+        return Markup(f"<a href='{url}'>{url}</a>")
+    
 
 class UserView(AdminModelView):
+    column_labels = {
+        "role_rel": "Role",
+        "role_rel.title": "Role"
+    }
+    
     can_export = True
     column_export_list = (
         "username",
         "first_name",
         "last_name",
-        # "list_of_achievements", - Ikke i bruk
-        "list_of_visited_attractions",
         "email",
-        "created_at",
         "country",
+        "created_at",
+        "list_of_badges",
+        "list_of_visited_attractions",
         )
     # Oppdaterer CSV export funksjonen.
     # https://blog.est.im/2022/stdout-05
@@ -66,38 +96,77 @@ class UserView(AdminModelView):
           r = super(UserView, self)._export_csv(return_url)
           r.response = chain((b'\xef\xbb\xbf',), r.response)
           return r
-
+    
     can_view_details = True
     column_details_list = [
         "username",
         "first_name",
         "last_name",
-        "list_of_achievements",
-        "list_of_visited_attractions",
         "email",
-        "created_at",
-    ]
-    form_columns = [
-        "username",
-        "email",
-        "role_rel",
         "country",
+        "created_at",
+        "badges_count",
+        "list_of_badges",
+        "visited_count",
+        "list_of_visited_attractions",
     ]
-    column_searchable_list = ["username", "email"]
-    column_filters = ["created_at", "email"]
     column_list = [
         "username",
         "email",
         "role_rel",
-        "number_of_achievements",
-        # "#attractions"
+        "created_at",
+        "visited_count",
+        "badges_count",
     ]
+    column_searchable_list = ["username", "email"]
+    column_filters = [
+        "email",
+        "role_rel.title",
+        "created_at"]
+    
+    form_create_rules = [
+        "username",
+        "email",
+        "password",
+        "first_name",
+        "last_name",
+        "country",
+        "role_rel"
+    ]
+    form_edit_rules = [
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+        "country",
+        "role_rel"
+    ]
+    form_args = {
+        "username": {
+            "validators": [DataRequired()]
+        },
+        "email": {
+            "validators": [DataRequired(), Email()]
+        },
+        "password": {
+            "validators": [DataRequired()],
+            "widget": PasswordInput(hide_value=True)
+        }
+    }
+    # Disable user role edit field when current user doesnt have Administrator role
+    def edit_form(self, obj=None):
+        form = super().edit_form(obj=obj)
+        if not self.has_role("Administrator"):
+            form.role_rel.render_kw = {'disabled': 'disabled'}
+        return form
     
     @staticmethod
     def on_form_prefill(form, id):
         UserView.changed_user = User.query.get(id)
         
     def on_model_change(self, form, model, is_created):
+        if 'password' in form and form.password.data:
+            model.set_password(form.password.data)
         if not is_created:
             changed_user = UserView.changed_user
             if model.username != changed_user.username or model.email != changed_user.email:
@@ -125,25 +194,10 @@ class UserView(AdminModelView):
         Comment.query.filter_by(user_id=model.id).delete()
         db.session.commit()
         super(UserView, self).on_model_delete(model)
-
-
-class AchievementsView(AdminModelView):
-    can_export = True
-    column_export_list = (
-        "title",
-        "description",
-        "user_count",
-    )
-    # Oppdaterer CSV export funksjonen.
-    # https://blog.est.im/2022/stdout-05
-    def _export_csv(self, return_url):
-          r = super(AchievementsView, self)._export_csv(return_url)
-          r.response = chain((b'\xef\xbb\xbf',), r.response)
-          return r
-
-    form_columns = ["title", "description"]
-    column_list = ["title", "description", "user_count"]
-
+    
+    def _show_missing_fields_warning(self, text):
+        pass
+    
 
 class CategoryView(AdminModelView):
     can_export = True
@@ -173,6 +227,7 @@ class TagView(AdminModelView):
     can_export = True
     column_export_list = (
         "name",
+        "attraction_count",
     )
     # Oppdaterer CSV export funksjonen.
     # https://blog.est.im/2022/stdout-05
@@ -181,7 +236,7 @@ class TagView(AdminModelView):
           r.response = chain((b'\xef\xbb\xbf',), r.response)
           return r
     form_columns = ["name"]
-    column_list = ["name"]
+    column_list = ["name", "attraction_count"]
 
     def on_model_delete(self, model):
         """Handle cascading delete"""
@@ -218,6 +273,11 @@ class AgeGroupView(AdminModelView):
 
 
 class AttractionView(AdminModelView):
+    column_labels = {
+        "city_rel": "City",
+        "city_rel.name": "City"
+    }
+    
     can_export = True
     column_export_list = (
         "name",
@@ -225,10 +285,12 @@ class AttractionView(AdminModelView):
         "location",
         "description",
         "image",
+        "category",
+        "age_groups",
         "tags",
         "points",
-        "age_groups",
         "visit_count",
+        "list_of_visitors"
     )
     # Oppdaterer CSV export funksjonen.
     # https://blog.est.im/2022/stdout-05
@@ -236,7 +298,22 @@ class AttractionView(AdminModelView):
           r = super(AttractionView, self)._export_csv(return_url)
           r.response = chain((b'\xef\xbb\xbf',), r.response)
           return r
-
+    
+    can_view_details = True
+    column_details_list = [
+        "name",
+        "city_rel",
+        "location",
+        "description",
+        "image",
+        "category",
+        "age_groups",
+        "tags",
+        "points",
+        "visit_count",
+        "list_of_visitors"
+    ]
+    
     form_columns = [
         "name",
         "city_rel",
@@ -244,21 +321,33 @@ class AttractionView(AdminModelView):
         "description",
         "image",
         "category",
+        "age_groups",
         "tags",
         "points",
-        "age_groups",
     ]
     column_list = [
         "name",
         "city_rel",
         "location",
+        "category",
+        "age_groups",
         "tags",
         "points",
-        "age_groups",
         "visit_count",
     ]
-
-    column_filters = ["tags", "age_groups", "visit_count"]
+    column_filters = [
+        "name",
+        "city_rel.name",
+        "category",
+        "age_groups",
+        "tags",
+        "points",
+        "visit_count"
+        ]
+    
+    column_formatters = {
+        "image": AdminModelView.url_formatter
+    }
 
     def on_model_delete(self, model):
         """Handle cascading delete"""
@@ -276,10 +365,10 @@ class CitiesView(AdminModelView):
     can_export = True
     column_export_list = (
         "name",
-        "country",
-        "image",
         "description",
-        "attractions_count",
+        "image",
+        "country",
+        "attractions_count"
     )
     # Oppdaterer CSV export funksjonen.
     # https://blog.est.im/2022/stdout-05
@@ -288,17 +377,88 @@ class CitiesView(AdminModelView):
           r.response = chain((b'\xef\xbb\xbf',), r.response)
           return r
     
+    can_view_details = True
+    column_details_list = [
+        "name",
+        "description",
+        "image",
+        "country",
+        "attractions_count"
+    ]
+    
     form_columns = [
         "name",
-        "country",
-        "image",
         "description",
+        "image",
+        "country"
     ]
     column_list = [
         "name",
         "country",
-        "attractions_count",
+        "attractions_count"
     ]
+    column_formatters = {
+        "image": AdminModelView.url_formatter
+    }
+    
+
+class BadgeView(AdminModelView):
+    inline_models = [(BadgeRequirement, {
+        'form_label': 'Requirements',
+        'form_columns': ('id', 'tag', 'quantity_required')
+    })]
+    
+    can_export = True
+    column_export_list = (
+        "name",
+        "description",
+        "requirements",
+        "achieved_count"
+    )
+    # Oppdaterer CSV export funksjonen.
+    # https://blog.est.im/2022/stdout-05
+    def _export_csv(self, return_url):
+          r = super(BadgeView, self)._export_csv(return_url)
+          r.response = chain((b'\xef\xbb\xbf',), r.response)
+          return r
+    
+    can_view_details = True
+    column_details_list = [
+        "name",
+        "description",
+        "requirements",
+        "achieved_count",
+        "list_of_achievers"
+    ]
+    
+    form_columns = [
+        "name",
+        "description",
+    ]
+    column_list = [
+        "name",
+        "description",
+        "requirements",
+        "achieved_count"
+    ]
+    column_filters = [
+        "name",
+        "description",
+        "achieved_count"
+    ]
+    
+
+class BadgeRequirementInlineModelForm(InlineFormAdmin):
+    form_columns = ('id', 'tag', 'quantity_required')
+    form_args = {
+        'id': {
+            'widget': HiddenInput()
+        },
+        'tag': {
+            'query_factory': lambda: Tag.query.all(),
+            'allow_blank': False
+        }
+    }
 
 
 class ReportView(BaseView):
@@ -327,16 +487,16 @@ class ReportView(BaseView):
         month_name = calendar.month_name[selected_month]
 
         # Monthly Achievements
-        achievements_data = (
+        badges_data = (
             db.session.query(
-                Achievement.title,
+                Badge.name,
                 db.func.count(
                     db.case(
                         (
                             db.and_(
-                                db.extract("year", UserAchievement.time_achieved)
+                                db.extract("year", UserBadge.date_earned)
                                 == selected_year,
-                                db.extract("month", UserAchievement.time_achieved)
+                                db.extract("month", UserBadge.date_earned)
                                 == selected_month,
                             ),
                             1,
@@ -346,17 +506,17 @@ class ReportView(BaseView):
                 db.func.sum(
                     db.case(
                         (
-                            db.extract("year", UserAchievement.time_achieved)
+                            db.extract("year", UserBadge.date_earned)
                             == selected_year,
                             1,
                         ),
                         else_=0,
                     )
                 ).label("yearly_acquired"),
-                db.func.count(UserAchievement.achievement_id).label("total_acquired"),
+                db.func.count(UserBadge.badge_id).label("total_acquired"),
             )
-            .join(UserAchievement)
-            .group_by(Achievement.title)
+            .join(UserBadge)
+            .group_by(Badge.name)
             .all()
         )
 
@@ -399,8 +559,7 @@ class ReportView(BaseView):
             form=form,
             month_name=month_name,
             selected_year=selected_year,
-            # achievements_data=achievements_data,
+            badges_data=badges_data,
             attractions_data=attractions_data,
         )
-    
-
+        
