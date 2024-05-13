@@ -11,7 +11,7 @@
 
 .profile .flag-container {
   position: absolute;
-  top: 0;
+  bottom: 0;
   right: 0;
 }
 
@@ -51,10 +51,10 @@
 
 .profile .top .title .stats {
   display: flex;
-  flex-direction: column;
-  gap: .25rem;
+  gap: 1rem;
   font-size: 1rem;
   font-family: var(--secondary-font);
+  padding-bottom: .25rem;
 }
 
 .profile .top .title .stats span strong {
@@ -106,24 +106,32 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 1rem;
   padding: 1rem;
 }
+
+.profile a {
+  text-decoration: none;
+  color: inherit;
+}
+
 
 /* Tabs */
 .profile-tabs{
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
   color: var(--white);
   font-family: var(--secondary-font);
-  padding: 0 1rem;
+  padding: 1rem 1rem 0;
 }
 
 .profile-tabs li {
   cursor: pointer;
   padding-bottom: 2px;
   border-bottom: 2px solid transparent;
-  font-weight: .9rem;
+  font-size: 1rem;
+  width: fit-content;
 }
 
 .profile-tabs li.active {
@@ -135,6 +143,13 @@
   border-color: var(--primary);
 }
 
+.profile-tabs svg {
+  vertical-align: middle;
+  transform: translateY(-2px); 
+  margin-right: 5px;
+  margin-top: -1rem;
+  margin-bottom: -1rem;
+}
 
 .profile .content-info {
   display: flex;
@@ -182,6 +197,16 @@
   padding: 0 3px;
   font-size: .8rem;
 }
+
+.profile .custom-label {
+  /* Legg til dine spesifikke stiler her */
+  position: static;
+  transform: translateY(-50%);
+  background-color: var(--bg-light);
+  /* padding: 0 3px; */
+  font-size: .8rem;
+}
+
 
 .profile .form-control input {
   width: 100%;
@@ -287,18 +312,178 @@
 .profile .form-wrapper .btn-container {
   justify-content: center;
   display: flex;
-  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: 1rem;
   padding-top: 2.5rem;
 }
 
+.profile .form-wrapper .btn-container .btn {
+  width: 100%;
+  padding: 1rem 2rem;
+}
+
 /* Visited Attractions and wishlist*/
+.profile .user-lists {
+  position: relative;
+}
+
+.profile .list-card-container {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 2rem;
+}
+
+.profile .list-card {
+  background-color: var(--white);
+  border-radius: 1rem;
+  height: fit-content;
+  position: relative;
+  height: 300px;
+}
+
+.profile .list-card .visibility {
+  font-family: var(--secondary-font);
+  color: var(--black);
+  background-color: var(--white);
+  padding: 5px 10px;
+  border-radius: .5rem;
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+  z-index: 10;
+}
+
+.profile .list-card .image-container {
+  height: 50%;
+}
+
+.profile .list-card img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.profile .list-card .text-container {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 50%;
+}
+
+.profile .list-card .btn-container {
+  padding-top: 1rem;
+  gap: 1rem;
+}
+
+.profile .list-card .btn-container .btn {
+  width: 50%;
+}
+
+.profile .edit-list {
+  margin-bottom: 1rem;
+}
+
+
+.profile .list-form {
+  background-color: var(--bg-light);
+  border-radius: .5rem;
+  width: 100%;
+}
+
+.profile .list-form .form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.profile .list-form .form-row .form-control:first-of-type{
+  width: 100%;
+}
+
+.profile .list-form .form-row .form-control:last-of-type{
+  width: 100%;
+}
+
+.profile .list-form .btn-container {
+  gap: .5rem;
+}
+
+.profile .list-form .btn-container .btn {
+  width: 50%;
+}
+
+.profile .list-card.add-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-light);
+}
+
+.profile .add-group-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+  /* outline: none; */
+  font-size: 1.25rem;
+}
+
+.profile .add-group-btn:hover,
+.profile .add-group-btn:hover svg {
+  color: var(--darken-primary);
+  fill: var(--darken-primary);
+}
+
+.profile .add-group-btn svg {
+  width: 60px;
+  height: 60px;
+}
+
+.profile .user-lists .title-container,
+.profile .friend-groups .title-container{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: fit-content;
+}
+
+.profile .user-lists .title-container button ,
+.profile .friend-groups .title-container button{
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding-bottom: 1rem;
+}
+
+.profile .user-lists .title-container button svg,
+.profile .friend-groups .title-container button svg{
+  fill: var(--white);
+}
+
+
+.profile .user-lists .title-container button:hover svg,
+.profile .friend-groups .title-container button:hover svg{
+  fill: var(--primary);
+}
+
+
 .profile .visited-attractions,
-.profile .user-wishlist{
+.profile .user-wishlist,
+.profile .grouped-attractions{
   width: 100%;
 }
 
 .profile .visited-attractions h2,
-.profile .user-wishlist h2 {
+.profile .user-lists h2,
+.profile .friend-groups h2 {
   color: var(--white);
   font-size: 1.75rem;
   font-weight: normal;
@@ -351,6 +536,7 @@
   border-radius: .5rem;
   box-shadow: 3px 6px 25px -18px rgba(0,0,0,0.75);
   position: relative;
+  cursor: pointer;
 }
 
 .profile .attraction-card img {
@@ -407,6 +593,10 @@
   font-size: 1.1rem;
 }
 
+.profile .user-details .btn-container {
+  padding: 1rem 0;
+}
+
 
 /* User Preferences */
 .profile .user-preferences {
@@ -437,6 +627,31 @@
   font-style: italic;
 }
 
+
+@media (min-width: 550px) {
+  .profile .flag-container {
+    top: 0;
+  }
+
+  .profile .list-card-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile .form-wrapper .btn-container .btn {
+    width: calc(50% - .5rem);
+  }
+  
+  .profile .user-details .btn-container .btn-danger {
+    width: 100%;
+  }
+
+  .profile #delete-user-confirmation .btn-container .btn {
+    width: calc(50% - .5rem);
+  }
+}
+
+
+
 @media (min-width: 768px) {
   .profile .flag-container {
     display: flex;
@@ -466,8 +681,8 @@
 
   .profile .top .title .progress-container {
     flex-direction: row;
-    gap: 2rem;
-    font-size: 1.1rem;
+    gap: 1rem;
+    font-size: 1rem;
   }
 
   .profile .attraction-card .points {
@@ -476,7 +691,10 @@
     right: .75rem;
 }
 
-  
+  .profile .list-card-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
 }
 
 @media (min-width: 992px) {
@@ -547,4 +765,37 @@
   .profile .preference-list li:last-child {
     border-bottom: none;
   }
+
+  .profile .list-card-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .profile .edit-list .list-form{
+    width: 50%;
+  }
+  
+
+}
+
+@media (min-width: 1200px) {
+  .profile .top .title {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0 2rem;
+  }
+
+  .profile .top .title h2 {
+    width: 100%;
+  }
+
+  .profile .top .title .stats {
+    width: fit-content;
+    padding-bottom: 0;
+    align-items: end;
+  }
+
+  .profile .top .title .progress-container {
+    width: fit-content;
+  }
+
 }

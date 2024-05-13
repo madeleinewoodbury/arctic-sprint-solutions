@@ -49,6 +49,7 @@ DROP TABLE IF EXISTS badge;
 DROP TABLE IF EXISTS tag;
 DROP TABLE IF EXISTS category;
 DROP TABLE IF EXISTS ageGroup;
+DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS attraction;
 DROP TABLE IF EXISTS userProfile;
 DROP TABLE IF EXISTS user;
@@ -196,6 +197,20 @@ CREATE TABLE `city` (
   `country_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
+
+--
+-- Dumping data for table `comment`
+--
+
+CREATE TABLE `comment` (
+  `id` int(11) NOT NULL,
+  `attraction_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `created_at` TIMESTAMP DEFAULT current_timestamp,
+  `edited_at` TIMESTAMP DEFAULT NULL,
+  `editor_id` INT DEFAULT NULL,
+  `comment_text` TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
 -- Table structure for table `friendship`
@@ -410,6 +425,15 @@ ALTER TABLE `city`
   ADD KEY `fk_city_country` (`country_id`);
 
 --
+-- Indexes for table `comment`
+--
+ALTER TABLE `comment`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `attraction_id` (`attraction_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `editor_id` (`editor_id`);
+
+--
 -- Indexes for table `friendship`
 --
 ALTER TABLE `friendship`
@@ -529,6 +553,12 @@ ALTER TABLE `attractionGroup`
 --
 -- AUTO_INCREMENT for table `badgeRequirement`
 --
+ALTER TABLE `badge`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `badgeRequirement`
+--
 ALTER TABLE `badgeRequirement`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
@@ -542,6 +572,12 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `city`
 --
 ALTER TABLE `city`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `comment`
+--
+ALTER TABLE `comment`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
@@ -617,6 +653,15 @@ ALTER TABLE `attractionTag`
 ALTER TABLE `badgeRequirement`
   ADD CONSTRAINT `badgeRequirement_ibfk_1` FOREIGN KEY (`badge_id`) REFERENCES `badge` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `badgeRequirement_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `comment`
+--
+ALTER TABLE `comment`
+  ADD CONSTRAINT `fk_comment_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_comment_edit_user` FOREIGN KEY (`editor_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_comment_attraction` FOREIGN KEY (`attraction_id`) REFERENCES `attraction` (`id`) ON DELETE CASCADE;
+
 
 --
 -- Constraints for table `friendship`
