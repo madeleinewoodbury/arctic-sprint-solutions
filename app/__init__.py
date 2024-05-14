@@ -6,14 +6,13 @@ config_name (str) - The name of the configuration to use.
 Return: flask application (with right configuration)
 """
 
-
 from flask import Flask, request, session, render_template
 from config import config
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_admin import Admin
 from flask_babel import Babel
-from flask_mail import Mail 
+from flask_mail import Mail
 from flask_moment import Moment
 from flask_caching import Cache
 from googletrans import Translator
@@ -29,12 +28,22 @@ cache = Cache()
 
 # Flask-login verdier
 login_manager = LoginManager()
-login_manager.session_protection = 'strong'
-login_manager.login_view = 'auth.login'
+login_manager.session_protection = "strong"
+login_manager.login_view = "auth.login"
 
 
 def create_app(config_name):
+    """
+    Creates the Flask app based on a specific configuration.
+
+    Args:
+        config_name (str): The name of the configuration to use.
+
+    Returns:
+        Flask: The Flask application with the right configuration.
+    """
     from .attractions.views import attractions
+
     app = Flask(__name__)
 
     # Loads the configurations settings based on config type.
@@ -54,29 +63,32 @@ def create_app(config_name):
     @app.context_processor
     def inject_cities():
         from .attractions.forms import SelectCityForm
-        selected_city = session.get('selected_city')
+
+        selected_city = session.get("selected_city")
         if not selected_city:
-            session['selected_city'] = 1
+            session["selected_city"] = 1
         return dict(select_city_form=SelectCityForm())
-    
-    
+
     from .admin import admin_manager as admin_bp
 
     from .auth import auth as auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/auth')
+
+    app.register_blueprint(auth_bp, url_prefix="/auth")
 
     from .attractions import attractions as attractions_bp
+
     app.register_blueprint(attractions_bp)
 
     from .main import main as main_bp
+
     app.register_blueprint(main_bp)
 
     @app.errorhandler(404)
     def page_not_found(error):
-        return render_template('404.html'), 404
+        return render_template("404.html"), 404
 
     @app.errorhandler(503)
     def service_unavailable(error):
-        return render_template('503.html'), 503
+        return render_template("503.html"), 503
 
     return app
