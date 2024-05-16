@@ -506,10 +506,18 @@ const friendGroups = (groups) => {
     }
 }
 
+const hidePlaceholderOnRegisterForm = () => {
+    const input = document.querySelector('.register-password input')
+    if(!input) return
+
+    input.placeholder = ''
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     truncateAttractionDescription()
     filterAttractionsGridContent()
     citySelectDesktop()
     citySelectMobile()
     citySelectAnonymous()
+    hidePlaceholderOnRegisterForm()
 })
