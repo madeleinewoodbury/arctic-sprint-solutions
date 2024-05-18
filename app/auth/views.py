@@ -27,7 +27,7 @@ from flask import (
 )
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_babel import _
-from datetime import datetime
+from datetime import datetime, timedelta
 from ..email import send_email
 from sqlalchemy import func
 
@@ -81,10 +81,10 @@ def login() -> "html":
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user is not None and user.check_password(form.password.data):
-            login_user(user, form.remember_me.data)
-            return redirect(url_for("attractions.get_attractions"))
-        flash(_("Invalid username or password."), "error")
-    return render_template("login.html", form=form)
+            login_user(user, form.remember_me.data, duration=timedelta(days=1))
+            return redirect(url_for('attractions.get_attractions'))
+        flash(_('Invalid username or password.'), "error")
+    return render_template('login.html', form=form)
 
 
 @auth.route("/logout")

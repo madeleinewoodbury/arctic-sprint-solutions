@@ -145,6 +145,8 @@
 .attraction-info img {
   border-radius: 1rem;
   box-shadow: 3px 6px 25px -18px rgba(0,0,0,0.75);
+  width: 100%;
+  height: auto;
 }
 
 .attraction-info .text-container {
@@ -440,6 +442,7 @@
     flex-direction: row;
     justify-content: space-between;
   }
+
 }
 
 @media (min-width: 992px) {
@@ -464,6 +467,17 @@
     order: 2;
     width: 60%;
     left: 40%;
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 500px;
+  }
+
+  .attraction-info .image-container img{
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
   }
 
   .attraction-info .text-container {

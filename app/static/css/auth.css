@@ -168,6 +168,12 @@
   .auth-card .content {
     padding: 2rem;
   }
+
+  @media (max-height: 880px) {
+    .auth-card {
+      margin-top: 4rem;
+    }
+  }
 }
 
 @media (min-width: 768px) {
@@ -175,6 +181,7 @@
     grid-template-columns: repeat(2, 1fr);
     width: calc(100% - 4rem);
     max-width: 1100px;
+    height: fit-content;
   }
   
   .auth-card .image-container {
@@ -196,7 +203,11 @@
   }
 
   .auth-card form {
-    padding-top: 7rem;
+    padding-top: 1rem;
+  }
+
+  .login .auth-card form {
+    padding-top: 5rem;
   }
 
   .auth-card form {
@@ -210,3 +221,4 @@
   } 
 
 }
+
