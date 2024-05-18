@@ -343,7 +343,7 @@ nav {
   left: calc(1rem - 3px);
   top: 0;
   transform: translateY(-50%);
-  background-color: var(--dark-blue);
+  background-color: var(--bg-dark);
   color: var(--bg-light);
   padding: 0 3px;
   font-size: .8rem;
